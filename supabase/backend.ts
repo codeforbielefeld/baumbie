@@ -1,10 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config()
+
 const options = {
     method: 'POST',
     headers: {
         accept: 'application/json',
         'content-type': 'application/json',
         versionID: "production",
-        Authorization: "VF.DM.654e90025605a20007a61c89.zbPoZtx6lhQVRnPy"
+        Authorization: process.env.VF_API_KEy
     },
     body: JSON.stringify({
         action: {type: 'launch'},
