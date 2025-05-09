@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import Card from '../../components/card/Card.svelte';
-	import { supabase } from '../../supabase';
+	import Card from '$components/ui/ModalFrame.svelte';
+	import { supabase } from '$shared/api/supabase';
 
 	let userEmail: string | undefined = '';
 

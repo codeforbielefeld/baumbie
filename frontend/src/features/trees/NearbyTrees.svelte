@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { supabase } from '../../supabase';
+	import { supabase } from '$shared/api/supabase';
 
 	let trees;
 	$: trees = [];

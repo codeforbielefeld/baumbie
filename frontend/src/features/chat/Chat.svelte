@@ -1,9 +1,9 @@
 <script lang="ts">
 	// === Imports ===
 	import { onMount } from 'svelte';
-	import { supabase } from '../../supabase';
+	import { supabase } from '$shared/api/supabase';
 	import Message from './Message.svelte';
-	import type { Message as MessageType, RawMessage } from '../../types/chat';
+	import type { Message as MessageType, RawMessage } from '$shared/types/chat';
 
 	// === Props ===
 	export let treeId: string = '';

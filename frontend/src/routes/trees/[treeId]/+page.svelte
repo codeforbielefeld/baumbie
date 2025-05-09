@@ -1,15 +1,15 @@
 <!--Seite für 1 individuellen Baum :) -->
 <script lang="ts">
 	import { Accordion, AccordionItem } from 'svelte-collapsible';
-	import WaterColumn from '../../../components/WaterColumn.svelte';
-	import Chat from '../../../components/chat/Chat.svelte';
-	import Card from '../../../components/card/Card.svelte';
-	import AdoptTree from '../../../features/adoption/AdoptTree.svelte';
-	import { supabase } from '../../../supabase';
+	import WaterColumn from '$components/WaterColumn.svelte';
+	import Chat from '$features/chat/Chat.svelte';
+	import OverlayPanel from '$components/layout/OverlayPanel.svelte';
+	import AdoptTree from '$features/adoption/AdoptTree.svelte';
+	import { supabase } from '$shared/api/supabase';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import type { Tree } from '../../../types/tree';
-	import TreeMetric from '../../../components/trees/TreeMetric.svelte';
+	import type { Tree } from '$shared/types/tree';
+	import TreeMetric from '$features/trees/TreeMetric.svelte';
 
 	export let activeTabIndex: number = 0;
 
@@ -37,7 +37,12 @@
 </script>
 
 {#if tree}
-	<Card title={tree.tree_type_german} open={true}>
+<OverlayPanel
+	title={tree.tree_type_german}
+	bind:open={showInfo}
+	closeable
+	on:close={() => history.back()}
+	>
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 
 		<div slot="navigation">
@@ -157,5 +162,5 @@
 				{/if}
 			</div>
 		</div>
-	</Card>
+	</OverlayPanel>
 {/if}

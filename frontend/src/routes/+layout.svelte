@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
-	import Map from '../components/map/Map.svelte';
-	import Navbar from '../components/navbar/Navbar.svelte';
+	import Map from '$features/map/Map.svelte';
+	import Navbar from '$components/layout/Navbar.svelte';
 </script>
 
 <svelte:head>

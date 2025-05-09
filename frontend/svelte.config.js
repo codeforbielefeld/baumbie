@@ -1,5 +1,6 @@
 import adapter from '@zugriff/adapter-sveltekit';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import path from 'path';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -14,6 +15,11 @@ const config = {
 		adapter: adapter(),
 		env: {
 			dir: ".."
+		},
+		alias: {
+			$components: path.resolve('./src/components'),
+			$features: path.resolve('./src/features'),
+			$shared: path.resolve('./src/shared')
 		}
 	}
 };

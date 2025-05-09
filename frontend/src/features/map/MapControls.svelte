@@ -1,6 +1,6 @@
 <script lang="ts">
 	import L from 'leaflet';
-	import { userMarkerIcon } from '$lib/map/user-marker';
+	import { userMarkerIcon } from '$shared/lib/map/user-marker';
 
 	export let map: L.Map;
 

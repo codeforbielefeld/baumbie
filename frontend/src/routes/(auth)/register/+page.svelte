@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Dialog from '../../../components/dialog/Dialog.svelte';
-	import RegistrationForm from '../../../features/auth/RegistrationForm.svelte';
+	import Dialog from '$components/layout/OverlayPanel.svelte';
+	import RegistrationForm from '$features/auth/RegistrationForm.svelte';
 </script>
 
 <Dialog title="Registrierung">

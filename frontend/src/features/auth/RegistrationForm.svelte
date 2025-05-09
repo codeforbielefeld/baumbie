@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { supabase } from '../../supabase';
-	import Dialog from '../../components/dialog/Dialog.svelte';
-	import EmailField from '../../components/input/EmailField.svelte';
-	import PasswordField from '../../components/input/PasswordField.svelte';
-	import PrimaryButton from '../../components/button/PrimaryButton.svelte';
-	import LinkButton from '../../components/button/LinkButton.svelte';
+	import { supabase } from '$shared/api/supabase';
+	import Dialog from '$components/layout/OverlayPanel.svelte';
+	import EmailField from '$components/ui/input/EmailField.svelte';
+	import PasswordField from '$components/ui/input/PasswordField.svelte';
+	import PrimaryButton from '$components/ui/button/PrimaryButton.svelte';
+	import LinkButton from '$components/ui/button/LinkButton.svelte';
 
 	let email: string = '';
 	let password: string = '';

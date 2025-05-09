@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Message as MessageType } from '../../types/chat';
+	import type { Message as MessageType } from '$shared/types/chat';
 
 	export let message: MessageType;
 </script>

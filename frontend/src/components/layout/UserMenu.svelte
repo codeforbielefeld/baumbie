@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import PrimaryButton from '../button/PrimaryButton.svelte';
-	import { supabase } from '../../supabase';
+	import PrimaryButton from '$components/ui/button/PrimaryButton.svelte';
+	import { supabase } from '$shared/api/supabase';
 
 	let loggedIn = false;
 

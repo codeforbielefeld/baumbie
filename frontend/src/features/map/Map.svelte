@@ -12,7 +12,7 @@
 	import './Map.css';
 
 	// 📦 Projektinterne Logik
-	import findMatchingSegments from '$lib/map/segments/findSegments';
+	import findMatchingSegments from '$shared/lib/map/segments/findSegments';
 
 	// 🗺️ Initialisierung
 	const id = 'map-' + Math.random().toString(36).substring(2, 9);
