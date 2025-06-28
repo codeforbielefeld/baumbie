@@ -1,12 +1,9 @@
 import os
 import json
 from dotenv import load_dotenv
-from tqdm import tqdm
 from supabase import create_client, Client
-from shapely import wkt, Point
 import pyproj
 import sys
-from tqdm import tqdm
 
 load_dotenv("../.env")
 
@@ -24,8 +21,6 @@ else:
 
 
 projection = pyproj.Proj(proj='utm', zone=32, ellps='WGS84')
-def unproject(x, y):
-    return projection(x, y, inverse=True)
 
 
 def create_insert_data(feature, provider_id):
@@ -59,12 +54,11 @@ def create_insert_data(feature, provider_id):
 with open(path_to_geojson) as f:
     data = json.load(f)
 
-    city = supabase.table("providers").insert({
-        "name": "Stadt Bielefeld",
-    }).execute()
-    city_uuid = city.data[0]["uuid"]
+city = supabase.table("providers").insert({
+    "name": "Stadt Bielefeld",
+}).execute()
+city_uuid = city.data[0]["uuid"]
 
-    rows = [create_insert_data(feature, city_uuid) for feature in data["features"]]
-    rows = [row for row in rows if row is not None]
-    for row in tqdm(rows):
-        supabase.table("trees").insert(row).execute()
+rows = [create_insert_data(feature, city_uuid) for feature in data["features"]]
+rows = [row for row in rows if row is not None]
+supabase.table("trees").insert(rows).execute()
