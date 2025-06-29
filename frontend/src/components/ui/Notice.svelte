@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let tone: 'info' | 'warning' | 'success' = 'info' ; // Ton bestimmt Farbe
+	export let tone: 'info' | 'warning' | 'success' = 'info'; // Ton bestimmt Farbe
 </script>
 
 <p
@@ -9,3 +9,9 @@
 >
 	<slot />
 </p>
+
+<style>
+	p :global(a) {
+		text-decoration: underline;
+	}
+</style>
