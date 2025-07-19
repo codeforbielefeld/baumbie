@@ -1,17 +1,16 @@
 <script lang="ts">
-	// Svelte lifecycle
+	// Imports
 	import { onMount, onDestroy } from 'svelte';
-
-	// UI & Actions
 	import { Notice } from '$components/ui';
 	import { FlyToTreeButton } from '$components/actions';
-
-	// Data loading
 	import { loadAdoptedTrees } from '$lib/trees';
-	import { getCurrentUser } from '$lib/supabase';
 
 	// Types
+	import type { User } from '@supabase/supabase-js';
 	import type { TreeMeta } from '$types/tree';
+
+	// Props
+	export let currentUser: User | null = null;
 
 	// State
 	let adoptedTrees: TreeMeta[] = [];
@@ -21,10 +20,13 @@
 	let warningMessage: string | null = null;
 	let warningTimeout: ReturnType<typeof setTimeout> | null = null;
 
+	// Lifecycle
 	onMount(async () => {
+		if (!currentUser) {
+			loading = false;
+			return;
+		}
 		try {
-			const user = await getCurrentUser();
-			loggedIn = !!user;
 			adoptedTrees = await loadAdoptedTrees();
 		} catch (err) {
 			console.error(err);
@@ -33,6 +35,13 @@
 		}
 	});
 
+	onDestroy(() => {
+		if (warningTimeout) {
+			clearTimeout(warningTimeout);
+		}
+	});
+
+	// Functions
 	function showWarning(msg: string) {
 		warningMessage = msg;
 
@@ -45,12 +54,6 @@
 			warningTimeout = null;
 		}, 5000);
 	}
-
-	onDestroy(() => {
-		if (warningTimeout) {
-			clearTimeout(warningTimeout);
-		}
-	});
 </script>
 
 {#if loading}
