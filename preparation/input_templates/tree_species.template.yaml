@@ -1,0 +1,29 @@
+# YAML-Vorlage für Baumarten-Beschreibungen
+# Jeder Eintrag wird eindeutig durch den botanischen Namen (tree_type_botanic) identifiziert.
+# Für jede Baumart müssen beide Felder – description_emotional und description_neutral – ausgefüllt werden.
+# Für mehrzeiligen Fließtext wird der YAML-Operator > verwendet.
+# Die Reihenfolge ist beliebig, Duplikate sind nicht erlaubt.
+
+- tree_type_botanic: Ulmus glabra  # Botanischer Name (muss exakt mit 'trees.tree_type_botanic' übereinstimmen)
+  description_emotional: >
+    Ich bin die Berg-Ulme – standfest und elegant zugleich!  
+    Meine breite Krone spendet Schatten an steilen Hängen, und mein Laub raschelt besonders schön im Wind.  
+    Wer einmal unter mir sitzt, spürt die Ruhe des Waldes ganz besonders.
+  description_neutral: >
+    Die Berg-Ulme ist ein mitteleuropäischer Laubbaum mit asymmetrischen, grob gezähnten Blättern.  
+    Sie bevorzugt feuchte, kühle Standorte und ist eine typische Baumart in Schlucht- und Hangwäldern.
+
+- tree_type_botanic: Sorbus aria
+  description_emotional: >
+    Schau mich an – mit meinen weißen Blattunterseiten glänze ich im Sonnenlicht!  
+    Ich komme gut mit Hitze klar und wachse selbst dort, wo andere längst aufgegeben haben.
+  description_neutral: >
+    Die Mehlbeere ist ein trockenheitsresistenter Baum mit ovalen, filzig-weiß behaarten Blättern.  
+    Sie wächst häufig auf mageren Standorten und trägt orange-rote Beeren, die für viele Vögel eine wichtige Nahrungsquelle sind.
+
+# Weitere Einträge …
+# - tree_type_botanic: Fagus sylvatica
+#   description_emotional: >
+#     Ich bin die Buche – Mutter des Waldes, tief verwurzelt und voller Geschichten.
+#   description_neutral: >
+#     Die Rotbuche ist die häufigste Laubbaumart Mitteleuropas und bildet dichte, schattige Buchenwälder.

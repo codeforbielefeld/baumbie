@@ -1,13 +1,11 @@
 <script lang="ts">
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import { getWateringsForTree, getCurrentUser } from '$lib/supabase';
 	import { WateringHistory } from '$components/waterings';
 	import { Notice } from '$components/ui';
 	import type { Watering } from '$types/watering';
 
 	export let treeId: string;
-
-	const dispatch = createEventDispatcher();
 
 	let currentUserId: string | null = null;
 	let waterings: Watering[] = [];
@@ -24,7 +22,6 @@
 			error = 'Fehler beim Laden der Gießungen.';
 		} finally {
 			loading = false;
-			dispatch('contentChanged');
 		}
 	}
 
