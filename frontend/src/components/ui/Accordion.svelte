@@ -1,6 +1,5 @@
-<!--Übernommen aus https://svelte.dev/playground/c109f83f3c114cb7829f04fe2440ef94?version=5.28.2, dann modifiziert ⚒️-->
 <script lang="ts">
-	import { onMount, afterUpdate, tick, createEventDispatcher } from 'svelte';
+	import { onMount, onDestroy, tick, createEventDispatcher } from 'svelte';
 
 	export let open = false;
 	const dispatch = createEventDispatcher();
@@ -9,24 +8,37 @@
 	let contentEl: HTMLDivElement;
 	let contentHeight = 0;
 
+	let resizeObserver: ResizeObserver;
+
 	const handleClick = () => (open = !open);
 
 	const updateHeight = async () => {
 		if (contentEl) {
-			await tick(); // DOM muss aktualisiert sein
+			await tick();
 			contentHeight = contentEl.scrollHeight;
 			dispatch('heightchange', { height: contentHeight });
 		}
 	};
 
-	onMount(updateHeight);
-	afterUpdate(updateHeight);
+	onMount(() => {
+		updateHeight();
+
+		if (contentEl) {
+			resizeObserver = new ResizeObserver(() => {
+				updateHeight();
+			});
+			resizeObserver.observe(contentEl);
+		}
+	});
+
+	onDestroy(() => {
+		resizeObserver?.disconnect();
+	});
 
 	$: if (open) {
 		updateHeight();
 	}
 
-	// Optional: von außen triggerbar
 	export function updateHeightExternally() {
 		updateHeight();
 	}

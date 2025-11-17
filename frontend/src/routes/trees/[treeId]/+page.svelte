@@ -1,16 +1,25 @@
 <script lang="ts">
+	// SvelteKit stores
 	import { page } from '$app/stores';
-	import { supabase } from '$lib/supabase';
 
+	// Typen
 	import type { TreeData } from '$types/tree';
-
-	import { Accordion } from '$components/ui';
 	import type AccordionType from '$components/ui/Accordion.svelte';
 
+	// Supabase-Funktionen
+	import { getTreeById, getTreeSpeciesDescription } from '$lib/supabase';
+
+	// Komponenten
+	import { Accordion, Notice } from '$components/ui';
 	import { DialogPanel } from '$components/overlay';
 	import { Chat } from '$components/chat';
-	import { AdoptTreeButton, WaterTreeButton, TreeMetric, TreeWaterings } from '$components/trees';
-	import Notice from '$components/ui/Notice.svelte';
+	import {
+		AdoptTreeButton,
+		WaterTreeButton,
+		TreeMetricsView,
+		TreeWaterings,
+		TreeDescription
+	} from '$components/trees';
 
 	export let activeTabIndex = 0;
 	const handleTabChange = (tab: number) => (activeTabIndex = tab);
@@ -20,22 +29,25 @@
 	let openAbout = true;
 	let openWater = false;
 	let openHistory = false;
+	let openEnvironment = false;
+	let treeDescription: string | null = null;
 
 	$: showInfo = activeTabIndex === 0;
 	$: showChat = activeTabIndex === 1;
 
 	let tree: TreeData;
 
-	// Lädt den Baum neu, sobald sich die treeId in der URL ändert
+	async function loadTree(treeId: string) {
+		tree = await getTreeById(treeId);
+
+		if (tree) {
+			treeDescription = await getTreeSpeciesDescription(tree.tree_type_botanic);
+		}
+	}
+
+	// Reloads the tree whenever the treeId in the URL changes
 	$: if ($page.params.treeId) {
-		(async () => {
-			const { data } = await supabase
-				.from('trees')
-				.select()
-				.eq('uuid', $page.params.treeId)
-				.maybeSingle();
-			tree = data;
-		})();
+		loadTree($page.params.treeId);
 	}
 </script>
 
@@ -85,26 +97,43 @@
 				{#if activeTabIndex === 0}
 					<Accordion bind:open={openAbout}>
 						<div slot="head">
-							<p class="text-black font-bold">🌳 Über diesen Baum</p>
+							<p class="font-semibold text-black text-base sm:text-lg leading-snug">
+								🌳 Über diesen Baum
+							</p>
+						</div>
+
+						<div slot="details" class="space-y-4">
+							<TreeDescription description={treeDescription} />
+
+							<TreeMetricsView
+								height={tree.height}
+								crown_diameter={tree.crown_diameter}
+								trunk_diameter={tree.trunk_diameter}
+							/>
+						</div>
+					</Accordion>
+
+					<hr />
+					<Accordion bind:open={openEnvironment}>
+						<div slot="head">
+							<p class="text-black font-bold">🏙️ Wirkung auf das Stadtklima</p>
 						</div>
 						<div slot="details">
-							<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-800">
-								<TreeMetric label="Höhe" value={tree.height} unit="m" max={39} position="right" />
-								<TreeMetric
-									label="Kronendurchmesser"
-									value={tree.crown_diameter}
-									unit="m"
-									max={29}
-									position="top"
-								/>
-								<TreeMetric
-									label="Stammdurchmesser"
-									value={tree.trunk_diameter}
-									unit="cm"
-									max={297}
-									position="bottom"
-								/>
-							</div>
+							<Notice tone="info">
+								Dieser Baum beeinflusst seine Umgebung positiv: Er spendet Schatten, reguliert das
+								Mikroklima, verbessert die Luftqualität und bietet Lebensraum für Tiere und
+								Insekten. Weitere Informationen folgen in einem späteren Update. <br /><br />Bis
+								dahin kannst du dir die
+								<a
+									href="https://www.bielefeld.de/node/7433"
+									target="_blank"
+									class="text-green-600 underline"
+									rel="noopener noreferrer"
+								>
+									Stadtklimaanalyse Bielefeld
+								</a> durchlesen, um zu erfahren, warum du dank der Stadtbäume in Bielefeld im Sommer
+								besser schlafen kannst. 🤓
+							</Notice>
 						</div>
 					</Accordion>
 					<hr />
@@ -125,10 +154,7 @@
 							<p class="text-black font-bold">🚿 Gießungen</p>
 						</div>
 						<div slot="details">
-							<TreeWaterings
-								treeId={tree.uuid}
-								on:contentChanged={() => historyAccordionRef?.updateHeightExternally()}
-							/>
+							<TreeWaterings treeId={tree.uuid} />
 						</div>
 					</Accordion>
 

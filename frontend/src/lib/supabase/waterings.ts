@@ -32,6 +32,16 @@ export async function getWateringsForTree(tree_uuid: string): Promise<Watering[]
 	return data ?? [];
 }
 
+export async function loadWateringsForTree(tree_uuid: string): Promise<{ data: Watering[]; error: string | null }> {
+	try {
+		const waterings = await getWateringsForTree(tree_uuid);
+		return { data: waterings, error: null };
+	} catch (err) {
+		console.error('Fehler beim Abrufen der Gießungen:', err);
+		return { data: [], error: 'Fehler beim Laden der Gießungen.' };
+	}
+}
+
 export async function getWateringsForUser(user_uuid: string): Promise<Watering[]> {
 	const { data, error } = await supabase
 		.from('waterings')
@@ -55,3 +65,5 @@ export async function deleteWatering(uuid: string): Promise<void> {
 		throw new Error(`Fehler beim Löschen: ${error.message}`);
 	}
 }
+
+

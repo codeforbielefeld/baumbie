@@ -1,5 +1,6 @@
 import { supabase } from './client';
 
+
 /**
  * Holt den deutschen Baumtyp eines Baumes anhand seiner UUID.
  */
@@ -37,4 +38,40 @@ export async function loadSpeciesMap(treeIds: string[]): Promise<Map<string, str
 	);
 
 	return speciesMap;
+}
+
+export async function getTreeSpeciesDescription(treeTypeBotanic: string) {
+	const field = Math.random() < 0.5 ? 'description_emotional' : 'description_neutral';
+
+
+	const { data, error } = await supabase
+		.from('tree_species')
+		.select(field)
+		.eq('tree_type_botanic', treeTypeBotanic)
+		.maybeSingle();
+
+	if (error) {
+		console.error('Failed to load species description:', error.message);
+		return null;
+	}
+
+	return (data as Record<string, string | null>)?.[field] ?? null;
+}
+
+/**
+ * Holt alle Baumdaten für eine bestimmte UUID aus der trees-Tabelle.
+ */
+export async function getTreeById(treeId: string) {
+	const { data, error } = await supabase
+		.from('trees')
+		.select()
+		.eq('uuid', treeId)
+		.maybeSingle();
+
+	if (error) {
+		console.error('Failed to load tree:', error.message);
+		return null;
+	}
+
+	return data;
 }

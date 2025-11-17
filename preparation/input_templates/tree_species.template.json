@@ -1,0 +1,17 @@
+[
+  {
+    "tree_type_botanic": "Ulmus glabra",
+    "description_emotional": "Ich bin die Berg-Ulme – standfest und elegant zugleich!  \nMeine breite Krone spendet Schatten an steilen Hängen, und mein Laub raschelt besonders schön im Wind.  \nWer einmal unter mir sitzt, spürt die Ruhe des Waldes ganz besonders.",
+    "description_neutral": "Die Berg-Ulme ist ein mitteleuropäischer Laubbaum mit asymmetrischen, grob gezähnten Blättern.  \nSie bevorzugt feuchte, kühle Standorte und ist eine typische Baumart in Schlucht- und Hangwäldern."
+  },
+  {
+    "tree_type_botanic": "Sorbus aria",
+    "description_emotional": "Schau mich an – mit meinen weißen Blattunterseiten glänze ich im Sonnenlicht!  \nIch komme gut mit Hitze klar und wachse selbst dort, wo andere längst aufgegeben haben.",
+    "description_neutral": "Die Mehlbeere ist ein trockenheitsresistenter Baum mit ovalen, filzig-weiß behaarten Blättern.  \nSie wächst häufig auf mageren Standorten und trägt orange-rote Beeren, die für viele Vögel eine wichtige Nahrungsquelle sind."
+  },
+  {
+    "tree_type_botanic": "Fagus sylvatica",
+    "description_emotional": "Ich bin die Buche – Mutter des Waldes, tief verwurzelt und voller Geschichten.",
+    "description_neutral": "Die Rotbuche ist die häufigste Laubbaumart Mitteleuropas und bildet dichte, schattige Buchenwälder."
+  }
+]
