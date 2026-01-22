@@ -11,18 +11,33 @@ defmodule Xylem.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
+  def cli do
+    [
+      preferred_envs: [
+        vcr: :test,
+        "vcr.delete": :test,
+        "vcr.check": :test,
+        "vcr.show": :test
+      ]
+    ]
+  end
+
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+      {:rdf, "~> 2.1"},
+      {:sparql_client, "~> 0.5"},
+      {:nimble_csv, "~> 1.1"},
+      {:jason, "~> 1.4"},
+      {:req, "~> 0.5"},
+      {:hackney, "~> 1.17"},
+      {:exvcr, "~> 0.15", only: :test},
+      {:req_cassette, "~> 0.1", only: :test}
     ]
   end
 end
