@@ -36,8 +36,8 @@ defmodule Xylem do
   - `:csv_path` - path to input CSV file (default: `data/Baumarten-wikidata.csv`)
   - `:raw_dir` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
   - `:limit` - limit number of species to process (default: all)
-  - `:max_concurrent` - max parallel HTTP fetches (default: 3)
-  - `:delay_ms` - delay between HTTP requests in ms (default: 500)
+  - `:max_concurrent` - max concurrent HTTP fetches (default: 2)
+  - `:delay_ms` - delay after each HTTP request in ms (default: 2000)
   - `:plug` - Req plug for testing (optional)
   """
   @spec run(keyword()) :: {:ok, result()} | {:error, term()}

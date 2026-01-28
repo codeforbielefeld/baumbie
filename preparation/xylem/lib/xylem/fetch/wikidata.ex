@@ -10,8 +10,8 @@ defmodule Xylem.Fetch.Wikidata do
   import Xylem.Wikidata
 
   @default_raw_dir "priv/data/wikidata/raw"
-  @default_max_concurrent 3
-  @default_delay_ms 500
+  @default_max_concurrent 2
+  @default_delay_ms 2000
 
   @type species :: %{baumart_bo: String.t(), baumart_de: String.t(), wikidata_id: String.t()}
   @type species_with_graph :: %{
@@ -36,8 +36,8 @@ defmodule Xylem.Fetch.Wikidata do
   ## Options
 
   - `:raw_dir` - directory for raw .ttl files (default: `#{@default_raw_dir}`)
-  - `:max_concurrent` - max parallel HTTP requests (default: #{@default_max_concurrent})
-  - `:delay_ms` - delay between requests in ms (default: #{@default_delay_ms})
+  - `:max_concurrent` - max concurrent HTTP requests (default: #{@default_max_concurrent})
+  - `:delay_ms` - delay after each request in ms (default: #{@default_delay_ms})
   - `:plug` - Req plug for testing (optional)
   """
   @spec run([species()], keyword()) ::
@@ -104,7 +104,12 @@ defmodule Xylem.Fetch.Wikidata do
   @doc "Fetches the Turtle representation of a Wikidata entity."
   def fetch_ttl(wikidata_id, opts) do
     url = entity_url(wikidata_id)
-    req_opts = [] |> maybe_add_plug(opts)
+
+    req_opts =
+      [
+        max_retries: 5
+      ]
+      |> maybe_add_plug(opts)
 
     case Req.get(url, req_opts) do
       {:ok, %{status: 200, body: body}} -> {:ok, body}
