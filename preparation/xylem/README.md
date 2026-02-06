@@ -1,21 +1,45 @@
 # Xylem
 
-**TODO: Add description**
+Daten-Pipeline für das BaumBie-Projekt. Lädt Baumarten-Daten von Wikidata basierend auf einer CSV-Datei mit Wikidata-IDs.
 
-## Installation
+**Input:** `data/Baumarten-wikidata.csv` (CSV mit Wikidata-IDs)
+**Output:** `priv/data/wikidata/raw/*.ttl` (RDF-Daten im Turtle-Format)
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `xylem` to your list of dependencies in `mix.exs`:
 
-```elixir
-def deps do
-  [
-    {:xylem, "~> 0.1.0"}
-  ]
-end
+## Nutzung mit Docker
+
+### Image bauen
+
+```bash
+docker compose build
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/xylem>.
+### Pipeline ausführen
 
+```bash
+# Alle Spezies verarbeiten
+docker compose run --rm xylem
+
+# Anzahl limitieren
+docker compose run --rm xylem --limit 10
+```
+
+### Optionen
+
+- `--csv PATH` - Pfad zur Input-CSV-Datei (default: `data/Baumarten-wikidata.csv`)
+- `--raw PATH` - Verzeichnis für die Output-TTL-Dateien (default: `priv/data/wikidata/raw`)
+- `--limit N` - Nur N Spezies verarbeiten
+
+
+## Lokale Entwicklung (mit Elixir)
+
+```bash
+# Dependencies installieren
+mix deps.get
+
+# Tests
+mix test
+
+# Pipeline ausführen
+mix xylem.generate
+```
