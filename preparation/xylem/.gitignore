@@ -21,3 +21,6 @@ xylem-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Output data
+/priv/data/wikidata/raw/
