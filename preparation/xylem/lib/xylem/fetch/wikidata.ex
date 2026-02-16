@@ -13,6 +13,9 @@ defmodule Xylem.Fetch.Wikidata do
   @default_max_concurrent 2
   @default_delay_ms 2000
 
+  @fetch_modes ~w(skip force clear auto)a
+  def fetch_modes, do: @fetch_modes
+
   @type species :: %{baumart_bo: String.t(), baumart_de: String.t(), wikidata_id: String.t()}
   @type species_with_graph :: %{
           baumart_bo: String.t(),
@@ -35,6 +38,11 @@ defmodule Xylem.Fetch.Wikidata do
 
   ## Options
 
+  - `:fetch` - fetch mode (default: `:auto`)
+    - `:auto` - skip if raw directory already has `.ttl` files, fetch otherwise
+    - `:skip` - skip fetching entirely
+    - `:force` - always fetch, even if data exists
+    - `:clear` - delete existing `.ttl` files and re-fetch
   - `:raw_dir` - directory for raw .ttl files (default: `#{@default_raw_dir}`)
   - `:max_concurrent` - max concurrent HTTP requests (default: #{@default_max_concurrent})
   - `:delay_ms` - delay after each request in ms (default: #{@default_delay_ms})
@@ -44,6 +52,68 @@ defmodule Xylem.Fetch.Wikidata do
           {:ok, %{successful: [species_with_graph()], failed: [fetch_error()]}}
   def run(species_list, opts \\ []) do
     raw_dir = Keyword.get(opts, :raw_dir, @default_raw_dir)
+    fetch_mode = Keyword.get(opts, :fetch, :auto)
+
+    case resolve_fetch_mode(fetch_mode, raw_dir) do
+      :skip ->
+        Logger.info("Skipping Wikidata fetch, loading existing data from #{raw_dir}")
+        load_existing(species_list, raw_dir)
+
+      :fetch ->
+        do_fetch(species_list, raw_dir, opts)
+    end
+  end
+
+  defp resolve_fetch_mode(:skip, _raw_dir), do: :skip
+  defp resolve_fetch_mode(:force, _raw_dir), do: :fetch
+
+  defp resolve_fetch_mode(:clear, raw_dir) do
+    clear_raw_dir!(raw_dir)
+    :fetch
+  end
+
+  defp resolve_fetch_mode(:auto, raw_dir) do
+    if raw_dir_has_data?(raw_dir), do: :skip, else: :fetch
+  end
+
+  defp raw_dir_has_data?(raw_dir) do
+    raw_dir
+    |> raw_dir_data()
+    |> Enum.any?()
+  end
+
+  defp clear_raw_dir!(raw_dir) do
+    Logger.info("Clearing #{raw_dir}")
+
+    raw_dir
+    |> raw_dir_data()
+    |> Enum.each(&File.rm!/1)
+  end
+
+  defp raw_dir_data(raw_dir) do
+    raw_dir |> Path.join("*.ttl") |> Path.wildcard()
+  end
+
+  defp load_existing(species_list, raw_dir) do
+    results =
+      Enum.reduce(species_list, %{successful: [], failed: []}, fn species, acc ->
+        raw_path = Path.join(raw_dir, "#{species.wikidata_id}.ttl")
+
+        case RDF.read_file(raw_path) do
+          {:ok, graph} ->
+            species_with_graph = Map.merge(species, %{graph: graph, raw_path: raw_path})
+            %{acc | successful: [species_with_graph | acc.successful]}
+
+          {:error, reason} ->
+            Logger.warning("Failed to load #{species.wikidata_id}: #{inspect(reason)}")
+            %{acc | failed: [Map.put(species, :error, reason) | acc.failed]}
+        end
+      end)
+
+    {:ok, results}
+  end
+
+  defp do_fetch(species_list, raw_dir, opts) do
     max_concurrent = Keyword.get(opts, :max_concurrent, @default_max_concurrent)
     delay_ms = Keyword.get(opts, :delay_ms, @default_delay_ms)
 

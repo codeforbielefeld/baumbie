@@ -9,6 +9,7 @@ defmodule Mix.Tasks.Xylem.Generate do
   ## Options
 
   - `--csv` - path to input CSV file (default: `data/Baumarten-wikidata.csv`)
+  - `--fetch` - Wikidata fetch mode: `auto` (default), `skip`, `force`, or `clear`
   - `--raw` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
   - `--limit` - limit number of species to process
 
@@ -27,8 +28,11 @@ defmodule Mix.Tasks.Xylem.Generate do
 
   use Mix.Task
 
+  @valid_fetch_modes Enum.map(Xylem.Fetch.Wikidata.fetch_modes(), &to_string/1)
+
   @switches [
     csv: :string,
+    fetch: :string,
     raw: :string,
     limit: :integer
   ]
@@ -42,6 +46,7 @@ defmodule Mix.Tasks.Xylem.Generate do
     xylem_opts =
       []
       |> maybe_put(:csv_path, opts[:csv])
+      |> maybe_put_fetch_mode(opts[:fetch])
       |> maybe_put(:raw_dir, opts[:raw])
       |> maybe_put(:limit, opts[:limit])
 
@@ -61,4 +66,16 @@ defmodule Mix.Tasks.Xylem.Generate do
 
   defp maybe_put(opts, _key, nil), do: opts
   defp maybe_put(opts, key, value), do: Keyword.put(opts, key, value)
+
+  defp maybe_put_fetch_mode(opts, nil), do: opts
+
+  defp maybe_put_fetch_mode(opts, mode) when mode in @valid_fetch_modes do
+    Keyword.put(opts, :fetch, String.to_atom(mode))
+  end
+
+  defp maybe_put_fetch_mode(_opts, invalid) do
+    Mix.raise(
+      "Invalid --fetch value: #{inspect(invalid)}. Must be one of: #{Enum.join(@valid_fetch_modes, ", ")}"
+    )
+  end
 end

@@ -34,6 +34,7 @@ defmodule Xylem do
   ## Options
 
   - `:csv_path` - path to input CSV file (default: `data/Baumarten-wikidata.csv`)
+  - `:fetch` - Wikidata fetch mode: `:auto` (default), `:skip`, `:force`, or `:clear`
   - `:raw_dir` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
   - `:limit` - limit number of species to process (default: all)
   - `:max_concurrent` - max concurrent HTTP fetches (default: 2)
