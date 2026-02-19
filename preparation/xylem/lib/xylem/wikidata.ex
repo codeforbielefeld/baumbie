@@ -20,8 +20,13 @@ defmodule Xylem.Wikidata do
   @doc "Extracts the entity ID (e.g., 'Q12345') from a wd: IRI."
   def entity_id(iri), do: String.replace_prefix(iri, @wd_prefix, "")
 
-  @doc "Constructs the URL for a Wikidata entity's Turtle representation."
-  def entity_url(wikidata_id), do: "#{@wikidata_base_url}/#{wikidata_id}.ttl"
+  @doc """
+  Constructs the URL for a Wikidata entity's Turtle representation.
+
+  Uses `uselang=de` so that referenced stub entities include German labels
+  (with English fallback). The main entity always includes all languages.
+  """
+  def entity_url(wikidata_id), do: "#{@wikidata_base_url}/#{wikidata_id}.ttl?uselang=de"
 
   @doc "Validates a Wikidata ID (e.g., 'Q12345')."
   def validate_wikidata_id(id) do
