@@ -1,4 +1,4 @@
-defmodule Xylem.Fetch.Wikidata do
+defmodule Xylem.Wikidata.Fetcher do
   @moduledoc """
   Fetches Wikidata entity data as Turtle RDF.
 

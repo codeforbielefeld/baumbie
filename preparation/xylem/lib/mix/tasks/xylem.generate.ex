@@ -1,16 +1,19 @@
 defmodule Mix.Tasks.Xylem.Generate do
-  @shortdoc "Fetches species from Wikidata"
+  @shortdoc "Runs the Xylem data pipeline for Wikidata tree species"
 
   @moduledoc """
-  Runs the Xylem pipeline to fetch Wikidata data.
+  Runs the Xylem pipeline to fetch, process, and describe Wikidata tree species data.
 
       $ mix xylem.generate [options]
 
   ## Options
 
   - `--csv` - path to input CSV file (default: `data/Baumarten-wikidata.csv`)
+  - `--config` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `--fetch` - Wikidata fetch mode: `auto` (default), `skip`, `force`, or `clear`
   - `--raw` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
+  - `--processed` - directory for processed .ttl files (default: `priv/data/wikidata/processed`)
+  - `--meta` - directory for vocab.ttl (default: `priv/data/wikidata/meta`)
   - `--limit` - limit number of species to process
 
   ## Examples
@@ -18,22 +21,25 @@ defmodule Mix.Tasks.Xylem.Generate do
       # Process all species
       mix xylem.generate
 
-      # Process first 10 species
-      mix xylem.generate --limit 10
+      # Process first 10 species, skip fetching
+      mix xylem.generate --limit 10 --fetch skip
 
       # Use custom paths
-      mix xylem.generate --csv my_species.csv
+      mix xylem.generate --csv my_species.csv --processed output/processed
 
   """
 
   use Mix.Task
 
-  @valid_fetch_modes Enum.map(Xylem.Fetch.Wikidata.fetch_modes(), &to_string/1)
+  @valid_fetch_modes Enum.map(Xylem.Wikidata.Fetcher.fetch_modes(), &to_string/1)
 
   @switches [
     csv: :string,
+    config: :string,
     fetch: :string,
     raw: :string,
+    processed: :string,
+    meta: :string,
     limit: :integer
   ]
 
@@ -46,8 +52,11 @@ defmodule Mix.Tasks.Xylem.Generate do
     xylem_opts =
       []
       |> maybe_put(:csv_path, opts[:csv])
+      |> maybe_put(:property_config_path, opts[:config])
       |> maybe_put_fetch_mode(opts[:fetch])
       |> maybe_put(:raw_dir, opts[:raw])
+      |> maybe_put(:processed_dir, opts[:processed])
+      |> maybe_put(:meta_dir, opts[:meta])
       |> maybe_put(:limit, opts[:limit])
 
     case Xylem.run(xylem_opts) do

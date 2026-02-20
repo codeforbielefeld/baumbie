@@ -1,0 +1,419 @@
+property_id;action;config;description
+P18;ignore;;Bild
+P41;ignore;;Flaggenbild
+P94;ignore;;Wappenbild
+P154;ignore;;Logo
+P158;ignore;;Siegel
+P181;ignore;;Kartenbild
+P242;ignore;;Lagekarte
+P948;ignore;;Wikivoyage-Banner
+P989;ignore;;gesprochener Text (Audio)
+P990;ignore;;Tonaufnahme
+P996;ignore;;Scan-Datei
+P1442;ignore;;Grabbild
+P1543;ignore;;Monogramm
+P1621;ignore;;Detail-Karte
+P1766;ignore;;Platzansicht
+P1801;ignore;;Gedenktafelbild
+P1846;ignore;;Verbreitungskarte
+P2713;ignore;;Querschnittsbild
+P2716;ignore;;Collage
+P2910;ignore;;Symbolbild
+P3451;ignore;;Nachtansicht
+P4291;ignore;;Panoramabild
+P5252;ignore;;Winteransicht
+P6802;ignore;;zugehöriges Bild
+P7407;ignore;;Aussprache (Audio)
+P7415;ignore;;Farbbild
+P7417;ignore;;Schwarz-Weiß-Bild
+P7418;ignore;;Zeichnung
+P8224;ignore;;Molekülmodell
+P8517;ignore;;Innenansicht
+P8592;ignore;;Floorplan
+P9906;ignore;;Arkivkopia-ID
+P10093;ignore;;Emojibild
+P373;ignore;;Commons-Kategorie
+P935;ignore;;Commons-Galerie
+P910;ignore;;Themenkategorie
+P1343;ignore;;beschrieben in Quelle
+P6104;ignore;;Wartungskategorie
+P1889;ignore;;unterscheidet sich von
+P105;inline;{"target": "taxonomischer_rang"};taxonomischer Rang
+P171;inline;{"target": "uebergeordnetes_taxon", "keep_source": true};übergeordnetes Taxon
+P1014;;;Art-and-Architecture-Thesaurus-Kennung
+P10243;;;NatureServe-Explorer-Kennung
+P10283;;;OpenAlex-Kennung
+P10333;;;
+P1036;;;Dewey-Dezimalklassifikation
+P10366;;;
+P10376;;;ScienceDirect-Thema-ID
+P10561;;;
+P10585;;;CoL-ID
+P1070;;;Plant List ID (Royal Botanic Gardens, Kew)
+P10701;;;
+P10709;;;
+P10711;;;
+P10791;;;
+P10793;;;
+P10906;;;
+P11067;;;
+P11074;;;
+P11078;;;
+P11083;;;
+P11114;;;
+P1149;;;LoC-Klassifikation
+P11514;;;Große-Russische-Enzyklopädie-Portalkennung
+P11650;;;
+P11824;;;
+P11829;;;
+P12086;;;WikiKids-Kennung
+P12100;;;
+P12136;;;
+P12137;;;
+P12138;;;
+P12178;;;Minnesota Plant List ID
+P12179;;;Flora of the Southeastern United States ID
+P12181;;;
+P12182;;;Go Botany taxon ID
+P12187;;;Thesaurus Linguae Aegyptiae Thesaurus-ID
+P12292;;;
+P12296;;;
+P12385;;;Große-Katalanische-Enzyklopädie-Kennung
+P1245;;;OmegaWiki-Bedeutungskennung
+P12554;;;CalPhotos Taxon Kennung
+P12596;;;museum-digital-Tag-Kennung
+P12616;;;
+P12670;;;
+P1282;;;OpenStreetMap-Attribut
+P1296;;;Große-Katalanische-Enzyklopädie-Kennung (alt)
+P13478;;;nomenklatorischer Typ von
+P13591;;;Yale-LUX-Kennung
+P1368;;;LNB-Kennung (Lettland)
+P13691;;;Georgische-Enzyklopädie-Kennung
+P13734;;;
+P141;;;Gefährdungsstufe (IUCN)
+P1417;;;Encyclopædia-Britannica-Online-Kennung
+P1420;;;taxonomische Synonyme
+P1421;;;GRIN-URL
+P166;;;Auszeichnung
+P1672;;;Ursprung von
+P1727;;;FNA-ID
+P1745;;;VasCan-ID
+P1747;;;FOC-ID
+P1772;;;USDA-ID
+P1843;;;einheimische Namen
+P1939;;;Dyntaxa-ID
+P2004;;;NALT-Kennung
+P2036;;;African-Plant-Database-ID
+P225;;;wissenschaftlicher Name
+P227;;;GND-Kennung
+P231;;;CAS-Nummer
+P2347;;;YSO-Kennung
+P244;;;LCAuth-Kennung
+P268;;;BnF-Kennung
+P2752;;;NZOR-ID
+P279;;;Unterklasse von
+P2827;;;Blütenfarbe
+P2833;;;ARKive-Url-Fragment
+P2892;;;UMLS CUI
+P3031;;;EPPO-Code
+P31;;;ist ein(e)
+P3101;;;FloraBase-ID
+P3102;;;Plantarium-ID
+P3105;;;Tela-Botanica-BDTFX-ID
+P3130;;;NSW-Flora-ID
+P3151;;;iNaturalist-Taxon-ID
+P3186;;;INPN-TAXREF-ID
+P3222;;;Nationalencyklopedin-Online-Kennung
+P3240;;;NBN-ID
+P3405;;;NSR-ID
+P3420;;;Calflora-ID
+P3591;;;WCSPF-ID
+P3606;;;BOLD-ID
+P366;;;Verwendung
+P4000;;;Fruchttyp
+P4122;;;PalDat-ID
+P4214;;;höchste beobachtete Lebensdauer
+P4301;;;PfaF-Kennung
+P4311;;;FOIH-Taxon-ID
+P4333;;;
+P4342;;;SNL-Kennung
+P4728;;;uBio-ID
+P4746;;;Elhuyar ZTH-ID
+P4753;;;Ecocrop-ID
+P5019;;;Brockhaus-Enzyklopädie-Kennung
+P5037;;;POWO-URN
+P5055;;;IRMNG-ID
+P5063;;;Interlingual-Index-Kennung
+P5179;;;
+P5263;;;NDOP-Taxon-ID
+P5588;;;invasiv in
+P5626;;;
+P566;;;Basionym
+P5698;;;Invasive-Species-Compendium-ID
+P5945;;;VicFlora-ID
+P5984;;;APNI-ID
+P6034;;;
+P6056;;;SanbiRedList-ID
+P6094;;;FloraWeb-ID
+P6098;;;info flora
+P6103;;;Michigan-Flora-ID
+P6105;;;Observation.org Taxon-ID
+P6114;;;
+P6142;;;
+P6161;;;
+P6177;;;EUNIS-Taxon-ID
+P6227;;;
+P627;;;IUCN-ID
+P6293;;;YSA-ID
+P6341;;;IFPNI-ID
+P6366;;;Microsoft-Academic-Kennung
+P6433;;;
+P646;;;Freebase-Kennung
+P6507;;;Zitation der Autoren des Taxons
+P652;;;UNII
+P6756;;;FoA-Online-ID
+P685;;;NCBI-ID
+P6864;;;eElurikkus-ID
+P6870;;;Lettische-Nationalenzyklopädie-ID
+P691;;;NKČR-AUT-Kennung
+P6933;;;SA-Flora-ID
+P7202;;;Belgian-Species-List-ID
+P7496;;;NZPCN-ID
+P7537;;;
+P7544;;;
+P7546;;;
+P7552;;;FinBIF-ID
+P7587;;;eFloraSA-ID
+P7715;;;World-Flora-Online-ID
+P8061;;;AGROVOC-ID
+P815;;;ITIS-TSN
+P8189;;;J9U-Kennung der Israelischen Nationalbibliothek
+P8193;;;Winterhärte der Pflanze
+P830;;;EOL-ID
+P8309;;;Yle-Themenkennung
+P8313;;;Lex-Kennung
+P838;;;BioLib-ID
+P8408;;;KBpedia-Kennung
+P846;;;GBIF Taxon-ID
+P8468;;;Queensland Biota-ID
+P8707;;;NBIC-Taxon-ID
+P8765;;;
+P8814;;;Synsetkennung (WordNet 3.1)
+P8892;;;edition humboldt digital Flora ID
+P8915;;;ZOBODAT-Taxonkennung
+P9157;;;OTT-ID
+P9408;;;Washington Flora Checklist ID
+P9423;;;OregonFlora Taxon ID
+P9495;;;National-Historical-Museums-of-Sweden-ID
+P9501;;;
+P9503;;;
+P960;;;Tropicos-ID
+P961;;;IPNI-TaxonName-ID
+P9654;;;
+P9691;;;
+P9714;;;Verbreitungsgebiet
+P9741;;;
+P9799;;;
+P9826;;;
+
+P10;;;Video
+P10064;;;
+P10077;;;ID beim Spanischen Institut für kulturelles Erbe
+P10331;;;
+P1051;;;PSH-Kennung
+P10528;;;
+P10538;;;
+P10565;;;Enzyklopädie-von-China-Kennung (dritte Ausgabe)
+P10707;;;McGraw-Hill-AccessScience-URL-Fragment
+P10778;;;CPNI-ID
+P10792;;;
+P10833;;;Great-Plant-Picks-Kennung
+P10890;;;
+P10907;;;
+P10921;;;
+P11022;;;
+P11044;;;
+P11082;;;
+P11084;;;
+P11087;;;
+P11092;;;
+P11137;;;Reddit-Kennung
+P11189;;;
+P11220;;;Fruchtfarbe
+P11293;;;Amazon.com-Durchsuchknoten
+P11473;;;
+P11693;;;OpenStreetMap-Knotenkennung
+P11762;;;
+P11764;;;BKIDS-Students-Level-Kennung
+P11765;;;BKIDS-Scholars-Level-Kennung
+P11801;;;
+P11901;;;
+P12113;;;
+P12114;;;
+P12177;;;Rare Species Guide ID
+P12180;;;
+P12183;;;
+P12209;;;
+P12218;;;
+P1225;;;NARA-Kennung
+P12270;;;
+P12273;;;
+P12278;;;
+P12297;;;
+P12367;;;
+P12368;;;
+P12380;;;
+P12403;;;
+P12453;;;
+P12517;;;
+P1256;;;Iconclass-Kennung
+P12721;;;Lille-norske-leksikon-ID
+P12763;;;taxonomisches Synonym zu
+P12766;;;fungiert als Basionym von
+P12788;;;
+P12800;;;Vikidia-Kennung (neu)
+P13162;;;Referenzabbildung
+P13177;;;
+P1325;;;externe Daten
+P13329;;;
+P13330;;;
+P13613;;;
+P13696;;;
+P13735;;;A Dictionary of Genetics Eintrag-ID
+P13750;;;
+P138;;;benannt nach
+P1382;;;teilweise übereinstimmend mit
+P1385;;;Enciclopédia Açoriana ID
+P13909;;;
+P1424;;;Hauptvorlage des Themas
+P1531;;;Hybrideltern
+P1552;;;charakterisiert durch
+P1617;;;BBC-Things-Kennung
+P1703;;;bestäubt durch
+P176;;;Hersteller
+P1807;;;Gran-Enciclopedia-Aragonesa-ID
+P183;;;endemisch in
+P1940;;;Gymnosperm-Database-ID
+P1978;;;NDB-Nummer
+P1992;;;Plazi-ID
+P2043;;;Länge
+P2048;;;Höhe
+P2049;;;Breite
+P2163;;;FAST-Kennung
+P2167;;;UNSPSC-Code
+P2341;;;einheimisch
+P2354;;;entsprechende Liste
+P2434;;;PAF-ID
+P2581;;;BabelNet-Kennung
+P2670;;;enthält Elemente von
+P2671;;;Google-Knowledge-Graph-Kennung
+P2809;;;APSA-ID
+P2868;;;Subjekt fungiert als
+P2888;;;exakte Übereinstimmung
+P2924;;;Große-Russische-Enzyklopädie-Kennung
+P2959;;;dauerhaftes Duplikat von
+P2974;;;Habitat
+P3073;;;CosIng-ID
+P3088;;;TaiBNET-ID
+P3219;;;Encyclopædia-Universalis-Kennung
+P3221;;;NYT-Themenkennung
+P3365;;;Enciclopedia-Treccani-Kennung
+P3417;;;Quora-Themenkennung
+P3443;;;
+P3479;;;Omni-Themenkennung
+P349;;;NDL-Kennung
+P3550;;;
+P3553;;;Zhihu-Themenkennung
+P3648;;;
+P3739;;;Blütenstand
+P3741;;;Samenausbreitung
+P3746;;;
+P3795;;;
+P3827;;;JSTOR-Themenkennung
+P3911;;;STW-Kennung
+P4030;;;PLU-Code
+P4194;;;CNPS-ID
+P4212;;;PACTOLS-Thesaurus-ID
+P4223;;;Enciclopedia-Italiana-Kennung
+P4235;;;PatientsLikeMe-Behandlung-ID
+P427;;;nomenklatorischer Typ
+P443;;;Aussprache (Audiodatei)
+P460;;;eventuell gleichwertig
+P4637;;;
+P4729;;;
+P4854;;;
+P486;;;MeSH-Kennung
+P487;;;Unicodezeichen
+P5008;;;auf der Arbeitsliste des Wikimedia-Projektes
+P508;;;BNCF-Thesaurus-Kennung
+P5160;;;Thesauruskennung für graphische Materialien
+P5230;;;Chromosomenzahl
+P527;;;besteht aus
+P5395;;;Canadian-Encyclopedia-ID
+P5417;;;Gemeinsames Vokabular für öffentliche Aufträge
+P5555;;;schematische Darstellung
+P580;;;Startzeitpunkt
+P5841;;;Gefährdungsstatus in der Rote Liste der gefährdeten Arten der Tschechischen Republik
+P5844;;;Treccani-Wortschatz-ID
+P5872;;;riecht nach
+P5930;;;Open Food Facts Zutat-ID
+P6000;;;Wasserfußabdruck
+P6019;;;
+P6035;;;
+P6044;;;FEIS-ID
+P6054;;;
+P6061;;;Plant Parasites of Europe ID
+P6092;;;
+P6137;;;APA-ID
+P6139;;;FloraGREIF-ID
+P6159;;;
+P6163;;;NAS-ID
+P6176;;;Cal-IPC-ID
+P618;;;Energiequelle
+P6385;;;Krugoswet-Kennung
+P6573;;;Klexikon-Artikelkennung
+P6706;;;De-Agostini-Kennung
+P672;;;MeSH-Code
+P6754;;;OBIS-Kennung
+P6800;;;
+P694;;;ersetztes Synonym
+P7033;;;Australisches-Bildungsvokabular-Kennung
+P7305;;;PWN-Enzyklopädie-Kennung
+P7388;;;
+P7502;;;Golden-Kennung
+P7666;;;Visuotinė-lietuvių-enciklopedija-Kennung
+P7691;;;
+P7830;;;
+P8026;;;
+P8072;;;CAB-Thesaurus-ID
+P8248;;;Kolon-Klassifikation
+P8370;;;UNBIS-Thesaurus-ID
+P8373;;;
+P8406;;;Grove-Art-Online-ID
+P842;;;Fossilworks-Taxon-ID
+P8469;;;
+P8485;;;Taxon-Verbreitungskarte datenmodelliert
+P850;;;WoRMS-Taxon-ID
+P8519;;;RKD-Thesaurus-Kennung
+P8603;;;Istrapedia-Kennung
+P8660;;;
+P8885;;;Namuwiki-Kennung
+P8957;;;
+P902;;;HLS-Kennung
+P9198;;;Encyclopédie berbère Artikel-Kennung
+P920;;;Spanische Schlagwörter für öffentliche Bibliotheken
+P9243;;;
+P9272;;;DeCS-ID
+P9292;;;
+P9318;;;Ávvir-Themen-ID
+P9322;;;SVKKL-Kennung
+P9475;;;Koreanische-Kultur-Enzyklopädie-ID
+P950;;;BNE-Kennung (v1.0)
+P9519;;;
+P9545;;;Enzyklopädie-von-China-Kennung (Zweite Ausgabe)
+P9629;;;Armeniapedia-ID
+P9684;;;ISDDB-ID
+P9685;;;MFG-ID
+P973;;;beschrieben in URL
+P9937;;;Postimees-Themenkennung

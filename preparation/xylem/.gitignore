@@ -23,4 +23,4 @@ xylem-*.tar
 /tmp/
 
 # Output data
-/priv/data/wikidata/raw/
+/priv/data/wikidata/

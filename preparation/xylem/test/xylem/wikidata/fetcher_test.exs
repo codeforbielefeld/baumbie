@@ -1,10 +1,10 @@
-defmodule Xylem.Fetch.WikidataTest do
+defmodule Xylem.Wikidata.FetcherTest do
   use ExUnit.Case
 
   import ReqCassette
   import ExUnit.CaptureLog
 
-  alias Xylem.Fetch.Wikidata
+  alias Xylem.Wikidata.Fetcher
 
   @test_raw_dir "test/fixtures/wikidata_raw"
   @valid_ttl """
@@ -27,7 +27,7 @@ defmodule Xylem.Fetch.WikidataTest do
     test "fetches and parses Wikidata entity" do
       with_cassette("wikidata_fetch_q165145", fn plug ->
         {:ok, result} =
-          Wikidata.run(@test_species, raw_dir: @test_raw_dir, delay_ms: 0, plug: plug)
+          Fetcher.run(@test_species, raw_dir: @test_raw_dir, delay_ms: 0, plug: plug)
 
         assert length(result.successful) == 1
         assert result.failed == []
@@ -46,7 +46,7 @@ defmodule Xylem.Fetch.WikidataTest do
 
       assert {{:ok, result}, log} =
                with_log(fn ->
-                 Wikidata.run(species, raw_dir: @test_raw_dir, delay_ms: 0)
+                 Fetcher.run(species, raw_dir: @test_raw_dir, delay_ms: 0)
                end)
 
       assert log =~ "Failed to fetch INVALID123: {:invalid_wikidata_id, \"INVALID123\"}"
@@ -62,7 +62,7 @@ defmodule Xylem.Fetch.WikidataTest do
       File.write!(Path.join(@test_raw_dir, "Q165145.ttl"), @valid_ttl)
 
       {:ok, result} =
-        Wikidata.run(@test_species, raw_dir: @test_raw_dir, fetch: :skip, delay_ms: 0)
+        Fetcher.run(@test_species, raw_dir: @test_raw_dir, fetch: :skip, delay_ms: 0)
 
       assert length(result.successful) == 1
       assert [loaded] = result.successful
@@ -73,7 +73,7 @@ defmodule Xylem.Fetch.WikidataTest do
 
     test "skip reports missing .ttl files as failed" do
       {:ok, result} =
-        Wikidata.run(@test_species, raw_dir: @test_raw_dir, fetch: :skip, delay_ms: 0)
+        Fetcher.run(@test_species, raw_dir: @test_raw_dir, fetch: :skip, delay_ms: 0)
 
       assert result.successful == []
       assert length(result.failed) == 1
@@ -84,7 +84,7 @@ defmodule Xylem.Fetch.WikidataTest do
       File.write!(Path.join(@test_raw_dir, "Q165145.ttl"), @valid_ttl)
 
       {:ok, result} =
-        Wikidata.run(@test_species, raw_dir: @test_raw_dir, fetch: :auto, delay_ms: 0)
+        Fetcher.run(@test_species, raw_dir: @test_raw_dir, fetch: :auto, delay_ms: 0)
 
       assert length(result.successful) == 1
       assert hd(result.successful).wikidata_id == "Q165145"
@@ -93,7 +93,7 @@ defmodule Xylem.Fetch.WikidataTest do
     test "auto fetches when raw directory is empty" do
       with_cassette("wikidata_fetch_q165145", fn plug ->
         {:ok, result} =
-          Wikidata.run(@test_species,
+          Fetcher.run(@test_species,
             raw_dir: @test_raw_dir,
             fetch: :auto,
             delay_ms: 0,
@@ -110,7 +110,7 @@ defmodule Xylem.Fetch.WikidataTest do
 
       with_cassette("wikidata_fetch_q165145", fn plug ->
         {:ok, result} =
-          Wikidata.run(@test_species,
+          Fetcher.run(@test_species,
             raw_dir: @test_raw_dir,
             fetch: :force,
             delay_ms: 0,
@@ -128,7 +128,7 @@ defmodule Xylem.Fetch.WikidataTest do
 
       with_cassette("wikidata_fetch_q165145", fn plug ->
         {:ok, result} =
-          Wikidata.run(@test_species,
+          Fetcher.run(@test_species,
             raw_dir: @test_raw_dir,
             fetch: :clear,
             delay_ms: 0,
@@ -146,7 +146,7 @@ defmodule Xylem.Fetch.WikidataTest do
       species = %{baumart_bo: "Pyrus", baumart_de: "Birne", wikidata_id: "Q434"}
 
       with_cassette("wikidata_fetch_q434", fn plug ->
-        {:ok, result} = Wikidata.fetch_species(species, @test_raw_dir, plug: plug)
+        {:ok, result} = Fetcher.fetch_species(species, @test_raw_dir, plug: plug)
 
         assert result.wikidata_id == "Q434"
         assert %RDF.Graph{} = result.graph

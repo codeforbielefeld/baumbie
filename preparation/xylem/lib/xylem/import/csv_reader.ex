@@ -8,7 +8,9 @@ defmodule Xylem.Import.CSVReader do
   - `wikidata_id` (Wikidata Q-ID)
   """
 
-  NimbleCSV.define(Parser, separator: ",", escape: "\"")
+  NimbleCSV.define(__MODULE__.Parser, separator: ",", escape: "\"")
+
+  alias __MODULE__.Parser
 
   @type species :: %{
           baumart_bo: String.t(),

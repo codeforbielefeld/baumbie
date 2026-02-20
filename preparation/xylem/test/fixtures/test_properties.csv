@@ -1,0 +1,7 @@
+property_id;action;config;description
+P18;ignore;;Bild
+P41;ignore;;Flaggenbild
+P105;inline;{"target": "taxonomischer_rang"};taxonomischer Rang
+P171;inline;{"target": "uebergeordnetes_taxon", "keep_source": true};übergeordnetes Taxon
+P225;;;wissenschaftlicher Name
+P685;;;ITIS TSN
