@@ -1,419 +1,394 @@
-property_id;action;config;description
-P18;ignore;;Bild
-P41;ignore;;Flaggenbild
-P94;ignore;;Wappenbild
-P154;ignore;;Logo
-P158;ignore;;Siegel
-P181;ignore;;Kartenbild
-P242;ignore;;Lagekarte
-P948;ignore;;Wikivoyage-Banner
-P989;ignore;;gesprochener Text (Audio)
-P990;ignore;;Tonaufnahme
-P996;ignore;;Scan-Datei
-P1442;ignore;;Grabbild
-P1543;ignore;;Monogramm
-P1621;ignore;;Detail-Karte
-P1766;ignore;;Platzansicht
-P1801;ignore;;Gedenktafelbild
-P1846;ignore;;Verbreitungskarte
-P2713;ignore;;Querschnittsbild
-P2716;ignore;;Collage
-P2910;ignore;;Symbolbild
-P3451;ignore;;Nachtansicht
-P4291;ignore;;Panoramabild
-P5252;ignore;;Winteransicht
-P6802;ignore;;zugehöriges Bild
-P7407;ignore;;Aussprache (Audio)
-P7415;ignore;;Farbbild
-P7417;ignore;;Schwarz-Weiß-Bild
-P7418;ignore;;Zeichnung
-P8224;ignore;;Molekülmodell
-P8517;ignore;;Innenansicht
-P8592;ignore;;Floorplan
-P9906;ignore;;Arkivkopia-ID
-P10093;ignore;;Emojibild
-P373;ignore;;Commons-Kategorie
-P935;ignore;;Commons-Galerie
-P910;ignore;;Themenkategorie
-P1343;ignore;;beschrieben in Quelle
-P6104;ignore;;Wartungskategorie
-P1889;ignore;;unterscheidet sich von
-P105;inline;{"target": "taxonomischer_rang"};taxonomischer Rang
-P171;inline;{"target": "uebergeordnetes_taxon", "keep_source": true};übergeordnetes Taxon
-P1014;;;Art-and-Architecture-Thesaurus-Kennung
-P10243;;;NatureServe-Explorer-Kennung
-P10283;;;OpenAlex-Kennung
-P10333;;;
-P1036;;;Dewey-Dezimalklassifikation
-P10366;;;
-P10376;;;ScienceDirect-Thema-ID
-P10561;;;
-P10585;;;CoL-ID
-P1070;;;Plant List ID (Royal Botanic Gardens, Kew)
-P10701;;;
-P10709;;;
-P10711;;;
-P10791;;;
-P10793;;;
-P10906;;;
-P11067;;;
-P11074;;;
-P11078;;;
-P11083;;;
-P11114;;;
-P1149;;;LoC-Klassifikation
-P11514;;;Große-Russische-Enzyklopädie-Portalkennung
-P11650;;;
-P11824;;;
-P11829;;;
-P12086;;;WikiKids-Kennung
-P12100;;;
-P12136;;;
-P12137;;;
-P12138;;;
-P12178;;;Minnesota Plant List ID
-P12179;;;Flora of the Southeastern United States ID
-P12181;;;
-P12182;;;Go Botany taxon ID
-P12187;;;Thesaurus Linguae Aegyptiae Thesaurus-ID
-P12292;;;
-P12296;;;
-P12385;;;Große-Katalanische-Enzyklopädie-Kennung
-P1245;;;OmegaWiki-Bedeutungskennung
-P12554;;;CalPhotos Taxon Kennung
-P12596;;;museum-digital-Tag-Kennung
-P12616;;;
-P12670;;;
-P1282;;;OpenStreetMap-Attribut
-P1296;;;Große-Katalanische-Enzyklopädie-Kennung (alt)
-P13478;;;nomenklatorischer Typ von
-P13591;;;Yale-LUX-Kennung
-P1368;;;LNB-Kennung (Lettland)
-P13691;;;Georgische-Enzyklopädie-Kennung
-P13734;;;
-P141;;;Gefährdungsstufe (IUCN)
-P1417;;;Encyclopædia-Britannica-Online-Kennung
-P1420;;;taxonomische Synonyme
-P1421;;;GRIN-URL
-P166;;;Auszeichnung
-P1672;;;Ursprung von
-P1727;;;FNA-ID
-P1745;;;VasCan-ID
-P1747;;;FOC-ID
-P1772;;;USDA-ID
-P1843;;;einheimische Namen
-P1939;;;Dyntaxa-ID
-P2004;;;NALT-Kennung
-P2036;;;African-Plant-Database-ID
-P225;;;wissenschaftlicher Name
-P227;;;GND-Kennung
-P231;;;CAS-Nummer
-P2347;;;YSO-Kennung
-P244;;;LCAuth-Kennung
-P268;;;BnF-Kennung
-P2752;;;NZOR-ID
-P279;;;Unterklasse von
-P2827;;;Blütenfarbe
-P2833;;;ARKive-Url-Fragment
-P2892;;;UMLS CUI
-P3031;;;EPPO-Code
-P31;;;ist ein(e)
-P3101;;;FloraBase-ID
-P3102;;;Plantarium-ID
-P3105;;;Tela-Botanica-BDTFX-ID
-P3130;;;NSW-Flora-ID
-P3151;;;iNaturalist-Taxon-ID
-P3186;;;INPN-TAXREF-ID
-P3222;;;Nationalencyklopedin-Online-Kennung
-P3240;;;NBN-ID
-P3405;;;NSR-ID
-P3420;;;Calflora-ID
-P3591;;;WCSPF-ID
-P3606;;;BOLD-ID
-P366;;;Verwendung
-P4000;;;Fruchttyp
-P4122;;;PalDat-ID
-P4214;;;höchste beobachtete Lebensdauer
-P4301;;;PfaF-Kennung
-P4311;;;FOIH-Taxon-ID
-P4333;;;
-P4342;;;SNL-Kennung
-P4728;;;uBio-ID
-P4746;;;Elhuyar ZTH-ID
-P4753;;;Ecocrop-ID
-P5019;;;Brockhaus-Enzyklopädie-Kennung
-P5037;;;POWO-URN
-P5055;;;IRMNG-ID
-P5063;;;Interlingual-Index-Kennung
-P5179;;;
-P5263;;;NDOP-Taxon-ID
-P5588;;;invasiv in
-P5626;;;
-P566;;;Basionym
-P5698;;;Invasive-Species-Compendium-ID
-P5945;;;VicFlora-ID
-P5984;;;APNI-ID
-P6034;;;
-P6056;;;SanbiRedList-ID
-P6094;;;FloraWeb-ID
-P6098;;;info flora
-P6103;;;Michigan-Flora-ID
-P6105;;;Observation.org Taxon-ID
-P6114;;;
-P6142;;;
-P6161;;;
-P6177;;;EUNIS-Taxon-ID
-P6227;;;
-P627;;;IUCN-ID
-P6293;;;YSA-ID
-P6341;;;IFPNI-ID
-P6366;;;Microsoft-Academic-Kennung
-P6433;;;
-P646;;;Freebase-Kennung
-P6507;;;Zitation der Autoren des Taxons
-P652;;;UNII
-P6756;;;FoA-Online-ID
-P685;;;NCBI-ID
-P6864;;;eElurikkus-ID
-P6870;;;Lettische-Nationalenzyklopädie-ID
-P691;;;NKČR-AUT-Kennung
-P6933;;;SA-Flora-ID
-P7202;;;Belgian-Species-List-ID
-P7496;;;NZPCN-ID
-P7537;;;
-P7544;;;
-P7546;;;
-P7552;;;FinBIF-ID
-P7587;;;eFloraSA-ID
-P7715;;;World-Flora-Online-ID
-P8061;;;AGROVOC-ID
-P815;;;ITIS-TSN
-P8189;;;J9U-Kennung der Israelischen Nationalbibliothek
-P8193;;;Winterhärte der Pflanze
-P830;;;EOL-ID
-P8309;;;Yle-Themenkennung
-P8313;;;Lex-Kennung
-P838;;;BioLib-ID
-P8408;;;KBpedia-Kennung
-P846;;;GBIF Taxon-ID
-P8468;;;Queensland Biota-ID
-P8707;;;NBIC-Taxon-ID
-P8765;;;
-P8814;;;Synsetkennung (WordNet 3.1)
-P8892;;;edition humboldt digital Flora ID
-P8915;;;ZOBODAT-Taxonkennung
-P9157;;;OTT-ID
-P9408;;;Washington Flora Checklist ID
-P9423;;;OregonFlora Taxon ID
-P9495;;;National-Historical-Museums-of-Sweden-ID
-P9501;;;
-P9503;;;
-P960;;;Tropicos-ID
-P961;;;IPNI-TaxonName-ID
-P9654;;;
-P9691;;;
-P9714;;;Verbreitungsgebiet
-P9741;;;
-P9799;;;
-P9826;;;
-
-P10;;;Video
-P10064;;;
-P10077;;;ID beim Spanischen Institut für kulturelles Erbe
-P10331;;;
-P1051;;;PSH-Kennung
-P10528;;;
-P10538;;;
-P10565;;;Enzyklopädie-von-China-Kennung (dritte Ausgabe)
-P10707;;;McGraw-Hill-AccessScience-URL-Fragment
-P10778;;;CPNI-ID
-P10792;;;
-P10833;;;Great-Plant-Picks-Kennung
-P10890;;;
-P10907;;;
-P10921;;;
-P11022;;;
-P11044;;;
-P11082;;;
-P11084;;;
-P11087;;;
-P11092;;;
-P11137;;;Reddit-Kennung
-P11189;;;
-P11220;;;Fruchtfarbe
-P11293;;;Amazon.com-Durchsuchknoten
-P11473;;;
-P11693;;;OpenStreetMap-Knotenkennung
-P11762;;;
-P11764;;;BKIDS-Students-Level-Kennung
-P11765;;;BKIDS-Scholars-Level-Kennung
-P11801;;;
-P11901;;;
-P12113;;;
-P12114;;;
-P12177;;;Rare Species Guide ID
-P12180;;;
-P12183;;;
-P12209;;;
-P12218;;;
-P1225;;;NARA-Kennung
-P12270;;;
-P12273;;;
-P12278;;;
-P12297;;;
-P12367;;;
-P12368;;;
-P12380;;;
-P12403;;;
-P12453;;;
-P12517;;;
-P1256;;;Iconclass-Kennung
-P12721;;;Lille-norske-leksikon-ID
-P12763;;;taxonomisches Synonym zu
-P12766;;;fungiert als Basionym von
-P12788;;;
-P12800;;;Vikidia-Kennung (neu)
-P13162;;;Referenzabbildung
-P13177;;;
-P1325;;;externe Daten
-P13329;;;
-P13330;;;
-P13613;;;
-P13696;;;
-P13735;;;A Dictionary of Genetics Eintrag-ID
-P13750;;;
-P138;;;benannt nach
-P1382;;;teilweise übereinstimmend mit
-P1385;;;Enciclopédia Açoriana ID
-P13909;;;
-P1424;;;Hauptvorlage des Themas
-P1531;;;Hybrideltern
-P1552;;;charakterisiert durch
-P1617;;;BBC-Things-Kennung
-P1703;;;bestäubt durch
-P176;;;Hersteller
-P1807;;;Gran-Enciclopedia-Aragonesa-ID
-P183;;;endemisch in
-P1940;;;Gymnosperm-Database-ID
-P1978;;;NDB-Nummer
-P1992;;;Plazi-ID
-P2043;;;Länge
-P2048;;;Höhe
-P2049;;;Breite
-P2163;;;FAST-Kennung
-P2167;;;UNSPSC-Code
-P2341;;;einheimisch
-P2354;;;entsprechende Liste
-P2434;;;PAF-ID
-P2581;;;BabelNet-Kennung
-P2670;;;enthält Elemente von
-P2671;;;Google-Knowledge-Graph-Kennung
-P2809;;;APSA-ID
-P2868;;;Subjekt fungiert als
-P2888;;;exakte Übereinstimmung
-P2924;;;Große-Russische-Enzyklopädie-Kennung
-P2959;;;dauerhaftes Duplikat von
-P2974;;;Habitat
-P3073;;;CosIng-ID
-P3088;;;TaiBNET-ID
-P3219;;;Encyclopædia-Universalis-Kennung
-P3221;;;NYT-Themenkennung
-P3365;;;Enciclopedia-Treccani-Kennung
-P3417;;;Quora-Themenkennung
-P3443;;;
-P3479;;;Omni-Themenkennung
-P349;;;NDL-Kennung
-P3550;;;
-P3553;;;Zhihu-Themenkennung
-P3648;;;
-P3739;;;Blütenstand
-P3741;;;Samenausbreitung
-P3746;;;
-P3795;;;
-P3827;;;JSTOR-Themenkennung
-P3911;;;STW-Kennung
-P4030;;;PLU-Code
-P4194;;;CNPS-ID
-P4212;;;PACTOLS-Thesaurus-ID
-P4223;;;Enciclopedia-Italiana-Kennung
-P4235;;;PatientsLikeMe-Behandlung-ID
-P427;;;nomenklatorischer Typ
-P443;;;Aussprache (Audiodatei)
-P460;;;eventuell gleichwertig
-P4637;;;
-P4729;;;
-P4854;;;
-P486;;;MeSH-Kennung
-P487;;;Unicodezeichen
-P5008;;;auf der Arbeitsliste des Wikimedia-Projektes
-P508;;;BNCF-Thesaurus-Kennung
-P5160;;;Thesauruskennung für graphische Materialien
-P5230;;;Chromosomenzahl
-P527;;;besteht aus
-P5395;;;Canadian-Encyclopedia-ID
-P5417;;;Gemeinsames Vokabular für öffentliche Aufträge
-P5555;;;schematische Darstellung
-P580;;;Startzeitpunkt
-P5841;;;Gefährdungsstatus in der Rote Liste der gefährdeten Arten der Tschechischen Republik
-P5844;;;Treccani-Wortschatz-ID
-P5872;;;riecht nach
-P5930;;;Open Food Facts Zutat-ID
-P6000;;;Wasserfußabdruck
-P6019;;;
-P6035;;;
-P6044;;;FEIS-ID
-P6054;;;
-P6061;;;Plant Parasites of Europe ID
-P6092;;;
-P6137;;;APA-ID
-P6139;;;FloraGREIF-ID
-P6159;;;
-P6163;;;NAS-ID
-P6176;;;Cal-IPC-ID
-P618;;;Energiequelle
-P6385;;;Krugoswet-Kennung
-P6573;;;Klexikon-Artikelkennung
-P6706;;;De-Agostini-Kennung
-P672;;;MeSH-Code
-P6754;;;OBIS-Kennung
-P6800;;;
-P694;;;ersetztes Synonym
-P7033;;;Australisches-Bildungsvokabular-Kennung
-P7305;;;PWN-Enzyklopädie-Kennung
-P7388;;;
-P7502;;;Golden-Kennung
-P7666;;;Visuotinė-lietuvių-enciklopedija-Kennung
-P7691;;;
-P7830;;;
-P8026;;;
-P8072;;;CAB-Thesaurus-ID
-P8248;;;Kolon-Klassifikation
-P8370;;;UNBIS-Thesaurus-ID
-P8373;;;
-P8406;;;Grove-Art-Online-ID
-P842;;;Fossilworks-Taxon-ID
-P8469;;;
-P8485;;;Taxon-Verbreitungskarte datenmodelliert
-P850;;;WoRMS-Taxon-ID
-P8519;;;RKD-Thesaurus-Kennung
-P8603;;;Istrapedia-Kennung
-P8660;;;
-P8885;;;Namuwiki-Kennung
-P8957;;;
-P902;;;HLS-Kennung
-P9198;;;Encyclopédie berbère Artikel-Kennung
-P920;;;Spanische Schlagwörter für öffentliche Bibliotheken
-P9243;;;
-P9272;;;DeCS-ID
-P9292;;;
-P9318;;;Ávvir-Themen-ID
-P9322;;;SVKKL-Kennung
-P9475;;;Koreanische-Kultur-Enzyklopädie-ID
-P950;;;BNE-Kennung (v1.0)
-P9519;;;
-P9545;;;Enzyklopädie-von-China-Kennung (Zweite Ausgabe)
-P9629;;;Armeniapedia-ID
-P9684;;;ISDDB-ID
-P9685;;;MFG-ID
-P973;;;beschrieben in URL
-P9937;;;Postimees-Themenkennung
+﻿property_id;type;action;config;description
+P10;CommonsMedia;;;"Video – relevantes Video; für Bilder Eigenschaft P18 verwenden; für Filmtrailer mit „Objekt hat Rolle“ (P3831) = Q622550 qualifizieren; für Filme mit „Objekt hat Rolle“ (P3831) = Q89347362 qualifizieren"
+P10064;ExternalId;ignore;;NWT Species ID – identifier for a taxon in the Northwest Territories in the NWT Species database
+P10077;ExternalId;ignore;;ID beim Spanischen Institut für kulturelles Erbe – identifier for an item in any of the Spanish Cultural Heritage thesauri
+P1014;ExternalId;ignore;;Art-and-Architecture-Thesaurus-Kennung – Identifikator im Art-and-Architecture-Thesaurus des Getty Research Institute
+P10243;ExternalId;ignore;;NatureServe-Explorer-Kennung – Kennung für eine Spezies oder ein Ökosystem in  der NatureServe-Explorer-Datenbank
+P10283;ExternalId;ignore;;OpenAlex-Kennung – Identifikator eines Eintrags bei OpenAlex
+P10331;ExternalId;ignore;;Washington Native Plant Society Plant Directory ID – identifier of a species or subspecies in the Washington Native Plant Society Plant Directory
+P10333;ExternalId;ignore;;New York Flora Atlas ID – identifier of a taxon in the New York Flora Atlas
+P1036;ExternalId;ignore;;Dewey-Dezimalklassifikation – Klassifikation für die inhaltliche Erschließung (Verwendung mit dem Qualifikator P747: Ausgabe)
+P10366;ExternalId;ignore;;Gardens Navigator ID – identifier for a plant taxon on Gardens Navigator
+P10376;ExternalId;ignore;;ScienceDirect-Thema-ID – identifier for a topic on the research publication website ScienceDirect
+P105;WikibaseItem;inline;"{""target"": ""taxonomischer_rang""}";taxonomischer Rang – Stufe der Einteilung von Lebewesen und Viren
+P1051;ExternalId;ignore;;PSH-Kennung – Identifikator für einen Eintrag in der Datenbank der Tschechischen Technischen Bibliothek
+P10528;ExternalId;ignore;;Madrean Discovery Expeditions Flora Database ID – identifier of a plant species in the Madrean Discovery Expeditions Flora Database
+P10538;ExternalId;ignore;;Leafsnap ID – identifier for a tree species of the United States and Canada on the Leafsnap electronic field guide
+P10561;ExternalId;ignore;;Virginia Tech Dendrology Factsheets ID – identifier for a North American tree taxon in the Virginia Tech Dendrology Factsheets database
+P10565;ExternalId;ignore;;Enzyklopädie-von-China-Kennung (dritte Ausgabe) – Identifikator für einen Artikel in der Onlineversion der Enzyklopädie von China (dritte Ausgabe)
+P10585;ExternalId;ignore;;CoL-ID – Identifikator für ein Taxonkonzept im Catalogue of Life (CoL)
+P1070;ExternalId;ignore;;Plant List ID (Royal Botanic Gardens, Kew) – Identifikator für den wissenschaftlichen Namen eines Taxons in der Datenbank „The Plant List“
+P10701;ExternalId;ignore;;Reflora ID – identifier for a taxon on the Reflora Flora e Funga do Brasil website
+P10707;ExternalId;ignore;;McGraw-Hill-AccessScience-URL-Fragment – identifier for content in the online encyclopedia AccessScience
+P10709;ExternalId;ignore;;North Carolina Extension Gardener Plant Toolbox ID – identifier for a taxon in the North Carolina Extension Gardener Plant Toolbox
+P10711;ExternalId;ignore;;Invasive.org species ID – identifier for a species on Invasive.org
+P10778;ExternalId;ignore;;CPNI-ID – identifier for a plant in Chinese Plant Names Index database of Scientific Database of China Plant Species
+P10791;ExternalId;ignore;;PlantFiles taxon ID – identifier for a taxon in the PlantFiles database
+P10792;ExternalId;ignore;;Garden.org Plants Database ID – identifier for a taxon in the Garden.org Plants Database
+P10793;ExternalId;ignore;;Woody Plants Database ID – identifier for a taxon in Cornell University's Woody Plants Database
+P10833;ExternalId;ignore;;Great-Plant-Picks-Kennung – Identifikator für eine bei Great Plant Picks verzeichnete Pflanze
+P10890;ExternalId;ignore;;PM20 ware ID – identifier for a wares category in the 20th Century Press Archives' commodities/wares category system
+P10906;WikibaseItem;;;foliage type – type of foliage characteristic of a plant, e.g. deciduous, semi-deciduous, semi-evergreen, or evergreen
+P10907;ExternalId;ignore;;Paleobiology Database taxon ID – identifier for a fossil taxon in the Paleobiology Database
+P10921;ExternalId;ignore;;AEDA taxonomic keyword ID – identifier for a taxon in the Agricultural and Environmental Data Archive (AEDA)
+P11022;ExternalId;ignore;;Garden Plant Finder ID – identifier for a plant taxon from New England in the Garden Plant Finder database
+P11044;ExternalId;ignore;;Colorado Plant Database ID – identifier for a plant taxon in the Colorado Plant Database
+P11067;ExternalId;ignore;;UConn Plant Database ID – identifier for a woody landscape plant taxon in the UConn Plant Database
+P11074;ExternalId;ignore;;vPlants ID – identifier for a plant species, subspecies, or variety from the Chicago Region in the vPlants virtual herbarium
+P11078;ExternalId;ignore;;Naturbasen species ID – identifier for a species at Naturbasen
+P11082;ExternalId;ignore;;Woody Plants Database cultivar ID – identifier for a cultivar in the Woody Plants Database
+P11083;ExternalId;ignore;;Maryland Plant Atlas ID – identifier for a plant species, subspecies, or variety in the Maryland Plant Atlas
+P11084;ExternalId;ignore;;Maryland Biodiversity Project species ID – identifier for a species, subspecies, or variety in the Maryland Biodiversity Project database
+P11087;ExternalId;ignore;;eGardenGo plant ID – identifier for a plant taxon on eGardenGo
+P11092;ExternalId;ignore;;Nebraska Invasive Species Program species ID – identifier for an invasive species in Nebraska on the Nebraska Invasive Species Program website
+P11114;ExternalId;ignore;;Illinois Plants ID – identifier for a taxon on the Illinois Plants website
+P11137;ExternalId;ignore;;Reddit-Kennung – Identifikator für ein Thema bei Reddit
+P11189;ExternalId;ignore;;Louisiana Plant ID – identifier for a plant taxon on the Louisiana Plant Identification and Interactive Ecosystem Virtual Tours website
+P11220;WikibaseItem;;;Fruchtfarbe – color of the fruit of a plant species, hybrid, or cultivar
+P11293;ExternalId;ignore;;Amazon.com-Durchsuchknoten – Knotenpunkt zu diesem Konzept auf amazon.com
+P11473;ExternalId;ignore;;Concepticon concept set ID – ID for a concept set in Concepticon
+P1149;ExternalId;ignore;;LoC-Klassifikation – Klassifikation der Library of Congress für die inhaltliche Erschließung
+P11514;ExternalId;ignore;;Große-Russische-Enzyklopädie-Portalkennung – Identifikator eines Portals auf der offiziellen Website der Großen Russischen Enzyklopädie
+P11650;ExternalId;ignore;;Moscow University Herbarium ID – ID for a taxon in the Moscow Digital Herbarium
+P11693;ExternalId;ignore;;OpenStreetMap-Knotenkennung – Knoten in OpenStreetMap für den Eintrag, der im Allgemeinen auf Wikidata zurückverlinkt
+P11762;ExternalId;ignore;;Britannica Kids kids level article ID – identifier of a kids level (up to grade 5) article in Britannica Kids
+P11764;ExternalId;ignore;;BKIDS-Students-Level-Kennung – Identifikator für Artikel in „Britannica Kids“ (Stufen 6–8)
+P11765;ExternalId;ignore;;BKIDS-Scholars-Level-Kennung – Identifikator für Artikel in „Britannica Kids“ (Stufe 9 und höher)
+P11801;WikibaseItem;;;visited by – organisms attracted by this plant taxon and reported to visit it
+P11824;ExternalId;ignore;;KPU Plant Database ID – identifier for a plant taxon in the KPU Plant Database of the Kwantlen Polytechnic University School of Horticulture
+P11829;ExternalId;ignore;;Plant Finder ID (Chicago Botanic Garden) – identifier of a plant taxon in the Chicago Botanic Garden's Plant Finder database
+P11901;ExternalId;ignore;;NCI Dictionary of Cancer Terms entry – identifier for an entry in the NCI Dictionary of Cancer Terms
+P12086;ExternalId;ignore;;WikiKids-Kennung – Identifikator für Artikel auf WikiKids
+P12100;ExternalId;ignore;;FloraVeg.EU taxon ID – identifier for a plant taxon in the FloraVeg.EU online database
+P12113;ExternalId;ignore;;Vascular Plants of Iowa species ID – identifier for a plant species in The Vascular Plants of Iowa website
+P12114;ExternalId;ignore;;Flora of New Jersey Project atlas ID – identifier for a plant species in the Flora of New Jersey Project atlas
+P12136;ExternalId;ignore;;Indiana Plant Atlas ID – identifier for a plant species, subspecies, or variety in the Indiana Plant Atlas
+P12137;ExternalId;ignore;;Linked Open Data Comune Firenze ID – identifier for an entity in the Linked Open Data platform of the municipality of Florence (Italy)
+P12138;ExternalId;ignore;;Tennessee-Kentucky Plant Atlas ID – identifier for a plant species, subspecies, or variety in the Tennessee-Kentucky Plant Atlas
+P12177;ExternalId;ignore;;Rare Species Guide ID – Kennung einer Tier- oder Pflanzenart im Rare Species Guide des Minnesota Department of Natural Resources
+P12178;ExternalId;ignore;;Minnesota Plant List ID – Kennung einer Pflanzenart in der Minnesota Plant List
+P12179;ExternalId;ignore;;Flora of the Southeastern United States ID – Kennung einer Pflanzenart in der Datenbank der Flora of the Southeastern United States
+P12180;Url;;;PAEnflowered taxon URL – URL for a plant taxon found in Pennsylvania on the PAEnflowered website
+P12181;ExternalId;ignore;;Digital Atlas of the Virginia Flora ID – identifier for a plant species, subspecies, or variety in the Digital Atlas of the Virginia Flora
+P12182;ExternalId;ignore;;Go Botany taxon ID – Identifikator für Gefäßpflanzen in Neuengland auf der Go Botany website
+P12183;ExternalId;ignore;;Search System of Japanese Red Data ID – identifier for species and subspecies of the flora and fauna of Japan in the Search System of Japanese Red Data
+P12187;ExternalId;ignore;;Thesaurus Linguae Aegyptiae Thesaurus-ID – ID für einen Metadaten-Thesaurus-Eintrag im Thesaurus Linguae Aegyptiae
+P12209;ExternalId;ignore;;The Plant List ID (Arizona Native Plant Society) – identifier for a native plant species, subspecies, or variety in The Plant List from the Arizona Native Plant Society
+P12218;ExternalId;ignore;;TaiCOL ID (new version) – identifier for taxa of the biota of Taiwan in the new version of the Catalogue of Life in Taiwan
+P1225;ExternalId;ignore;;NARA-Kennung – Identifikator, der einem Eintrag im Onlineverzeichnis der National Archives and Records Administration der USA zugewiesen wurde
+P12270;Url;;;Flora of the Hawaiian Islands URL – URL of the entry for a plant genus, species, subspecies, or variety in the Flora of the Hawaiian Islands website
+P12273;Url;;;Montana Plant Life URL – URL for a plant family, genus, or species on the Montana Plant Life website
+P12278;ExternalId;ignore;;Mid-Atlantic Herbaria Consortium taxon ID – identifier for a plant taxon in the Mid-Atlantic Herbaria Consortium database
+P12292;ExternalId;ignore;;Biota of New Zealand ID – identifier for a taxon in the Biota of New Zealand database
+P12296;ExternalId;ignore;;SERNEC taxon ID – identifier for a plant taxon in the SERNEC data portal
+P12297;ExternalId;ignore;;TORCH taxon ID – identifier for a plant taxon in the TORCH Data Portal
+P12367;ExternalId;ignore;;Plant Illustrations taxon ID – identifier for a taxon other than species on the Plant Illustrations website
+P12368;ExternalId;ignore;;Plant Illustrations species ID – identifier for a species on the Plant Illustrations website
+P12380;ExternalId;ignore;;Euro+Med PlantBase taxon ID – identifier for a plant taxon in the Euro+Med PlantBase
+P12385;ExternalId;ignore;;Große-Katalanische-Enzyklopädie-Kennung – alphabetischer Identifikator für einen Eintrag in der Großen katalanischen Enzyklopädie
+P12403;ExternalId;ignore;;Plants of Hawaiʻi ID – identifier for a taxon on the Plants of Hawaiʻi website
+P1245;ExternalId;ignore;;OmegaWiki-Bedeutungskennung – Identifikator für eine definierte Bedeutung im OmegaWiki
+P12453;ExternalId;ignore;;Great Plains Herbaria taxon ID – identifier for a plant taxon on the Great Plains Regional Herbarium Network website
+P12517;ExternalId;ignore;;Consortium of Midwest Herbaria taxon ID – identifier for a plant taxon on the Consortium of Midwest Herbaria website
+P12554;ExternalId;ignore;;CalPhotos Taxon Kennung – Kennung einer Pflanzen-, Tier- oder Fossilienart oder Unterart auf der CalPhotos Webseite
+P1256;ExternalId;ignore;;Iconclass-Kennung – Identifikator eines ikonographischen Themas
+P12596;ExternalId;ignore;;museum-digital-Tag-Kennung – numerischer Identifikator für Schlagworte, die auf Museum-Digital zur Beschreibung von Kulturerbeobjekten verwendet werden.
+P12616;WikibaseItem;;;leaf morphology – characterization of aspects of the shape of a plant’s leaves
+P12670;ExternalId;ignore;;Flora Croatica Database taxon ID – identifier for a taxon in the Flora Croatica Database
+P12721;ExternalId;ignore;;Lille-norske-leksikon-ID – identificator for an article in Lille/Vesle norske leksikon (lille.snl.no)
+P12763;WikibaseItem;;;taxonomisches Synonym zu – Datenobjekt ist ein taxonomisches Synonym zu folgendem Objekt:
+P12766;WikibaseItem;;;fungiert als Basionym von – taxon item of which this taxon name is a basionym (original name, for botanical and similar items) - inverse property of basionym (P566)
+P12788;ExternalId;ignore;;A Dictionary of Plant Sciences ID – identifier for an entry in online fourth edition of A Dictionary of Plant Sciences
+P12800;ExternalId;ignore;;Vikidia-Kennung (neu) – Identifikator für Artikel in der Enzyklopädie „Vikidia“ im Format „Sprachcode:Titel“
+P1282;String;;;OpenStreetMap-Attribut – OpenStreetMap-Schema zum Tagging (ein key=value)
+P1296;ExternalId;ignore;;Große-Katalanische-Enzyklopädie-Kennung (alt) – numerischer Identifikator für einen Eintrag in der Großen katalanischen Enzyklopädie
+P13162;CommonsMedia;;;Referenzabbildung – Eine Abbildung dieses Objekts, um einen detaillierten Hinweis auf sein Aussehen zu geben. Sie sollte idealerweise mit der Primärliteratur zum Thema verknüpft sein.
+P13177;WikibaseItem;;;homonymous taxon – taxon item of which the taxon name is an exact homonym
+P1325;Url;;;externe Daten – URL, unter der externe Daten zu dem Thema gefunden werden können
+P13329;ExternalId;ignore;;Brussels Inventory of Natural Heritage tree ID – identifier for remarkable trees in the Brussels-Capital Region
+P13330;ExternalId;ignore;;Korean National Species list ID – identifier for a taxon (species), in the Korean National Species List
+P1343;WikibaseItem;;;beschrieben in – Werk, in dem das Objekt beschrieben wird
+P13478;WikibaseItem;;;nomenklatorischer Typ von – taxon item of which this item is the taxonomic type (name-bearing type), e.g. the family for which this genus is the type, the genus for which this species is the type, the taxon for which this type specimen is the type, ect...
+P13591;ExternalId;ignore;;Yale-LUX-Kennung – Identifikator für Entitäten in „Yale's LUX cross collection knowledge graph“
+P13613;ExternalId;ignore;;Enciclopedia Galega Universal ID – numerical identifier for an ítem in Enciclopedia Galega Universal
+P1368;ExternalId;ignore;;LNB-Kennung (Lettland) – Identifikator eines Normdateneintrags in der Lettischen Nationalbibliothek
+P13691;ExternalId;ignore;;Georgische-Enzyklopädie-Kennung – identifier for an item in the Georgian Encyclopedia
+P13696;CommonsMedia;;;taxon aspect image – an exemplary image of a particular aspect for this taxon. Relevant for taxonomic identification
+P13734;ExternalId;ignore;;EASIN-Kennung – identifier for an alien species on the Catalogue of Alien Species by the European Alien Species Information Network
+P13735;ExternalId;ignore;;A Dictionary of Genetics Eintrag-ID – Identifikator für einen Eintrag in der 8. Auflage des Dictionary of Genetics
+P13750;ExternalId;ignore;;Arab Encyclopedia concept ID – digital identifier for a topic within the articles of the Arabic Encyclopedia
+P138;WikibaseItem;;;benannt nach – Person oder anderes Objekt als Namensgeber dieses Objekts
+P1382;WikibaseItem;;;teilweise übereinstimmend mit – Objekt, das sich teilweise mit dem Subjekt überlappt in Bezug auf seine Exemplare, Teile oder Mitglieder
+P1385;ExternalId;ignore;;Enciclopédia Açoriana ID – Kennung für einen Artikel in der Enciclopédia Açoriana
+P13909;ExternalId;ignore;;Antique Chinese and Japanese Porcelain Dictionary and Glossary of Terms entry – identifier for an entry in the Antique Chinese and Japanese Porcelain Dictionary and Glossary of Terms
+P141;WikibaseItem;;;Gefährdungsstufe (IUCN) – Die International Union for Conservation of Nature and Natural Resources stuft gefährdete Tier- und Pflanzenarten derart ein (mögliche Werte: siehe Disk.)
+P1417;ExternalId;ignore;;Encyclopædia-Britannica-Online-Kennung – Kennung eines Artikels in der Onlineausgabe der Encyclopædia Britannica
+P1420;WikibaseItem;;;taxonomische Synonyme – Synonym(e) des anerkannten wissenschaftlichen Namens eines Taxons
+P1421;Url;;;GRIN-URL – URL für den wissenschaftlichen Namen eines Taxons bei GRIN
+P1424;WikibaseItem;;;Hauptvorlage des Themas – Hauptinfobox oder -navigationsvorlage für dieses Thema
+P1531;WikibaseItem;;;Hybrideltern – parent of this hybrid breed or cultivar
+P1552;WikibaseItem;;;charakterisiert durch – die Entität besitzt eine innewohnende Eigenschaft, die nicht weggelassen werden kann
+P1617;ExternalId;ignore;;BBC-Things-Kennung – Identifikationsnummer in Datenbank BBC Things
+P166;WikibaseItem;;;Auszeichnung – erhaltene Auszeichnung einer Person, Organisation oder eines schöpferischen Werks
+P1672;WikibaseItem;;;Ursprung von – ein Naturprodukt wird durch Verarbeitung zu
+P1703;WikibaseItem;;;bestäubt durch – Bestäuber einer Pflanze
+P171;WikibaseItem;inline;"{""target"": ""uebergeordnetes_taxon"", ""keep_source"": true}";übergeordnetes Taxon – wissenschaftlicher Name des dem Taxon unmittelbar übergeordneten Taxons
+P1727;ExternalId;ignore;;FNA-ID – Identifikator in der Flora of North America (FNA)
+P1745;ExternalId;ignore;;VasCan-ID – Identifikator in der Datenbank Vascular Plants of Canada (VasCan)
+P1747;ExternalId;ignore;;FOC-ID – Identifikator in der Flora of China (FOC)
+P176;WikibaseItem;;;Hersteller – Haupthersteller eines Produkts (Subunternehmen ausgeschlossen)
+P1772;ExternalId;ignore;;USDA-ID – Identifikator in der Datenbank des United States Department of Agriculture (USDA)
+P18;CommonsMedia;;;Bild – Foto, Grafik etc. des Subjekts aus Wikimedia Commons (ohne „File:“)
+P1807;ExternalId;ignore;;Gran-Enciclopedia-Aragonesa-ID – identifier in the Spanish language, Aragon-themed, Great Aragonese Encyclopedia (GEA)
+P181;CommonsMedia;;;Verbreitungskarte des Taxons – verweist auf eine Verbreitungskarte für ein Taxon bei Commons
+P183;WikibaseItem;;;endemisch in – Gegend, in der das Taxon ausschließlich (endemisch) vorkommt
+P1843;Monolingualtext;;;einheimische Namen – einheimischer Name eines Taxons
+P1889;WikibaseItem;;;verschieden von – Objekt, das sich von einem anderen Objekt unterscheidet, die aber oft verwechselt werden
+P1939;ExternalId;ignore;;Dyntaxa-ID – Identifikator in der schwedischen Taxonomiedatenbank (Dyntaxa)
+P1940;ExternalId;ignore;;Gymnosperm-Database-ID – identifier for a taxon in the conifers.org database
+P1978;ExternalId;ignore;;NDB-Nummer – Ident eines Lebensmittels gemäß United States Department of Agriculture 'National Nutrient Database'
+P1992;ExternalId;ignore;;Plazi-ID – identifier for a taxon treatment at Plazi.org
+P2004;ExternalId;ignore;;NALT-Kennung – Identifikator einer Begriffskategorie im landwirtschaftlichen Thesaurus bei United States National Agricultural Library
+P2036;ExternalId;ignore;;African-Plant-Database-ID – Identifikator für den wissenschaftlichen Namen eines Taxons in der African Plant Database
+P2043;Quantity;;;Länge – gemessene Dimension eines Objekts
+P2048;Quantity;;;Höhe – Höhe eines Objekts
+P2049;Quantity;;;Breite – Breite eines Objekts
+P2163;ExternalId;ignore;;FAST-Kennung – Identifikator in der WorldCat zugehörigen FAST-Normdatei
+P2167;ExternalId;ignore;;UNSPSC-Code – identifier for taxonomy of products and services for use in eCommerce
+P225;String;;;wissenschaftlicher Name – wissenschaftlicher Name einer Gruppe von Lebewesen
+P227;ExternalId;ignore;;GND-Kennung – Identifikator der Gemeinsamen Normdatei für Personennamen, Körperschaften und Schlagworte (bitte nicht Typ n eintragen = Name, mehrdeutig)
+P231;ExternalId;ignore;;CAS-Nummer – Bezeichnungsstandard für Chemikalien der American Chemical Society (CAS) database
+P2341;WikibaseItem;;;einheimisch – ethnographische Herkunft
+P2347;ExternalId;ignore;;YSO-Kennung – Identifikator eines Konzepts in der General Finnisch Ontologie YSO
+P2354;WikibaseItem;;;entsprechende Liste – Wikimedia-Liste zu diesem Objekt
+P2434;ExternalId;ignore;;PAF-ID – Identifikator in der Panarctic Flora (PAF)
+P244;ExternalId;ignore;;LCAuth-Kennung – Identifikator eines Normdatensatzes in der Library of Congress (für einzelne Bücher siehe P1144). Zwischen den Buchstabe(n) und den folgenden Zahlen keine Leerstelle!
+P2581;ExternalId;ignore;;BabelNet-Kennung – Identifikator eines Eintrag in der BabelNet-Enzyklopädie
+P2670;WikibaseItem;;;enthält Elemente von – das Subjekt der Aussage hat mindestens eine Instanz der Objektklasse als Bestandteil
+P2671;ExternalId;ignore;;Google-Knowledge-Graph-Kennung – Identifikator für die API des Google Knowledge Panels
+P268;ExternalId;ignore;;BnF-Kennung – Identifikator eines Normdateneintrags in der französischen Nationalbibliothek: 8 Zahlen + 1 Prüfzeichen (ohne 'cb'), siehe https://w.wiki/Q26
+P2713;CommonsMedia;;;Schnittansicht – Bild das eine Schnittfläche eines Objektes darstellt
+P2716;CommonsMedia;;;Fotocollage – Bild, das aus zwei oder mehr Bildern zusammengesetzt wurde
+P2752;ExternalId;ignore;;NZOR-ID – Identifikator im New Zealand Organisms Register
+P279;WikibaseItem;;;"Unterklasse von – Diese Klasse/Gruppe ist eine Unterklasse zu jener Klasse/Gruppe. Alle Elemente der Unterklasse sind auch Elemente der Oberklasse; verschieden von P31 („ist ein(e)“), z.B.: Vulkan ist eine „Unterklasse von“ Berg, der K2 „ist ein“ Berg."
+P2809;ExternalId;ignore;;APSA-ID – Identifikator im Australasian Pollen and Spore Atlas (APSA)
+P2827;WikibaseItem;;;Blütenfarbe – Farbe der Blüten einer Blütenpflanze
+P2833;ExternalId;ignore;;ARKive-Url-Fragment – Url-Fragment für ein Taxon in der ARKive-Datenbank
+P2868;WikibaseItem;;;Subjekt fungiert als – Rolle des Subjekts der Aussage im konkreten Zusammenhang. Für die Rolle des Objekts P3831 verwenden. Für Personen verwende P39.
+P2888;Url;;;exakte Übereinstimmung – verwendet, um zwei Konzepte (Begriffe) zu verbinden, wobei mit großer Sicherheit gilt, dass beide untereinander auswechselbar sind
+P2892;ExternalId;ignore;;UMLS CUI – NLM Unified Medical Language System (UMLS) controlled biomedical vocabulary unique identifier
+P2924;ExternalId;ignore;;Große-Russische-Enzyklopädie-Kennung – Identifikator eines Eintrags auf der offiziellen Website der Großen Russischen Enzyklopädie
+P2959;WikibaseItem;;;dauerhaftes Duplikat von – dieser Eintrag ist ein Duplikat eines anderen. Sie können nicht zusammengeführt werden, weil ein Wikimedia-Projekt dauerhaft unterschiedliche Seiten dazu hat, z. B. in unterschiedlichen Schriften oder Sprachen
+P2974;WikibaseItem;;;Habitat – charakteristischer Lebensraum einer Tier- oder Pflanzenart
+P3031;ExternalId;ignore;;EPPO-Code – der EPPO-Code ist ein System zur schnellen Identifikation von Schadorganismen in landwirtschaftlich genutzten Kulturpflanzen
+P3073;ExternalId;ignore;;CosIng-ID – Eintrag in der Cosmetic Ingredient Database
+P3088;ExternalId;ignore;;TaiBNET-ID – identifier (name code) for a taxon in the Catalogue of Life in Taiwan
+P31;WikibaseItem;;;"ist ein(e) – Ausprägung oder Exemplar einer Sache, Mitglied einer Klasse. Zu unterscheiden von P279 (Unterklasse von), z. B. der K2 „ist ein“ Berg; Vulkan ist eine „Unterklasse von“ Berg (aber Vulkan „ist eine“ vulkanogene Landform)"
+P3101;ExternalId;ignore;;FloraBase-ID – Identifikator in FloraBase - the Western Australian Flora
+P3102;ExternalId;ignore;;Plantarium-ID – identifier for a plant taxon, in the Plantarium database
+P3105;ExternalId;ignore;;Tela-Botanica-BDTFX-ID – identifier for a plant taxon in Tela Botanica's 'base des trachéophytes de France métropolitaine' - BDTFX - (Metropolitan France Tracheophyte Database)
+P3130;ExternalId;ignore;;NSW-Flora-ID – identifier for a plant taxon, in the NSW Flora Online
+P3151;ExternalId;ignore;;iNaturalist-Taxon-ID – Identifikator für ein Taxon in iNaturalist
+P3186;ExternalId;ignore;;INPN-TAXREF-ID – Identifikator für ein Taxonkonzept im Inventaire National du Patrimoine Naturel (INPN) des Muséum National d'Histoire Naturelle (MNHN)
+P3219;ExternalId;ignore;;Encyclopædia-Universalis-Kennung – Identifikator eines Artikels in der Onlineversion der Encyclopædia Universalis
+P3221;ExternalId;ignore;;NYT-Themenkennung – Identifikator eines Themas auf der Webseite der New York Times
+P3222;ExternalId;ignore;;Nationalencyklopedin-Online-Kennung – Identifikator in der Online-Ausgabe der Schwedischen Nationalenzyklopädie
+P3240;ExternalId;ignore;;NBN-ID – identifier of a taxon in the National Biodiversity Network (UK)
+P3365;ExternalId;ignore;;Enciclopedia-Treccani-Kennung – Identifikator für einen Artikel in der Onlineausgabe der Enciclopedia Treccani Online auf treccani.it
+P3405;ExternalId;ignore;;NSR-ID – Identifikator für den wissenschaftlichen Namen eines Taxons im Nederlands Soortenregister
+P3417;ExternalId;ignore;;Quora-Themenkennung – Identifikator eines Themas auf der Website Quora (englische Sprachversion)
+P3420;ExternalId;ignore;;Calflora-ID – Identifikator für ein Taxon bei Calflora
+P3443;ExternalId;ignore;;Victorian Heritage Database ID – identifier for a heritage location, in Australia's Victorian Heritage Database
+P3479;ExternalId;ignore;;Omni-Themenkennung – Identifikator eines Themas bei Omni und Aftonbladet
+P349;ExternalId;ignore;;NDL-Kennung – Identifikator des Normdateneintrags in der Nationalen Parlamentsbibliothek (NDL), Japan
+P3550;ExternalId;ignore;;Australian Register of Therapeutic Goods ID – identifier of a medicine or medical device listed in the Australian Register of Therapeutic Goods
+P3553;ExternalId;ignore;;Zhihu-Themenkennung – Identifikator eines Themas auf der chinesischen Website Zhihu
+P3591;ExternalId;ignore;;WCSPF-ID – Identifikator für ein Taxon in der World Checklist of Selected Plant Families (WCSPF)
+P3606;ExternalId;ignore;;BOLD-ID – identifier for a taxon in boldsystems.org
+P3648;WikibaseItem;;;NatureServe conservation status – conservation status assigned by NatureServe
+P366;WikibaseItem;;;"Verwendung – Hauptbenutzungszweck des Subjekts (welcher bspw. bei einem Gebäude vom ursprünglichen Zweck abweichen kann; umfasst aktuelle und frühere Nutzungszwecke)"
+P373;String;;;Commons-Kategorie – Name der Kategorie auf Wikimedia Commons, die Dateien zu dem Objekt (item) beinhaltet (ohne das Präfix „Category:“)
+P3739;WikibaseItem;;;Blütenstand – placement of flowers on the stem of a flower plant
+P3741;WikibaseItem;;;Samenausbreitung – mode used by the item to disperse its seeds
+P3746;ExternalId;ignore;;Wildflowers of Israel ID – identifier of a taxon in the Wildflowers of Israel database
+P3795;ExternalId;ignore;;Flora of Israel Online plant ID – identifier for a plant taxon or cultivar in the Flora of Israel Online database
+P3827;ExternalId;ignore;;JSTOR-Themenkennung – Identifikator eines bei JSTOR verzeichneten Themas
+P3911;ExternalId;ignore;;STW-Kennung – Identifikator für einen Deskriptor des Standard-Thesaurus Wirtschaft (STW), der auf volks- und betriebswirtschaftliche Literatur verlinkt
+P4000;WikibaseItem;;;Fruchttyp – morphology of the fruit of this taxon, as defined in botany
+P4030;ExternalId;ignore;;PLU-Code – Code zur Preisfindung durch elektronische Kassen
+P4122;ExternalId;ignore;;PalDat-ID – Identifikator in der Palynological Database (PalDat)
+P4194;ExternalId;ignore;;"CNPS-ID – Indentifikator im ""Inventory of Rare and Endangered Plants of California"" der California Native Plant Society (CNPS)"
+P4212;ExternalId;ignore;;PACTOLS-Thesaurus-ID – Identifikator im PACTOLS Archäologie-Thesaurus von FRANTIQ
+P4214;Quantity;;;höchste beobachtete Lebensdauer – Alter des ältesten Exemplars eines Taxons, für das das Alter nachgewiesen werden kann
+P4223;ExternalId;ignore;;Enciclopedia-Italiana-Kennung – Identifikator für einen Artikel in der Enciclopedia Italiana auf treccani.it
+P4235;ExternalId;ignore;;PatientsLikeMe-Behandlung-ID – identifier for a treatment on PatientsLikeMe, a website where patients can share health information
+P427;WikibaseItem;;;nomenklatorischer Typ – Taxon, die die Verwendung des wissenschaftlichen Namens bestimmt
+P4301;ExternalId;ignore;;PfaF-Kennung – Identifikator für ein Pflanzentaxon in der Plants-For-A-Future-Datenbank
+P4311;ExternalId;ignore;;FOIH-Taxon-ID – Identifikator für Taxa im Thesaurus der flämischen Organisation für unbewegliches Kulturerbe
+P4333;ExternalId;ignore;;GenBank assembly accession number – unique identifier of a genome assembly
+P4342;ExternalId;ignore;;SNL-Kennung – Identifikator eines Artikels in der Online-Enzyklopädie snl.no
+P443;CommonsMedia;;;"Aussprache (Audiodatei) – Name einer Datei in Commons mit der Aussprache; nutze Abfragekriterien um die Sprache zu identifizieren"
+P460;WikibaseItem;;;eventuell gleichwertig – es könnte sich um das gleiche Objekt handeln, das ist jedoch umstritten
+P4637;ExternalId;ignore;;FoodEx2 code – identifier within the FoodEx2 (version 2 of the EFSA Food classification and description system for exposure assessment) food taxonomy
+P4728;ExternalId;ignore;;uBio-ID – identifier for a taxon, in the uBio 'Namebank' database
+P4729;ExternalId;ignore;;INRAN Italian Food ID – identifier in the Italian national nutriment database
+P4746;ExternalId;ignore;;Elhuyar ZTH-ID – Elhuyar Science and Technology Dictionary has a wide range of terms in four languages (en, es, fr, eu) that can easily be linked to and from Wikidata
+P4753;ExternalId;ignore;;Ecocrop-ID – identifier of a plant used as an agricultural crop in the Ecocrop database
+P4854;ExternalId;ignore;;Uppslagsverket Finland ID – identifier of an article in the online encyclopedia Uppslagsverket Finland
+P486;ExternalId;ignore;;MeSH-Kennung – Primärschlüssel der Medical-Subject-Headings-Datenbank
+P487;String;;;Unicodezeichen – Zeichen des Datenobjekts
+P5008;WikibaseItem;;;auf der Arbeitsliste des Wikimedia-Projektes – die Eigenschaft signalisiert, dass das Objekt auf einer Arbeitsliste eines Wikimedia-Projektes (WikiProjekt, Redaktion, Portal, etc.) enthalten ist.  Siehe auch P6104, P972, P2354
+P5019;ExternalId;ignore;;Brockhaus-Enzyklopädie-Kennung – Identifikator eines Artikels in der Onlineausgabe der Brockhaus Enzyklopädie
+P5037;ExternalId;ignore;;POWO-URN – LSID für den wissenschaftlichen Namen eines Taxons in der Datenbank Plants of the World online (POWO)
+P5055;ExternalId;ignore;;IRMNG-ID – Identifikator im Interim Register of Marine and Nonmarine Genera (IRMNG)
+P5063;ExternalId;ignore;;Interlingual-Index-Kennung – Kennung in der „Interlingual Index“ Datenbank
+P508;ExternalId;ignore;;BNCF-Thesaurus-Kennung – bibliographischer Eintrag der italienischen Nationalbibliothek
+P5160;ExternalId;ignore;;Thesauruskennung für graphische Materialien – Identifikator zur Indexierung visueller (graphischer) Materialien nach Thema, der von der Prints and Photographs Division der United States Library of Congress geführt wird
+P5179;ExternalId;ignore;;FloraCatalana ID – identifier for a plant taxon in the FloraCatalana database
+P5230;Quantity;;;Chromosomenzahl – karyologische Information über die Anzahl der Chromosomen typisch für eine Spezies (2n)
+P5252;CommonsMedia;;;Winteransicht – Bild des Objekts im Winter, vorzugsweise mit Schnee
+P5263;ExternalId;ignore;;NDOP-Taxon-ID – identifier for a taxon in the Conservancy Species Occurrence Finding Database, managed by the Nature Conservation Agency of the Czech Republic
+P527;WikibaseItem;;;besteht aus – Einheit, die Teil der aktuellen Einheit ist (nicht im administrativen Sinn)
+P5395;ExternalId;ignore;;Canadian-Encyclopedia-ID – Identifikator in der Encyclopédie canadienne / Canadian Encyclopedia
+P5417;ExternalId;ignore;;Gemeinsames Vokabular für öffentliche Aufträge – massively multilingual and public domain taxonomy legislated by the EU for goods and services
+P5555;CommonsMedia;;;schematische Darstellung – veranschaulichende, abstrahierende Visualisierung eines Gegenstands, Systems oder Prozesses zur Verdeutlichung wesentlicher Eigenschaften
+P5588;WikibaseItem;;;invasiv in – region which a taxon is not endemic to where the taxon has a tendency to spread to a degree believed to cause damage to the environment, human economy or human health
+P5626;ExternalId;ignore;;Global Invasive Species Database ID – identifier for a taxon in the IUCN's Global Invasive Species Database
+P566;WikibaseItem;;;Basionym – gültiger wissenschaftliche Name auf dem eine Umkombination beruht (ICN)
+P5698;ExternalId;ignore;;Invasive-Species-Compendium-ID – identifier for a taxon datasheet in the Invasive Species Compendium, produced by the Centre for Agriculture and Bioscience International
+P580;Time;;;Startzeitpunkt – Zeitpunkt, an dem eine Aussage wahr wurde oder ein Objekt zu existieren anfing
+P5841;WikibaseItem;;;Gefährdungsstatus in der Rote Liste der gefährdeten Arten der Tschechischen Republik – endangerment status of species in the national Red List of the Czech Republic
+P5844;ExternalId;ignore;;Treccani-Wortschatz-ID – ID for lexemes
+P5872;WikibaseItem;;;riecht nach – Wonach ein Gegenstand riecht
+P5930;ExternalId;ignore;;Open Food Facts Zutat-ID – identifier of a food ingredient on Open Food Facts
+P5945;ExternalId;ignore;;VicFlora-ID – identifier for a plant taxon, in the Australian 'Flora of Victoria' database
+P5984;ExternalId;ignore;;APNI-ID – identifier for a plant, in the Australian Plant Name index
+P6000;Quantity;;;Wasserfußabdruck – Gesamtmenge an Wasser, die für die Produktion von Gütern und Dienstleistungen benötigt wird.
+P6019;ExternalId;ignore;;Species at Risk public registry ID – identifier for a taxon on the Canadian 'Species at Risk' public registry website
+P6034;ExternalId;ignore;;Plant Finder ID (Missouri Botanical Garden) – identifier for a taxon in Plant Finder, on the Missouri Botanical Garden website
+P6035;ExternalId;ignore;;C.V. Starr Virtual Herbarium ID – identifier for a taxon on the Steere Herbarium website
+P6044;ExternalId;ignore;;FEIS-ID – identifier for a taxon on the Fire Effects Information System website
+P6054;ExternalId;ignore;;GT IBMA ID – identifier for a species on the Groupe de travail Invasions biologiques en milieux aquatiques website
+P6056;ExternalId;ignore;;SanbiRedList-ID – identifier for a species on the Red List of South African Plants website
+P6061;ExternalId;ignore;;Plant Parasites of Europe ID – identifier for a taxon at the Plant Parasites of Europe database
+P6092;ExternalId;ignore;;Map of Life ID – identifier for a taxon on the Map of Life website
+P6094;ExternalId;ignore;;FloraWeb-ID – Identifikator der entsprechenden biologischen Art (Spezies) auf der Webseite „FloraWeb.de“
+P6098;ExternalId;ignore;;info flora – Das nationale Daten- und Informationszentrum der Schweizer Flora
+P6103;ExternalId;ignore;;Michigan-Flora-ID – identifier for a species on the Michigan Flora website
+P6104;WikibaseItem;;;"betreut von WikiProjekt – WikiProjekt, welches diese Eigenschaft, dieses Objekt, oder dieses Lexem betreut. Für WikiProjekte außerhalb von Wikidata ergänze den Geltungsbereich mit einem Qualifikator "" ist Teil von"" (P361)."
+P6105;ExternalId;ignore;;Observation.org Taxon-ID – Taxon-Identifikator auf der Observation.org-Plattform
+P6114;ExternalId;ignore;;Portal to the Flora of Italy ID – identifier for a species on the Portal to the Flora of Italy website
+P6137;ExternalId;ignore;;APA-ID – Identifikator für eine Pflanzenart auf der Website Alabama Plant Atlas
+P6139;ExternalId;ignore;;FloraGREIF-ID – Virtual Guide to the Flora of Mongolia
+P6142;ExternalId;ignore;;Verspreidingsatlas.nl ID – identifier for a species on the verspreidingsatlas.nl website
+P6159;ExternalId;ignore;;Atlas of Florida Plants ID – identifier for a species on the Atlas of Florida Plants website
+P6161;ExternalId;ignore;;Invasive Plant Atlas of the United States ID – identifier for a species on the Invasive Plant Atlas of the United States website
+P6163;ExternalId;ignore;;NAS-ID – identifier for a species in the Nonindigenous Aquatic Species database, on the U.S. Geological Survey website
+P6176;ExternalId;ignore;;Cal-IPC-ID – identifier for a species on the California Invasive Plant Council website
+P6177;ExternalId;ignore;;EUNIS-Taxon-ID – Identifikator für Arten auf der Webseite des EUNIS Systems
+P618;WikibaseItem;;;Energiequelle – Art der Energie, die ein bewegtes Objekt (Maschine oder Lebewesen) nutzt
+P6227;ExternalId;ignore;;Flora of Wisconsin ID – identifier for a taxon on the Flora of Wisconsin website
+P627;ExternalId;ignore;;IUCN-ID – Referenz für IUCN Artenschutzstatus (P141)
+P6293;ExternalId;ignore;;YSA-ID – identifier for a concept in the General Finnish Thesaurus YSA
+P6341;ExternalId;ignore;;IFPNI-ID – identifier for a species at the International Fossil Plant Names Index
+P6366;ExternalId;ignore;;Microsoft-Academic-Kennung – Identifikator eines Eintrags bei Microsoft Academic
+P6385;ExternalId;ignore;;Krugoswet-Kennung – Identifikator für einen Artikel in der russischsprachigen Online-Enzyklopädie Krugoswet
+P6433;ExternalId;ignore;;Global Species ID – identifier for a taxon in Global Species database
+P646;ExternalId;ignore;;Freebase-Kennung – Kennung des gleichbedeutenden Eintrags in der Freebase-Datenbank
+P6507;String;;;Zitation der Autoren des Taxons – Zitation des Autors/der Autoren des Taxons unter Verwendung der entsprechenden Nomenklatur (ICBN, ICZN, ...)
+P652;ExternalId;ignore;;UNII – von der FDA definierter Identifikator für einzelnen Inhaltsstoff chemischer Verbindungen
+P6573;ExternalId;ignore;;Klexikon-Artikelkennung – Identifikator eines Artikels auf Klexikon
+P6706;ExternalId;ignore;;De-Agostini-Kennung – Identifikator für einen Artikel in der italienischen De-Agostini-Enzyklopädie auf sapere.it
+P672;ExternalId;ignore;;MeSH-Code – Medical Subject Headings (MeSH)-Codes sind ein Index und Thesaurus für die Lebenswissenschaften (≠ MeSH ID)
+P6754;ExternalId;ignore;;OBIS-Kennung – Identifikator eines Taxons in der Datenbank des Ocean Biogeographic Information System
+P6756;ExternalId;ignore;;FoA-Online-ID – Identifikator für den wissenschaftlichen Namen eines Taxons bei Flora of Australia Online (neu)
+P6800;Url;;;sequenced genome URL – sequenced and assembled genome for this taxon
+P6802;CommonsMedia;;;themenverwandtes Bild – themenverwandte Version eines Bilds, falls eine bessere Alternative nicht existiert oder aus rechtlichen Gründen nicht verfügbar ist
+P685;ExternalId;ignore;;NCBI-ID – Identifikator für ein Taxonkonzept in der Taxonomiedatenbank des National Center for Biotechnology Information (NCBI)
+P6864;ExternalId;ignore;;eElurikkus-ID – identifier for a taxon in the Estonian eBiodiversity portal
+P6870;ExternalId;ignore;;Lettische-Nationalenzyklopädie-ID – Identifikator für einen Artikel in der lettischen Nationalenzyklopädie (Nacionālā enciklopēdija)
+P691;ExternalId;ignore;;NKČR-AUT-Kennung – Identifikator in der Normdatenbank (AUT) der Nationalbibliothek der Tschechischen Republik (NK ČR)
+P6933;ExternalId;ignore;;SA-Flora-ID – identifier for a plant taxon, in the Australian 'South Australian electronic Flora' database
+P694;WikibaseItem;;;ersetztes Synonym – wissenschaftlicher Name, der aus nomenklatorischen Gründen ersetzt werden musste
+P7033;ExternalId;ignore;;Australisches-Bildungsvokabular-Kennung – Identifikator für einen Lehrplanbegriff in einem der kontrollierten Vokabulare in australischen Bildungsvokabularen
+P7202;ExternalId;ignore;;Belgian-Species-List-ID – identifier for a taxon in the Belgian Species List
+P7305;ExternalId;ignore;;PWN-Enzyklopädie-Kennung – Identifikator für Artikel in der polnischsprachigen Online-Enzyklopädie des Verlages „Wydawnictwo Naukowe PWN“
+P7388;ExternalId;ignore;;Great Encyclopedia of Navarre ID – identifier of an item in the Great Encyclopaedia of Navarre
+P7496;ExternalId;ignore;;NZPCN-ID – ID of a plant taxon held by the New Zealand Plant Conservation Network
+P7502;ExternalId;ignore;;Golden-Kennung – Identifikator für Einträge in der Wissensdatenbank „Golden“ (IDs mit Umlauten, Kommas u. ä. funktionieren nicht)
+P7537;ExternalId;ignore;;India Biodiversity Portal species ID – identifier for species found in India maintained by the 'India Biodiversity Portal' database
+P7544;ExternalId;ignore;;Indian Medicinal Plants Database ID – identifier for medicinal plants found in India maintained by the 'Indian Medicinal Plants Database'
+P7546;ExternalId;ignore;;Flowers of India ID – identifier for plant taxons
+P7552;ExternalId;ignore;;FinBIF-ID – identifier for species found in Finland maintained by the Finnish Biodiversity Information Facility
+P7587;ExternalId;ignore;;eFloraSA-ID – Electronic Flora of South Australia: Factsheet ID
+P7666;ExternalId;ignore;;Visuotinė-lietuvių-enciklopedija-Kennung – Identifikator für einen Eintrag in der Onlineausgabe der Visuotinė lietuvių enciklopedija
+P7691;ExternalId;ignore;;The Oregon Encyclopedia ID – identifier for an entry on the Oregon Encyclopedia website
+P7715;ExternalId;ignore;;World-Flora-Online-ID – identifier for a plant in World Flora Online
+P7830;ExternalId;ignore;;LiverTox ID – LiverTox database ID
+P8026;WikibaseItem;;;LiverTox likelihood score – categorization of the likelihood that a medication is associated with drug induced liver injury that was developed by the Drug-Induced Liver Injury Network (DILIN) Network and published in NCBI's LiverTox
+P8061;ExternalId;ignore;;AGROVOC-ID – mehrsprachige strukturierte Datenbank mit landwirtschaftlichen Konzepten, Begriffen, Definitionen und Beziehungen der FAO
+P8072;ExternalId;ignore;;CAB-Thesaurus-ID – Identifikationsnummer für ein Thema im Thesaurus des Centre for Agriculture and Biosciences International (CAB)
+P815;ExternalId;ignore;;ITIS-TSN – Identifikator (=Taxonomic Serial Number [TSN]) im Integrated Taxonomic Information System (ITIS)
+P8189;ExternalId;ignore;;J9U-Kennung der Israelischen Nationalbibliothek – Identifikator eines Eintrags, der von der Israelischen Nationalbibliothek verwendet wird (neu)
+P8193;WikibaseItem;;;Winterhärte der Pflanze – recommended hardiness zone for plant, ability of plant to survive adverse growing conditions
+P8248;ExternalId;ignore;;"Kolon-Klassifikation – Art der Bibliothekssortierung, eher nach Themen als nach schriftlichen Arbeiten zu verwenden; wird mit dem Qualifier „Edition (P747)“ mit dem Itemwert „CC 6“ oder „CC 7“ verwendet"
+P830;ExternalId;ignore;;EOL-ID – Taxon-Konzept-Identifikator in der Encyclopedia of Life (EOL)
+P8309;ExternalId;ignore;;Yle-Themenkennung – Identifikator für Themen bei Yleisradio, der öffentlich-rechtlichen Rundfunkanstalt von Finnland
+P8313;ExternalId;ignore;;Lex-Kennung – Identifikator für einen Artikel in der Onlineausgabe der Den Store Danske Encyklopædi auf lex.dk
+P8370;ExternalId;ignore;;UNBIS-Thesaurus-ID – identifier for a concept in the UNBIS Thesaurus
+P8373;ExternalId;ignore;;Encyclopedia Tatarica (tt) Online ID – Tatar version of online encyclopedia created by Institute of Tatar encyclopedia of Tatarstan Academy of Sciences
+P838;ExternalId;ignore;;BioLib-ID – Identifikator in der Biological Library (BioLib)
+P8406;ExternalId;ignore;;Grove-Art-Online-ID – identifier of a topic in Grove Art Online
+P8408;ExternalId;ignore;;KBpedia-Kennung – Identifikator eines Eintrags bei KBpedia
+P842;ExternalId;ignore;;Fossilworks-Taxon-ID – Identifikator für fossile Tiere, Pflanzen, und Mikroorganismen
+P846;ExternalId;ignore;;GBIF Taxon-ID – Identifikator bei der Global Biodiversity Information Facility (GBIF)
+P8468;ExternalId;ignore;;Queensland Biota-ID – identifier for a taxon, in a Queensland Government database of species profiles
+P8469;ExternalId;ignore;;Australian Weed ID – identifier for a taxon, in an Atlas of Living Australia database of weed profiles
+P8485;GeoShape;;;Taxon-Verbreitungskarte datenmodelliert – dynamische Verbreitungskarte eines Taxons
+P850;ExternalId;ignore;;WoRMS-Taxon-ID – Identifikator im World Register of Marine Species (WoRMS)
+P8519;ExternalId;ignore;;RKD-Thesaurus-Kennung – Identifikator eines Normdatensatzes im niederländischen RKD Thesaurus (Rijksbureau voor Kunsthistorische Documentatie)
+P8592;CommonsMedia;;;Luftbild – Bild des Motivs aus der Luft
+P8603;ExternalId;ignore;;Istrapedia-Kennung – identifier for an article in the Internet encyclopedia Istrapedia
+P8660;ExternalId;ignore;;Native Plants Database ID – identifier for a taxon in the Native Plants Database, on the Lady Bird Johnson Wildflower Center website
+P8707;ExternalId;ignore;;NBIC-Taxon-ID – identifier for a taxon's scientific name in the Norwegian Biodiversity Information Centre database, a database on species and ecosystems in Norway
+P8765;ExternalId;ignore;;Royal Horticultural Society plant ID – identifier for plants listed on the Royal Horticultural Society website
+P8814;ExternalId;ignore;;Synsetkennung (WordNet 3.1) – Identifikator für einen Synset in der WordNet-Version 3.1 von Princeton
+P8885;ExternalId;ignore;;Namuwiki-Kennung – Identifikator eines Eintrags bei Namuwiki
+P8892;ExternalId;ignore;;edition humboldt digital Flora ID – ID des Pflanzenregisters der edition humboldt digital
+P8915;ExternalId;ignore;;ZOBODAT-Taxonkennung – Identifikator eines Taxons bei ZOBODAT, einer bibliografischen Datenenbank für deutschsprachige Arbeiten auf dem Gebiet der Zoologie
+P8957;ExternalId;ignore;;GS1 GPC code – code used to classify products in the GS1 Global Product Classification: Segment>Family>Class>Brick, or Attribute Type: Value
+P902;ExternalId;ignore;;HLS-Kennung – Identifikator eines Eintrags im Historischen Lexikon der Schweiz
+P910;WikibaseItem;;;Hauptkategorie des Themas – Haupt-Wikimedia-Kategorie
+P9157;ExternalId;ignore;;OTT-ID – Identifikator für ein Taxon in der Referenztaxonomie (OTT) des Projektes Open Tree of Life
+P9198;ExternalId;ignore;;Encyclopédie berbère Artikel-Kennung – ID eines Artikels aus der Encyclopédie berbère
+P920;ExternalId;ignore;;Spanische Schlagwörter für öffentliche Bibliotheken – Schlagwörter für öffentliche Bibliotheken werden unterstützt durch das spanische Ministerium für Bildung, Kultur und Sport
+P9243;ExternalId;ignore;;NParks Flora & Fauna Web ID – identifier for a species in NParks Flora & Fauna Web
+P9272;ExternalId;ignore;;DeCS-ID – identifier in the Health Sciences Descriptors thesaurus
+P9292;ExternalId;ignore;;Encyclopédie du patrimoine culturel de l'Amérique française ID (French) – identifier for an article in the Encyclopédie du patrimoine culturel de l'Amérique française
+P9318;ExternalId;ignore;;Ávvir-Themen-ID – identifier of a topic in the Northern Sámi publication Ávvir
+P9322;ExternalId;ignore;;SVKKL-Kennung – Identifikator für Personen oder Sachen in der regionalen Datenbank der mittelböhmischen wissenschaftlichen Bibliothek
+P935;String;;;Commons-Galerie – Name der Galerieseite(n) auf Wikimedia Commons mit Dateien zu dem Objekt (item)
+P9408;ExternalId;ignore;;Washington Flora Checklist ID – Identifikator für die Washington Flora Checklist
+P9423;ExternalId;ignore;;OregonFlora Taxon ID – numerical identifier for a taxon on the OregonFlora website
+P9475;ExternalId;ignore;;Koreanische-Kultur-Enzyklopädie-ID – identifier for an article in the Encyclopedia of Korean Culture
+P948;CommonsMedia;;;Wikivoyage-Banner – Banner-Bild der Wikivoyage-Seite
+P9495;ExternalId;ignore;;National-Historical-Museums-of-Sweden-ID – authority identification for an entry in the collections of the National Historical Museums of Sweden
+P950;ExternalId;ignore;;BNE-Kennung (v1.0) – einer der beiden Identifikatoren eines Eintrags in der Normdatei der Spanischen Nationalbibliothek (Biblioteca Nacional de España)
+P9501;ExternalId;ignore;;Oregon Flora Image Project ID – identifier for a plant species on the Oregon Flora Image Project website
+P9503;ExternalId;ignore;;MyBIS species ID – identifier for a species in the Malaysia Biodiversity Information System
+P9519;Url;;;Digital Atlas of Idaho URL – URL for an entry in the Digital Atlas of Idaho
+P9545;ExternalId;ignore;;Enzyklopädie-von-China-Kennung (Zweite Ausgabe) – Identifikator für einen Artikel in der Onlineversion der Enzyklopädie von China (Zweite Ausgabe)
+P960;ExternalId;ignore;;Tropicos-ID – Identifikator für einen wissenschaftlichen Namen eines Taxons bei Tropicos
+P961;ExternalId;ignore;;IPNI-TaxonName-ID – Identifikator für den wissenschaftlichen Namen eines Taxons im International Plant Names Index (IPNI)
+P9629;ExternalId;ignore;;"Armeniapedia-ID – numerischer Identifikator für einen Eintrag in der englischsprachigen Online-Enzyklopädie ""Armeniapedia"""
+P9654;ExternalId;ignore;;Burke Herbarium Image Collection ID – identifier for a plant, macrofungus, or lichen species in the Burke Herbarium Image Collection
+P9684;ExternalId;ignore;;ISDDB-ID – Identifikator in der Idaho Species Diversity Database
+P9685;ExternalId;ignore;;MFG-ID – Identifikator im Montana Field Guide
+P9691;ExternalId;ignore;;E-Flora BC species ID – identifier for a plant species, subspecies, or variety on E-Flora BC
+P9714;WikibaseItem;;;Verbreitungsgebiet – Gebiet des aktuellen Auftretens einer Art oder einer höheren systematischen Gruppe
+P973;Url;;;beschrieben in URL – das Element wird in der angegebenen URL beschrieben
+P9741;ExternalId;ignore;;Pladias ID – taxon identifier in Pladias database of Czech plant species
+P9799;ExternalId;ignore;;Palynodata taxa ID – Kennung eines Taxons in der Palynodata-Datenbank
+P9826;ExternalId;ignore;;Great Encyclopedia of Cyril and Methodius entry ID – ID for an entry on the Great Encyclopedia of Cyrill and Methodius
+P989;CommonsMedia;;;Audiodatei eines gesprochenen Texts – Audiodatei eines gesprochenen Werkes oder Wikipedia-Artikels
+P9937;ExternalId;ignore;;Postimees-Themenkennung – numerischer Identifikator für Themen auf der Website der estnischen Tageszeitung „Postimees“

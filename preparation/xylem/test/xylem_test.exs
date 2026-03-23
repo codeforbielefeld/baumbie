@@ -59,7 +59,8 @@ defmodule XylemTest do
     end
 
     test "returns error for missing CSV" do
-      assert {:error, :enoent} = Xylem.run(csv_path: "nonexistent.csv")
+      assert {:error, :enoent} =
+               Xylem.run(csv_path: "nonexistent.csv", property_config_path: @test_config_path)
     end
 
     test "returns error for missing property config" do

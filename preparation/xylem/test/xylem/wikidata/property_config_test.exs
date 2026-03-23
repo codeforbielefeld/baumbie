@@ -105,14 +105,35 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
       assert PropertyConfig.known?(updated, "P888")
     end
 
-    test "uses labels for descriptions", %{config: config} do
+    test "uses metadata for type and description", %{config: config} do
       :ok =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
-          labels: %{"P999" => "Testbeschreibung"}
+          metadata: %{"P999" => %{type: "WikibaseItem", description: "Testbeschreibung"}}
         )
 
       {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
+      assert updated.entries["P999"].type == "WikibaseItem"
       assert updated.entries["P999"].description == "Testbeschreibung"
+    end
+
+    test "defaults ExternalId properties to ignore action", %{config: config} do
+      :ok =
+        PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
+          metadata: %{"P999" => %{type: "ExternalId", description: "Some ID"}}
+        )
+
+      {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
+      assert PropertyConfig.ignored?(updated, "P999")
+    end
+
+    test "defaults non-ExternalId properties to keep action", %{config: config} do
+      :ok =
+        PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
+          metadata: %{"P999" => %{type: "CommonsMedia", description: "Some media"}}
+        )
+
+      {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
+      refute PropertyConfig.ignored?(updated, "P999")
     end
 
     test "skips already known properties", %{config: config} do
@@ -155,7 +176,11 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     test "sorts appended properties by ID", %{config: config} do
       :ok =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999", "P100", "P500"],
-          labels: %{"P100" => "first", "P500" => "second", "P999" => "third"}
+          metadata: %{
+            "P100" => %{type: "", description: "first"},
+            "P500" => %{type: "", description: "second"},
+            "P999" => %{type: "", description: "third"}
+          }
         )
 
       content = File.read!(@append_csv_path)
@@ -171,8 +196,8 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
   describe "inline config with custom source" do
     test "parses custom source property" do
       csv = """
-      property_id;action;config;description
-      P999;inline;{"target": "test_prop", "source": "schema:description"};Test
+      property_id;type;action;config;description
+      P999;WikibaseItem;inline;"{""target"": ""test_prop"", ""source"": ""schema:description""}";Test
       """
 
       path = "test/fixtures/test_custom_source.csv"

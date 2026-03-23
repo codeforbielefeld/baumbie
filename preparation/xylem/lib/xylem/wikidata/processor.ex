@@ -74,7 +74,7 @@ defmodule Xylem.Wikidata.Processor do
     |> inline_properties(subject, config, species.graph)
     |> add_secondary_resources(species.graph)
     |> filter_languages()
-    |> RDF.Turtle.write_file!(path)
+    |> RDF.Turtle.write_file!(path, force: true)
 
     Logger.debug("Processed #{species.wikidata_id} -> #{path}")
 

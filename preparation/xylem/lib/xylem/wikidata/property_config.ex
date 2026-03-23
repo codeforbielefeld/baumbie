@@ -7,9 +7,9 @@ defmodule Xylem.Wikidata.PropertyConfig do
 
   ## CSV Format
 
-      property_id;action;config;description
-      P18;ignore;;Bild
-      P105;inline;{"target": "taxonomischer_rang"};taxonomischer Rang
+      property_id;type;action;config;description
+      P18;CommonsMedia;ignore;;Bild
+      P105;WikibaseItem;inline;"{""target"": ""taxonomischer_rang""}";taxonomischer Rang
 
   Actions:
   - (empty) - property is kept unchanged
@@ -22,11 +22,13 @@ defmodule Xylem.Wikidata.PropertyConfig do
   - `keep_source` (optional, default: `false`) - whether to keep the original link triple
   """
 
-  NimbleCSV.define(__MODULE__.Parser, separator: ";", escape: "\0")
+  NimbleCSV.define(__MODULE__.Parser, separator: ";", escape: "\"")
 
   alias __MODULE__.Parser
 
   @default_path "priv/config/wikidata_properties.csv"
+  @csv_header "property_id;type;action;config;description\n"
+  @bom "\uFEFF"
 
   defstruct entries: %{}
 
@@ -37,6 +39,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
           keep_source: boolean()
         }
   @type entry :: %{
+          type: String.t(),
           action: action(),
           config: inline_config() | nil,
           description: String.t()
@@ -55,7 +58,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
     path = Keyword.get(opts, :path, @default_path)
 
     with {:ok, content} <- File.read(path) do
-      parse(content)
+      content |> String.trim_leading(@bom) |> parse()
     end
   end
 
@@ -93,16 +96,18 @@ defmodule Xylem.Wikidata.PropertyConfig do
   Appends unknown property IDs to the CSV file.
 
   Compares the given property IDs with the loaded config and appends rows
-  for any properties not yet in the configuration. New entries have no action
-  or config, and use the provided labels map for descriptions.
+  for any properties not yet in the configuration. Uses metadata from the
+  vocabulary file to populate type, description, and a default action
+  (`ExternalId` properties default to `ignore`).
 
   ## Options
 
-  - `:labels` - map from property ID to label string (default: `%{}`)
+  - `:metadata` - map from property ID to `%{type: String.t(), description: String.t()}`
+    (default: `%{}`)
   """
   @spec append_unknown(t(), Path.t(), [String.t()], keyword()) :: :ok | {:error, term()}
   def append_unknown(%__MODULE__{} = config, csv_path, property_ids, opts \\ []) do
-    labels = Keyword.get(opts, :labels, %{})
+    metadata = Keyword.get(opts, :metadata, %{})
 
     unknown_ids =
       property_ids
@@ -113,15 +118,46 @@ defmodule Xylem.Wikidata.PropertyConfig do
     if unknown_ids == [] do
       :ok
     else
-      lines = Enum.map(unknown_ids, fn id -> "#{id};;;#{labels[id]}" end)
-      content = "\n" <> Enum.join(lines, "\n") <> "\n"
+      lines =
+        Enum.map(unknown_ids, fn id ->
+          meta = Map.get(metadata, id, %{})
+          type = Map.get(meta, :type, "")
+          description = meta |> Map.get(:description, "") |> quote_csv_field()
+          action = default_action(type)
+          "#{id};#{type};#{action};;#{description}"
+        end)
+
+      ensure_csv_file(csv_path)
+      existing = File.read!(csv_path)
+      prefix = if String.ends_with?(existing, "\n"), do: "", else: "\n"
+      content = prefix <> Enum.join(lines, "\n") <> "\n"
       File.write(csv_path, content, [:append])
+    end
+  end
+
+  defp ensure_csv_file(csv_path) do
+    unless File.exists?(csv_path) do
+      File.mkdir_p!(Path.dirname(csv_path))
+      File.write!(csv_path, @bom <> @csv_header)
+    end
+  end
+
+  defp default_action("ExternalId"), do: "ignore"
+  defp default_action(_type), do: ""
+
+  defp quote_csv_field(""), do: ""
+
+  defp quote_csv_field(value) do
+    if String.contains?(value, ["\"", ";"]) do
+      "\"" <> String.replace(value, "\"", "\"\"") <> "\""
+    else
+      value
     end
   end
 
   defp parse(content) do
     case Parser.parse_string(content, skip_headers: false) do
-      [["property_id", "action", "config", "description"] | rows] ->
+      [["property_id", "type", "action", "config", "description"] | rows] ->
         entries =
           rows
           |> Enum.map(&parse_row/1)
@@ -138,7 +174,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
     end
   end
 
-  defp parse_row([property_id, action_str, config_str, description]) do
+  defp parse_row([property_id, type, action_str, config_str, description]) do
     property_id = String.trim(property_id)
 
     if property_id != "" do
@@ -146,6 +182,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
 
       {property_id,
        %{
+         type: String.trim(type),
          action: action,
          config: parse_config(action, config_str),
          description: String.trim(description)

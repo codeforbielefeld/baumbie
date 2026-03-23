@@ -26,6 +26,8 @@ defmodule Xylem do
   alias RDF.XSD
   alias RDF.NS.RDFS
 
+  import RDF.Sigils
+
   @type result :: %{
           successful: [map()],
           failed_fetches: [map()],
@@ -110,8 +112,8 @@ defmodule Xylem do
 
   defp auto_append_properties(config, config_path, processed, vocab_path) do
     property_ids = collect_property_ids(processed)
-    labels = extract_vocab_labels(vocab_path)
-    PropertyConfig.append_unknown(config, config_path, property_ids, labels: labels)
+    metadata = extract_vocab_metadata(vocab_path)
+    PropertyConfig.append_unknown(config, config_path, property_ids, metadata: metadata)
   end
 
   defp collect_property_ids(processed) do
@@ -127,7 +129,11 @@ defmodule Xylem do
     |> Enum.uniq()
   end
 
-  defp extract_vocab_labels(vocab_path) do
+  @wikibase_property_type ~I<http://wikiba.se/ontology#propertyType>
+  @schema_description ~I<http://schema.org/description>
+  @wikibase_ontology_prefix "http://wikiba.se/ontology#"
+
+  defp extract_vocab_metadata(vocab_path) do
     case RDF.Turtle.read_file(vocab_path) do
       {:ok, graph} ->
         graph
@@ -136,11 +142,17 @@ defmodule Xylem do
           subject_str = description |> RDF.Description.subject() |> to_string()
 
           if String.starts_with?(subject_str, Wikidata.wd_prefix()) do
-            if label = find_label(description, RDFS.label()) do
-              [{Wikidata.entity_id(subject_str), label}]
-            end
+            property_id = Wikidata.entity_id(subject_str)
+            label = find_label(description, RDFS.label())
+            schema_desc = find_description(description)
+            type = extract_property_type(description)
+
+            description_text = build_description(label, schema_desc)
+
+            [{property_id, %{type: type, description: description_text}}]
+          else
+            []
           end
-          |> List.wrap()
         end)
         |> Map.new()
 
@@ -149,6 +161,27 @@ defmodule Xylem do
         %{}
     end
   end
+
+  defp find_description(description) do
+    if values = RDF.Description.get(description, @schema_description) do
+      find_by_language(values, "de") || find_by_language(values, "en")
+    end
+  end
+
+  defp extract_property_type(description) do
+    case RDF.Description.get(description, @wikibase_property_type) do
+      [%RDF.IRI{} = iri | _] ->
+        iri |> to_string() |> String.replace_prefix(@wikibase_ontology_prefix, "")
+
+      _ ->
+        ""
+    end
+  end
+
+  defp build_description(nil, nil), do: ""
+  defp build_description(label, nil), do: label
+  defp build_description(nil, desc), do: desc
+  defp build_description(label, desc), do: "#{label} – #{desc}"
 
   defp find_label(description, rdfs_label) do
     if labels = RDF.Description.get(description, rdfs_label) do
