@@ -26,7 +26,7 @@ defmodule Xylem.Wikidata.VocabGenerator do
   @default_meta_dir "priv/data/wikidata/meta"
   @wikidata_sparql_endpoint "https://query.wikidata.org/sparql"
   @rdfs_label RDFS.label()
-  @default_batch_size 50
+  @default_batch_size 20
   @max_retries 3
   @kept_languages MapSet.new(["de", "en"])
 
