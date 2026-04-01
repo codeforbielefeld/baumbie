@@ -164,12 +164,13 @@ defmodule Xylem.Wikidata.VocabGenerator do
   end
 
   defp fetch_batch(iris) do
-    query = build_construct_query(iris)
-    sparql_construct(query)
+    iris
+    |> build_construct_query()
+    |> sparql_construct()
   end
 
   defp build_construct_query(iris) do
-    values = iris |> Enum.map(&"<#{&1}>") |> Enum.join(" ")
+    values = Enum.map_join(iris, " ", &"<#{&1}>")
 
     """
     CONSTRUCT {
@@ -196,22 +197,29 @@ defmodule Xylem.Wikidata.VocabGenerator do
         {:ok, graph}
 
       {:error, %SPARQL.Client.HTTPError{status: status}} when status in [429, 503] ->
-        if retries < @max_retries do
-          delay = min(1000 * :math.pow(2, retries), 30_000) |> round()
+        retry_or_fail(query, retries, "rate limited (#{status})")
 
-          Logger.warning(
-            "Wikidata rate limited (#{status}), retrying in #{delay}ms (attempt #{retries + 1}/#{@max_retries})..."
-          )
-
-          Process.sleep(delay)
-          sparql_construct(query, retries + 1)
-        else
-          Logger.error("Wikidata rate limiting persists after #{@max_retries} retries")
-          {:error, :rate_limit_exceeded}
-        end
+      {:error, :timeout} ->
+        retry_or_fail(query, retries, "timeout")
 
       {:error, reason} ->
         {:error, reason}
+    end
+  end
+
+  defp retry_or_fail(query, retries, reason) do
+    if retries < @max_retries do
+      delay = min(1000 * :math.pow(2, retries), 30_000) |> round()
+
+      Logger.warning(
+        "SPARQL #{reason}, retrying in #{delay}ms (attempt #{retries + 1}/#{@max_retries})..."
+      )
+
+      Process.sleep(delay)
+      sparql_construct(query, retries + 1)
+    else
+      Logger.error("SPARQL #{reason} persists after #{@max_retries} retries")
+      {:error, :retries_exhausted}
     end
   end
 
