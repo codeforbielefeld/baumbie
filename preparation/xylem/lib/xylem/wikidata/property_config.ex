@@ -7,9 +7,10 @@ defmodule Xylem.Wikidata.PropertyConfig do
 
   ## CSV Format
 
-      property_id;type;action;config;description
-      P18;CommonsMedia;ignore;;Bild
-      P105;WikibaseItem;inline;"{""target"": ""taxonomischer_rang""}";taxonomischer Rang
+      property_id;type;action;config;description;import
+      P18;CommonsMedia;ignore;;Bild;
+      P105;WikibaseItem;inline;"{""target"": ""taxonomischer_rang""}";taxonomischer Rang;
+      P141;WikibaseItem;;;;"{""group"": ""Gefährdung""}"
 
   Actions:
   - (empty) - property is kept unchanged
@@ -20,6 +21,11 @@ defmodule Xylem.Wikidata.PropertyConfig do
   - `target` (required for inline) - name of the new property in the BaumBie namespace
   - `source` (optional, default: `"rdfs:label"`) - property of the secondary resource to inline
   - `keep_source` (optional, default: `false`) - whether to keep the original link triple
+
+  The `import` field uses JSON and controls Supabase import:
+  - (empty) or `"skip"` - property is not imported
+  - `group` (required) - name of the `tree_attribute_group`
+  - `attribute_name` (optional) - overrides the attribute name (default: label from description)
   """
 
   NimbleCSV.define(__MODULE__.Parser, separator: ";", escape: "\"")
@@ -27,7 +33,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
   alias __MODULE__.Parser
 
   @default_path "priv/config/wikidata_properties.csv"
-  @csv_header "property_id;type;action;config;description\n"
+  @csv_header "property_id;type;action;config;description;import\n"
   @bom "\uFEFF"
 
   defstruct entries: %{}
@@ -38,11 +44,16 @@ defmodule Xylem.Wikidata.PropertyConfig do
           source: String.t(),
           keep_source: boolean()
         }
+  @type import_config :: %{
+          group: String.t(),
+          attribute_name: String.t() | nil
+        }
   @type entry :: %{
           type: String.t(),
           action: action(),
           config: inline_config() | nil,
-          description: String.t()
+          description: String.t(),
+          import: import_config() | nil
         }
   @type t :: %__MODULE__{entries: %{String.t() => entry()}}
 
@@ -80,6 +91,15 @@ defmodule Xylem.Wikidata.PropertyConfig do
     end
   end
 
+  @doc "Returns the import configuration for a property, or `nil` if not configured for import."
+  @spec import_config(t(), String.t()) :: import_config() | nil
+  def import_config(%__MODULE__{entries: entries}, property_id) do
+    case Map.get(entries, property_id) do
+      %{import: %{} = config} -> config
+      _ -> nil
+    end
+  end
+
   @doc "Returns whether the given property has an entry in the configuration."
   @spec known?(t(), String.t()) :: boolean()
   def known?(%__MODULE__{entries: entries}, property_id) do
@@ -97,8 +117,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
 
   Compares the given property IDs with the loaded config and appends rows
   for any properties not yet in the configuration. Uses metadata from the
-  vocabulary file to populate type, description, and a default action
-  (`ExternalId` properties default to `ignore`).
+  vocabulary file to populate type and description.
 
   ## Options
 
@@ -118,21 +137,50 @@ defmodule Xylem.Wikidata.PropertyConfig do
     if unknown_ids == [] do
       :ok
     else
-      lines =
-        Enum.map(unknown_ids, fn id ->
-          meta = Map.get(metadata, id, %{})
-          type = Map.get(meta, :type, "")
-          description = meta |> Map.get(:description, "") |> quote_csv_field()
-          action = default_action(type)
-          "#{id};#{type};#{action};;#{description}"
-        end)
-
       ensure_csv_file(csv_path)
       existing = File.read!(csv_path)
       prefix = if String.ends_with?(existing, "\n"), do: "", else: "\n"
-      content = prefix <> Enum.join(lines, "\n") <> "\n"
+
+      content =
+        prefix <>
+          Enum.map_join(unknown_ids, "\n", &build_line(&1, Map.get(metadata, &1, %{}))) <>
+          "\n"
+
       File.write(csv_path, content, [:append])
     end
+  end
+
+  defp build_line(id, %{type: "WikibaseItem"} = meta) do
+    label = Map.get(meta, :label)
+    target = if label, do: normalize_target(label), else: String.downcase(id)
+    config = ~s({"target": "#{target}", "keep_source": true}) |> quote_csv_field()
+    description = meta |> Map.get(:description, "") |> quote_csv_field()
+    "#{id};WikibaseItem;inline;#{config};#{description};"
+  end
+
+  defp build_line(id, %{type: "ExternalId"} = meta) do
+    description = meta |> Map.get(:description, "") |> quote_csv_field()
+    "#{id};ExternalId;;;#{description};skip"
+  end
+
+  defp build_line(id, meta) do
+    type = Map.get(meta, :type, "")
+    description = meta |> Map.get(:description, "") |> quote_csv_field()
+    "#{id};#{type};;;#{description};"
+  end
+
+  @doc false
+  def normalize_target(label) do
+    label
+    |> String.downcase()
+    |> String.replace("ä", "ae")
+    |> String.replace("ö", "oe")
+    |> String.replace("ü", "ue")
+    |> String.replace("ß", "ss")
+    |> String.replace(~r/[^a-z0-9\s-]/, "")
+    |> String.replace(~r/[\s-]+/, "_")
+    |> String.replace(~r/_+/, "_")
+    |> String.trim("_")
   end
 
   defp ensure_csv_file(csv_path) do
@@ -141,9 +189,6 @@ defmodule Xylem.Wikidata.PropertyConfig do
       File.write!(csv_path, @bom <> @csv_header)
     end
   end
-
-  defp default_action("ExternalId"), do: "ignore"
-  defp default_action(_type), do: ""
 
   defp quote_csv_field(""), do: ""
 
@@ -157,7 +202,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
 
   defp parse(content) do
     case Parser.parse_string(content, skip_headers: false) do
-      [["property_id", "type", "action", "config", "description"] | rows] ->
+      [["property_id", "type", "action", "config", "description", "import"] | rows] ->
         entries =
           rows
           |> Enum.map(&parse_row/1)
@@ -174,7 +219,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
     end
   end
 
-  defp parse_row([property_id, type, action_str, config_str, description]) do
+  defp parse_row([property_id, type, action_str, config_str, description, import_str]) do
     property_id = String.trim(property_id)
 
     if property_id != "" do
@@ -185,7 +230,8 @@ defmodule Xylem.Wikidata.PropertyConfig do
          type: String.trim(type),
          action: action,
          config: parse_config(action, config_str),
-         description: String.trim(description)
+         description: String.trim(description),
+         import: parse_import(import_str)
        }}
     end
   end
@@ -226,4 +272,27 @@ defmodule Xylem.Wikidata.PropertyConfig do
   end
 
   defp parse_config(_action, _config_str), do: nil
+
+  defp parse_import(str) do
+    case String.trim(str) do
+      "" ->
+        nil
+
+      "skip" ->
+        nil
+
+      json ->
+        case Jason.decode(json) do
+          {:ok, %{"group" => group} = map} when is_binary(group) ->
+            %{
+              group: group,
+              attribute_name: Map.get(map, "attribute_name")
+            }
+
+          _ ->
+            raise ArgumentError,
+                  "import config must be valid JSON with a \"group\" key, got: #{json}"
+        end
+    end
+  end
 end

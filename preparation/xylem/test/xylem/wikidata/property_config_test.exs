@@ -108,32 +108,51 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     test "uses metadata for type and description", %{config: config} do
       :ok =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
-          metadata: %{"P999" => %{type: "WikibaseItem", description: "Testbeschreibung"}}
+          metadata: %{"P999" => %{type: "Quantity", description: "Testbeschreibung"}}
         )
 
       {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
-      assert updated.entries["P999"].type == "WikibaseItem"
+      assert updated.entries["P999"].type == "Quantity"
       assert updated.entries["P999"].description == "Testbeschreibung"
     end
 
-    test "defaults ExternalId properties to ignore action", %{config: config} do
+    test "generates inline config for WikibaseItem properties", %{config: config} do
+      :ok =
+        PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
+          metadata: %{
+            "P999" => %{
+              type: "WikibaseItem",
+              label: "Gefährdungsstufe (IUCN)",
+              description: "test"
+            }
+          }
+        )
+
+      {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
+      assert updated.entries["P999"].action == :inline
+
+      assert %{target: "gefaehrdungsstufe_iucn", keep_source: true} =
+               PropertyConfig.inline_config(updated, "P999")
+    end
+
+    test "WikibaseItem without label falls back to property ID as target", %{config: config} do
+      :ok =
+        PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
+          metadata: %{"P999" => %{type: "WikibaseItem", description: "test"}}
+        )
+
+      {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
+      assert %{target: "p999"} = PropertyConfig.inline_config(updated, "P999")
+    end
+
+    test "sets import to skip for ExternalId properties", %{config: config} do
       :ok =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
           metadata: %{"P999" => %{type: "ExternalId", description: "Some ID"}}
         )
 
-      {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
-      assert PropertyConfig.ignored?(updated, "P999")
-    end
-
-    test "defaults non-ExternalId properties to keep action", %{config: config} do
-      :ok =
-        PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
-          metadata: %{"P999" => %{type: "CommonsMedia", description: "Some media"}}
-        )
-
-      {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
-      refute PropertyConfig.ignored?(updated, "P999")
+      content = File.read!(@append_csv_path)
+      assert content =~ "P999;ExternalId;;;Some ID;skip"
     end
 
     test "skips already known properties", %{config: config} do
@@ -193,11 +212,93 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
   end
 
+  describe "import_config/2" do
+    test "parses import config with group" do
+      csv = """
+      property_id;type;action;config;description;import
+      P141;WikibaseItem;;;;"{""group"": ""Gefährdung""}"
+      """
+
+      path = "test/fixtures/test_import.csv"
+      File.write!(path, csv)
+      on_exit(fn -> File.rm(path) end)
+
+      {:ok, config} = PropertyConfig.load(path: path)
+
+      assert %{group: "Gefährdung", attribute_name: nil} =
+               PropertyConfig.import_config(config, "P141")
+    end
+
+    test "parses import config with group and attribute_name" do
+      csv = """
+      property_id;type;action;config;description;import
+      P141;WikibaseItem;;;;"{""group"": ""Gefährdung"", ""attribute_name"": ""IUCN-Status""}"
+      """
+
+      path = "test/fixtures/test_import.csv"
+      File.write!(path, csv)
+      on_exit(fn -> File.rm(path) end)
+
+      {:ok, config} = PropertyConfig.load(path: path)
+
+      assert %{group: "Gefährdung", attribute_name: "IUCN-Status"} =
+               PropertyConfig.import_config(config, "P141")
+    end
+
+    test "returns nil for empty import field" do
+      {:ok, config} = PropertyConfig.load(path: @test_csv_path)
+      assert PropertyConfig.import_config(config, "P225") == nil
+    end
+
+    test "returns nil for skip import field" do
+      csv = """
+      property_id;type;action;config;description;import
+      P141;WikibaseItem;;;;skip
+      """
+
+      path = "test/fixtures/test_import.csv"
+      File.write!(path, csv)
+      on_exit(fn -> File.rm(path) end)
+
+      {:ok, config} = PropertyConfig.load(path: path)
+      assert PropertyConfig.import_config(config, "P141") == nil
+    end
+
+    test "returns nil for unknown properties" do
+      {:ok, config} = PropertyConfig.load(path: @test_csv_path)
+      assert PropertyConfig.import_config(config, "P99999") == nil
+    end
+  end
+
+  describe "normalize_target/1" do
+    test "converts German label to snake_case" do
+      assert PropertyConfig.normalize_target("taxonomischer Rang") == "taxonomischer_rang"
+    end
+
+    test "replaces umlauts" do
+      assert PropertyConfig.normalize_target("übergeordnetes Taxon") == "uebergeordnetes_taxon"
+      assert PropertyConfig.normalize_target("Größe") == "groesse"
+    end
+
+    test "removes parentheses and special characters" do
+      assert PropertyConfig.normalize_target("Gefährdungsstufe (IUCN)") ==
+               "gefaehrdungsstufe_iucn"
+    end
+
+    test "handles hyphens" do
+      assert PropertyConfig.normalize_target("Schwarz-Weiß-Bild") == "schwarz_weiss_bild"
+    end
+
+    test "collapses multiple underscores" do
+      assert PropertyConfig.normalize_target("test  --  value") == "test_value"
+    end
+  end
+
   describe "inline config with custom source" do
     test "parses custom source property" do
       csv = """
-      property_id;type;action;config;description
-      P999;WikibaseItem;inline;"{""target"": ""test_prop"", ""source"": ""schema:description""}";Test
+      property_id;type;action;config;description;import
+      P999;WikibaseItem;inline;"{""target"": ""test_prop"", ""source"": ""schema:description""}";Test;
       """
 
       path = "test/fixtures/test_custom_source.csv"

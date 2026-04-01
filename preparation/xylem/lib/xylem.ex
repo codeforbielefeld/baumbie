@@ -149,7 +149,7 @@ defmodule Xylem do
 
             description_text = build_description(label, schema_desc)
 
-            [{property_id, %{type: type, description: description_text}}]
+            [{property_id, %{type: type, label: label, description: description_text}}]
           else
             []
           end
