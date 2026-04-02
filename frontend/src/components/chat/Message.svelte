@@ -8,9 +8,9 @@
 </script>
 
 <div class="message flex flex-row w-full">
-	{#if message.sender === 'bot'}
-		<BotMessage {message} {sendMessage}/>
-	{:else if message.sender === 'user'}
+	{#if message.role === 'assistant'}
+		<BotMessage {message} {sendMessage} />
+	{:else if message.role === 'user'}
 		<UserMessage {message} />
 	{/if}
 </div>

@@ -26,12 +26,12 @@
 	let lastMessageText = '';
 	let selectedLabel: string | null = null;
 
-	$: if (message?.text && message.text !== lastMessageText) {
-		const current = message.text;
+	$: if (message?.content && message.content !== lastMessageText) {
+		const current = message.content;
 		lastMessageText = current;
 
 		parseMarkdown(current).then((result) => {
-			if (message.text === current) htmlText = result;
+			if (message.content === current) htmlText = result;
 		});
 	}
 
