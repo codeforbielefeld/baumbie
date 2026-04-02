@@ -34,7 +34,7 @@ const getSystemPrompt = async (treeId: string) => {
     data.height +
     "m, Kronendurchmesser: " +
     data.crown_diameter +
-    "m"
+    "m."
   );
 };
 
@@ -57,28 +57,36 @@ Deno.serve(async (req) => {
     console.log("[BB] Found Tree data!");
   }
 
+  const body = JSON.stringify({
+    model: Deno.env.get("OPENAI_MODEL"),
+    temperature: Deno.env.get("OPENAI_TEMPERATURE"),
+    messages: [
+      {
+        role: "system",
+        content: await getSystemPrompt(treeId),
+      },
+      {
+        role: "user",
+        content: Deno.env.get("OPENAI_FIRST_USER_PROMPT")!,
+      },
+      ...messages.map((message) => ({
+        role: message.role,
+        content: message.content,
+      })),
+    ],
+  });
+  console.log(body);
+
   const llmResponse = await fetch(Deno.env.get("OPENAI_ENDPOINT")!, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${Deno.env.get("OPENAI_API_KEY")}`,
     },
-    body: JSON.stringify({
-      model: Deno.env.get("OPENAI_MODEL"),
-      messages: [
-        {
-          role: "system",
-          content: await getSystemPrompt(treeId),
-        },
-        {
-          role: "user",
-          content: Deno.env.get("OPENAI_FIRST_USER_PROMPT")!,
-        },
-        ...messages,
-      ],
-    }),
+    body,
   });
   const llmData = await llmResponse.json();
+  console.log(llmData);
 
   return new Response(
     JSON.stringify({
