@@ -33,6 +33,8 @@ defmodule Xylem.Wikidata.PropertyConfig do
   alias __MODULE__.Parser
 
   @default_path "priv/config/wikidata_properties.csv"
+  def default_path, do: @default_path
+
   @csv_header "property_id;type;action;config;description;import\n"
   @bom "\uFEFF"
 
@@ -53,7 +55,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
           action: action(),
           config: inline_config() | nil,
           description: String.t(),
-          import: import_config() | nil
+          import: import_config() | :skip | nil
         }
   @type t :: %__MODULE__{entries: %{String.t() => entry()}}
 
@@ -97,6 +99,53 @@ defmodule Xylem.Wikidata.PropertyConfig do
     case Map.get(entries, property_id) do
       %{import: %{} = config} -> config
       _ -> nil
+    end
+  end
+
+  @doc "Returns whether the property is importable (not skipped, not ignored, and known)."
+  @spec importable?(t(), String.t()) :: boolean()
+  def importable?(%__MODULE__{entries: entries}, property_id) do
+    entries |> Map.get(property_id) |> importable_entry?()
+  end
+
+  defp importable_entry?(%{import: :skip}), do: false
+  defp importable_entry?(%{action: :ignore}), do: false
+  defp importable_entry?(%{}), do: true
+  defp importable_entry?(_), do: false
+
+  @doc "Returns all importable property entries as a sorted list of `{property_id, entry}` tuples."
+  @spec importable_entries(t()) :: [{String.t(), entry()}]
+  def importable_entries(%__MODULE__{entries: entries}) do
+    entries
+    |> Enum.filter(fn {_id, entry} -> importable_entry?(entry) end)
+    |> Enum.sort_by(fn {id, _} -> id end)
+  end
+
+  @doc "Returns the attribute name for a property."
+  @spec attribute_name(t(), String.t()) :: String.t() | nil
+  def attribute_name(%__MODULE__{entries: entries}, property_id) do
+    case Map.get(entries, property_id) do
+      %{import: %{attribute_name: name}} when is_binary(name) -> name
+      %{action: :inline, config: %{target: target}} -> target
+      # TODO: Das Label ist nur temporär in der Metadata-Map während append_unknown verfügbar
+      # und wird dort in die Description eingebaut ("label – beschreibung"), aber nicht separat
+      # gespeichert. Daher parsen wir es hier zurück. Sauberer wäre eine eigene label-Spalte
+      # in der CSV, damit das Label direkt als Feld in der Entry zur Verfügung steht.
+      %{description: desc} when desc != "" -> normalize_target(description_label(desc))
+      _ -> nil
+    end
+  end
+
+  defp description_label(description) do
+    description |> String.split(" – ", parts: 2) |> hd() |> String.trim()
+  end
+
+  @doc "Returns the import group for a property, or empty string if not configured."
+  @spec import_group(t(), String.t()) :: String.t()
+  def import_group(%__MODULE__{entries: entries}, property_id) do
+    case Map.get(entries, property_id) do
+      %{import: %{group: group}} when is_binary(group) -> group
+      _ -> ""
     end
   end
 
@@ -279,7 +328,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
         nil
 
       "skip" ->
-        nil
+        :skip
 
       json ->
         case Jason.decode(json) do

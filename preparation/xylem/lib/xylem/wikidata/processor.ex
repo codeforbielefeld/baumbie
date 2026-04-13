@@ -14,7 +14,8 @@ defmodule Xylem.Wikidata.Processor do
   alias RDF.NS.RDFS
 
   @default_processed_dir "priv/data/wikidata/processed"
-  @default_config_path "priv/config/wikidata_properties.csv"
+  def default_processed_dir, do: @default_processed_dir
+
   @kept_languages MapSet.new(["de", "en"])
 
   @type species_with_graph :: %{
@@ -38,7 +39,7 @@ defmodule Xylem.Wikidata.Processor do
   ## Options
 
   - `:property_config` - a loaded `PropertyConfig` struct (takes precedence)
-  - `:property_config_path` - path to the property config CSV (default: `#{@default_config_path}`)
+  - `:property_config_path` - path to the property config CSV (default: `#{PropertyConfig.default_path()}`)
   - `:processed_dir` - output directory for processed .ttl files (default: `#{@default_processed_dir}`)
   """
   @spec run([species_with_graph()], keyword()) ::
@@ -60,7 +61,7 @@ defmodule Xylem.Wikidata.Processor do
         {:ok, config}
 
       nil ->
-        config_path = Keyword.get(opts, :property_config_path, @default_config_path)
+        config_path = Keyword.get(opts, :property_config_path, PropertyConfig.default_path())
         PropertyConfig.load(path: config_path)
     end
   end

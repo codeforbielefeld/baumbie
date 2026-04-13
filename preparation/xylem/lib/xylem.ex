@@ -35,7 +35,7 @@ defmodule Xylem do
         }
 
   @default_csv_path "data/Baumarten-wikidata.csv"
-  @default_config_path "priv/config/wikidata_properties.csv"
+  def default_csv_path, do: @default_csv_path
 
   @baumbie_prefix "https://www.baumbie.org/xylem/vocab/"
   def baumbie_prefix, do: @baumbie_prefix
@@ -60,7 +60,7 @@ defmodule Xylem do
   @spec run(keyword()) :: {:ok, result()} | {:error, term()}
   def run(opts \\ []) do
     csv_path = Keyword.get(opts, :csv_path, @default_csv_path)
-    config_path = Keyword.get(opts, :property_config_path, @default_config_path)
+    config_path = Keyword.get(opts, :property_config_path, PropertyConfig.default_path())
 
     with {:ok, config} <- PropertyConfig.load(path: config_path),
          {:ok, species} <- read_csv(csv_path, opts),
