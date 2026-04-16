@@ -7,10 +7,10 @@ defmodule Xylem.Export.CSVExporter do
 
   ## Options
 
-  - `:csv_path` - path to input species CSV (default: `data/Baumarten-wikidata.csv`)
+  - `:csv_path` - path to input species CSV (default: `priv/data/citree_wikidata_mapping.csv`)
   - `:property_config_path` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `:processed_dir` - directory of processed .ttl files (default: `priv/data/wikidata/processed`)
-  - `:output_path` - output CSV path (default: `data/wikidata-export.csv`)
+  - `:output_path` - output CSV path (default: `priv/data/wikidata/export.csv`)
   - `:limit` - limit number of species to export
   """
 
@@ -23,7 +23,7 @@ defmodule Xylem.Export.CSVExporter do
   alias RDF.NS.RDFS
   alias RDF.XSD
 
-  @default_output_path "data/wikidata-export.csv"
+  @default_output_path "priv/data/wikidata/export.csv"
   @csv_header "wikidata_id;baumart_bo;baumart_de;property_id;attribute_name;value;group\n"
 
   @spec run(keyword()) ::

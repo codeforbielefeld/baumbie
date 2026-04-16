@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Xylem.Generate do
 
   ## Options
 
-  - `--csv` - path to input CSV file (default: `data/Baumarten-wikidata.csv`)
+  - `--csv` - path to input CSV file (default: `priv/data/citree_wikidata_mapping.csv`)
   - `--config` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `--fetch` - Wikidata fetch mode: `auto` (default), `skip`, `force`, or `clear`
   - `--raw` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)

@@ -34,7 +34,7 @@ defmodule Xylem do
           vocab_path: Path.t() | nil
         }
 
-  @default_csv_path "data/Baumarten-wikidata.csv"
+  @default_csv_path "priv/data/citree_wikidata_mapping.csv"
   def default_csv_path, do: @default_csv_path
 
   @baumbie_prefix "https://www.baumbie.org/xylem/vocab/"
@@ -46,7 +46,7 @@ defmodule Xylem do
 
   ## Options
 
-  - `:csv_path` - path to input CSV file (default: `data/Baumarten-wikidata.csv`)
+  - `:csv_path` - path to input CSV file (default: `priv/data/citree_wikidata_mapping.csv`)
   - `:property_config_path` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `:fetch` - Wikidata fetch mode: `:auto` (default), `:skip`, `:force`, or `:clear`
   - `:raw_dir` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)

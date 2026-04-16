@@ -9,10 +9,10 @@ defmodule Mix.Tasks.Xylem.Export do
 
   ## Options
 
-  - `--csv` - path to input species CSV (default: `data/Baumarten-wikidata.csv`)
+  - `--csv` - path to input species CSV (default: `priv/data/citree_wikidata_mapping.csv`)
   - `--config` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `--processed` - directory of processed .ttl files (default: `priv/data/wikidata/processed`)
-  - `--output` - output CSV path (default: `data/wikidata-export.csv`)
+  - `--output` - output CSV path (default: `priv/data/wikidata/export.csv`)
   - `--limit` - limit number of species to export
 
   ## Examples
