@@ -129,7 +129,7 @@ P1424;WikibaseItem;inline;"{""target"": ""hauptvorlage_des_themas"", ""keep_sour
 P1531;WikibaseItem;inline;"{""target"": ""hybrideltern"", ""keep_source"": true}";Hybrideltern – parent of this hybrid breed or cultivar;
 P1552;WikibaseItem;inline;"{""target"": ""charakterisiert_durch"", ""keep_source"": true}";charakterisiert durch – die Entität besitzt eine innewohnende Eigenschaft, die nicht weggelassen werden kann;
 P1617;ExternalId;;;BBC-Things-Kennung – Identifikationsnummer in Datenbank BBC Things;skip
-P166;WikibaseItem;inline;"{""target"": ""auszeichnung"", ""keep_source"": true}";Auszeichnung – erhaltene Auszeichnung einer Person, Organisation oder eines schöpferischen Werks;
+P166;WikibaseItem;inline;"{""target"": ""auszeichnung"", ""keep_source"": true}";Auszeichnung – erhaltene Auszeichnung einer Person, Organisation oder eines schöpferischen Werks;skip
 P1672;WikibaseItem;inline;"{""target"": ""ursprung_von"", ""keep_source"": true}";Ursprung von – ein Naturprodukt wird durch Verarbeitung zu;
 P1703;WikibaseItem;inline;"{""target"": ""bestaeubt_durch"", ""keep_source"": true}";bestäubt durch – Bestäuber einer Pflanze;
 P171;WikibaseItem;inline;"{""target"": ""uebergeordnetes_taxon"", ""keep_source"": true}";übergeordnetes Taxon – wissenschaftlicher Name des dem Taxon unmittelbar übergeordneten Taxons;
@@ -142,7 +142,7 @@ P18;CommonsMedia;;;Bild – Foto, Grafik etc. des Subjekts aus Wikimedia Commons
 P1807;ExternalId;;;Gran-Enciclopedia-Aragonesa-ID – identifier in the Spanish language, Aragon-themed, Great Aragonese Encyclopedia (GEA);skip
 P181;CommonsMedia;;;Verbreitungskarte des Taxons – verweist auf eine Verbreitungskarte für ein Taxon bei Commons;
 P183;WikibaseItem;inline;"{""target"": ""endemisch_in"", ""keep_source"": true}";endemisch in – Gegend, in der das Taxon ausschließlich (endemisch) vorkommt;
-P1843;Monolingualtext;;;einheimische Namen – einheimischer Name eines Taxons;
+P1843;Monolingualtext;;;einheimische Namen – einheimischer Name eines Taxons;skip
 P1889;WikibaseItem;inline;"{""target"": ""verschieden_von"", ""keep_source"": true}";verschieden von – Objekt, das sich von einem anderen Objekt unterscheidet, die aber oft verwechselt werden;skip
 P1939;ExternalId;;;Dyntaxa-ID – Identifikator in der schwedischen Taxonomiedatenbank (Dyntaxa);skip
 P1940;ExternalId;;;Gymnosperm-Database-ID – identifier for a taxon in the conifers.org database;skip
@@ -256,7 +256,7 @@ P5588;WikibaseItem;inline;"{""target"": ""invasiv_in"", ""keep_source"": true}";
 P5626;ExternalId;;;Global Invasive Species Database ID – identifier for a taxon in the IUCN's Global Invasive Species Database;skip
 P566;WikibaseItem;inline;"{""target"": ""basionym"", ""keep_source"": true}";Basionym – gültiger wissenschaftliche Name auf dem eine Umkombination beruht (ICN);
 P5698;ExternalId;;;Invasive-Species-Compendium-ID – identifier for a taxon datasheet in the Invasive Species Compendium, produced by the Centre for Agriculture and Bioscience International;skip
-P580;Time;;;Startzeitpunkt – Zeitpunkt, an dem eine Aussage wahr wurde oder ein Objekt zu existieren anfing;
+P580;Time;;;Startzeitpunkt – Zeitpunkt, an dem eine Aussage wahr wurde oder ein Objekt zu existieren anfing;skip
 P5841;WikibaseItem;inline;"{""target"": ""gefaehrdungsstatus_in_der_rote_liste_der_gefaehrdeten_arten_der_tschechischen_republik"", ""keep_source"": true}";Gefährdungsstatus in der Rote Liste der gefährdeten Arten der Tschechischen Republik – endangerment status of species in the national Red List of the Czech Republic;
 P5844;ExternalId;;;Treccani-Wortschatz-ID – ID for lexemes;skip
 P5872;WikibaseItem;inline;"{""target"": ""riecht_nach"", ""keep_source"": true}";riecht nach – Wonach ein Gegenstand riecht;
