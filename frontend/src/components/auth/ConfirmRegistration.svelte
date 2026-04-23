@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { getCurrentUser } from '$lib/supabase';
 
-	let userEmail: string | undefined = '';
+	let userEmail: string | undefined = $state('');
 
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);

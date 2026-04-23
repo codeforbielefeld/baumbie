@@ -1,12 +1,17 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import type { Message } from '../../types/chat';
 	import parseMarkdown from '$lib/utils/parseMarkdown';
 
-	export let message: Message;
 
 	// console.log('BotMessage received:', message);
 
-	/*
+	
+
+	interface Props {
+		message: Message;
+		/*
 	DEBUG: Testnachricht mit eingebautem <script>-Tag zur Prüfung von Markdown-Parsing und XSS-Schutz.
 	Das <script>-Tag ist bewusst aufgetrennt, damit der Svelte-Compiler es nicht als echtes Tag interpretiert.
 	Kann verwendet werden, um parseMarkdown() + DOMPurify live im UI zu verifizieren.
@@ -19,21 +24,25 @@
 	
 	message = debugMessage; // zum Aktivieren auskommentieren
 	*/
-
-	export let sendMessage: (text: string) => void;
-
-	let htmlText: string | null = null;
-	let lastMessageText = '';
-	let selectedLabel: string | null = null;
-
-	$: if (message?.text && message.text !== lastMessageText) {
-		const current = message.text;
-		lastMessageText = current;
-
-		parseMarkdown(current).then((result) => {
-			if (message.text === current) htmlText = result;
-		});
+		sendMessage: (text: string) => void;
 	}
+
+	let { message, sendMessage }: Props = $props();
+
+	let htmlText: string | null = $state(null);
+	let lastMessageText = $state('');
+	let selectedLabel: string | null = $state(null);
+
+	run(() => {
+		if (message?.text && message.text !== lastMessageText) {
+			const current = message.text;
+			lastMessageText = current;
+
+			parseMarkdown(current).then((result) => {
+				if (message.text === current) htmlText = result;
+			});
+		}
+	});
 
 	function handleClick(label: string) {
 		if (selectedLabel !== null || message.type !== 'choice') return;
@@ -75,7 +84,7 @@
 						class:opacity-50={selectedLabel !== null && selectedLabel !== button.label}
 						class:hover:bg-green-400={selectedLabel === null}
 						disabled={selectedLabel !== null}
-						on:click={() => handleClick(button.label)}
+						onclick={() => handleClick(button.label)}
 					>
 						{button.label}
 					</button>

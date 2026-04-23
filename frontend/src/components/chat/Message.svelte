@@ -3,8 +3,12 @@
 	import UserMessage from './UserMessage.svelte';
 	import type { Message as MessageType } from '../../types/chat';
 
-	export let message: MessageType;
-	export let sendMessage: (text: string) => void;
+	interface Props {
+		message: MessageType;
+		sendMessage: (text: string) => void;
+	}
+
+	let { message, sendMessage }: Props = $props();
 </script>
 
 <div class="message flex flex-row w-full">

@@ -3,9 +3,9 @@
 	import { loginWithEmailPassword } from '$lib/supabase';
 	import { EmailField, PasswordField, Button, Notice } from '$components/ui';
 
-	let email = '';
-	let password = '';
-	let errorMessage: string | null = null;
+	let email = $state('');
+	let password = $state('');
+	let errorMessage: string | null = $state(null);
 
 	const handleLogin = async (e: SubmitEvent) => {
 		e.preventDefault();
@@ -24,7 +24,7 @@
 	};
 </script>
 
-<form on:submit={handleLogin} class="flex flex-col gap-y-4">
+<form onsubmit={handleLogin} class="flex flex-col gap-y-4">
 	<div class="flex flex-col gap-y-2">
 		<EmailField
 			id="email"

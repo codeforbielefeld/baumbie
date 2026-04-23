@@ -5,14 +5,18 @@
 	import { Notice } from '$components/ui';
 	import type { Watering } from '$types/watering';
 
-	export let treeId: string;
+	interface Props {
+		treeId: string;
+	}
+
+	let { treeId }: Props = $props();
 
 	const dispatch = createEventDispatcher();
 
-	let currentUserId: string | null = null;
-	let waterings: Watering[] = [];
-	let loading = true;
-	let error: string | null = null;
+	let currentUserId: string | null = $state(null);
+	let waterings: Watering[] = $state([]);
+	let loading = $state(true);
+	let error: string | null = $state(null);
 
 	async function loadWaterings() {
 		try {

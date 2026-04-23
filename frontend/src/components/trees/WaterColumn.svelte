@@ -48,17 +48,17 @@
           <div
             class="flex absolute top-0 left-0 z-0 bg-red-100 h-[330px] min-h-[330px] rounded-[50px] w-[33px]"
             role="presentation"
-          />
+></div>
           
           <div class="flex z-0 flex-1 gap-3 items-center size-full">
             <div
               class="flex shrink-0 self-stretch h-[94px] rounded-[30px] w-[33px]"
               role="presentation"
-            />
+></div>
             <div
               class="shrink-0 self-stretch my-auto h-0 border border-solid border-black border-opacity-40 w-[29px]"
               role="presentation"
-            />
+></div>
             <p class="self-stretch my-auto">{missingAmount} Liter fehlen</p>
           </div>
     
@@ -66,11 +66,11 @@
             <div
               class="flex shrink-0 self-stretch bg-emerald-400 h-[94px] rounded-[30px] w-[33px]"
               role="presentation"
-            />
+></div>
             <div
               class="shrink-0 self-stretch my-auto h-0 border border-solid border-black border-opacity-40 w-[29px]"
               role="presentation"
-            />
+></div>
             <p class="self-stretch my-auto">{waterData.userContribution} Liter von Dir</p>
           </div>
     
@@ -79,11 +79,11 @@
               <div
                 class="flex shrink-0 self-stretch bg-slate-500 h-[41px] rounded-[30px] w-[33px]"
                 role="presentation"
-              />
+></div>
               <div
                 class="shrink-0 self-stretch my-auto h-0 border border-solid border-black border-opacity-40 w-[29px]"
                 role="presentation"
-              />
+></div>
               <p class="self-stretch my-auto">{contribution.amount} Liter von {contribution.user}</p>
             </div>
           {/each}
@@ -92,11 +92,11 @@
             <div
               class="flex shrink-0 self-stretch bg-slate-500 h-[53px] rounded-[30px] w-[33px]"
               role="presentation"
-            />
+></div>
             <div
               class="shrink-0 self-stretch my-auto h-0 border border-solid border-black border-opacity-40 w-[29px]"
               role="presentation"
-            />
+></div>
             <p class="self-stretch my-auto">{waterData.cityContribution} Liter von Stadt</p>
           </div>
     
@@ -104,11 +104,11 @@
             <div
               class="flex shrink-0 self-stretch bg-slate-400 h-[66px] rounded-[30px] w-[33px]"
               role="presentation"
-            />
+></div>
             <div
               class="shrink-0 self-stretch my-auto h-0 border border-solid border-black border-opacity-40 w-[29px]"
               role="presentation"
-            />
+></div>
             <p class="self-stretch my-auto">{waterData.naturalContribution} Liter von Natur</p>
           </div>
         </section>
@@ -117,5 +117,5 @@
       <div
         class="absolute z-0 h-0 border border-solid border-black border-opacity-10 bottom-[-19px] min-h-[1px] right-[-3px] w-[353px]"
         role="presentation"
-      />
+></div>
     </section>

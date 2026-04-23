@@ -1,8 +1,13 @@
 <script lang="ts">
 	type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-	export let level: HeadingLevel = 1;
-	export let className: string = '';
+	interface Props {
+		level?: HeadingLevel;
+		className?: string;
+		children?: import('svelte').Snippet;
+	}
+
+	let { level = 1, className = '', children }: Props = $props();
 
 	const tag = `h${level}`;
 
@@ -15,9 +20,9 @@
 		6: 'font-bold pb-2'
 	};
 
-	$: combinedClass = `${levelClassMap[level]} ${className}`.trim();
+	let combinedClass = $derived(`${levelClassMap[level]} ${className}`.trim());
 </script>
 
 <svelte:element this={tag} class={combinedClass}>
-	<slot />
+	{@render children?.()}
 </svelte:element>

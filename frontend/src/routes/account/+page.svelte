@@ -5,7 +5,7 @@
 	import { DialogPanel } from '$components/overlay';
 	import { logout, getCurrentUser } from '$lib/supabase';
 
-	let user: { email?: string } | null = null;
+	let user: { email?: string } | null = $state(null);
 
 	onMount(async () => {
 		user = await getCurrentUser();

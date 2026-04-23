@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	// External libraries
 	import L from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
@@ -26,32 +28,13 @@
 	// ⚙️ State
 	const id = 'map-' + Math.random().toString(36).substring(2, 9);
 	const markerGroupRegistry = new Map<MarkerClusterGroup, string[]>();
-	let map: L.Map;
+	let map: L.Map = $state();
 	let loadedSegmentFiles = new Set<string>();
-	let allMarkerGroups: MarkerClusterGroup[] = [];
-	let lastFilter: TreeFilter = { species: [] };
+	let allMarkerGroups: MarkerClusterGroup[] = $state([]);
+	let lastFilter: TreeFilter = $state({ species: [] });
 
 	const loadDelayMs = 50;
 
-	// 🔄 React to filter changes
-	$: if (map && JSON.stringify($selectedTreeFilters) !== JSON.stringify(lastFilter)) {
-		lastFilter = structuredClone($selectedTreeFilters);
-
-		allMarkerGroups.forEach((group) => {
-			group.remove();
-			const ids = markerGroupRegistry.get(group);
-			if (ids) {
-				for (const id of ids) {
-					unregisterTreeMarker(id);
-				}
-				markerGroupRegistry.delete(group);
-			}
-		});
-
-		allMarkerGroups = [];
-		loadedSegmentFiles.clear();
-		onMove();
-	}
 
 	// 📍 Load visible segments
 	const onMove = async () => {
@@ -104,10 +87,31 @@
 			}
 		});
 	});
+	// 🔄 React to filter changes
+	run(() => {
+		if (map && JSON.stringify($selectedTreeFilters) !== JSON.stringify(lastFilter)) {
+			lastFilter = structuredClone($selectedTreeFilters);
+
+			allMarkerGroups.forEach((group) => {
+				group.remove();
+				const ids = markerGroupRegistry.get(group);
+				if (ids) {
+					for (const id of ids) {
+						unregisterTreeMarker(id);
+					}
+					markerGroupRegistry.delete(group);
+				}
+			});
+
+			allMarkerGroups = [];
+			loadedSegmentFiles.clear();
+			onMove();
+		}
+	});
 </script>
 
 <!-- 🗺️ Map container -->
-<div {id} class="fixed top-0 left-0 min-w-full min-h-full" />
+<div {id} class="fixed top-0 left-0 min-w-full min-h-full"></div>
 
 <!-- 🧭 Custom controls -->
 <MapControls {map} />
