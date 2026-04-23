@@ -17,7 +17,6 @@
 	run(() => {
 		treeId;
 	});
-	console.log('Chat got Tree ID: ', treeId);
 
 	// === State ===
 	let sessionId: string = '';

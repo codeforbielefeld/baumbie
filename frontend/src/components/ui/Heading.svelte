@@ -9,7 +9,7 @@
 
 	let { level = 1, className = '', children }: Props = $props();
 
-	const tag = `h${level}`;
+	const tag = $derived(`h${level}`);
 
 	const levelClassMap: Record<HeadingLevel, string> = {
 		1: 'font-bold text-2xl pb-4',
