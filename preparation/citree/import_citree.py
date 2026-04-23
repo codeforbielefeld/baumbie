@@ -88,12 +88,12 @@ attribute_rows = [
         "description": attribute_descriptions[attr_name] or None,
         "type": attribute_types[attr_name],
         "provider_uuid": provider_uuid,
-        "tree_attribute_group_uuid": group_uuid_map[attribute_to_group[attr_name]],
+        "tree_type_attribute_group_uuid": group_uuid_map[attribute_to_group[attr_name]],
     }
     for attr_name in attribute_to_group
 ]
 attr_result = supabase.table("tree_type_attributes").upsert(
-    attribute_rows, on_conflict="name"
+    attribute_rows, on_conflict="provider_uuid,name"
 ).execute()
 attr_uuid_map = {row["name"]: row["uuid"] for row in attr_result.data}
 print(f"Attributes: {len(attr_uuid_map)}")
