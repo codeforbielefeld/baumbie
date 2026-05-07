@@ -2,6 +2,11 @@
 	import '../app.css';
 	import Map from '$components/map/Map.svelte';
 	import { Navbar } from '$components/overlay';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <svelte:head>
@@ -13,7 +18,7 @@
 		<Map />
 		<div class="flex flex-col justify-end grow">
 			<div class="z-[1100]">
-				<slot />
+				{@render children?.()}
 			</div>
 		</div>
 	</div>

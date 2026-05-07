@@ -6,10 +6,10 @@
 	import { onMount } from 'svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	let liter: number = 0;
-	let wateredAt: string = '';
-	let errorMessage: string | null = null;
-	let noticeMessage: string | null = null;
+	let liter: number = $state(0);
+	let wateredAt: string = $state('');
+	let errorMessage: string | null = $state(null);
+	let noticeMessage: string | null = $state(null);
 
 	const dispatch = createEventDispatcher();
 
@@ -50,7 +50,7 @@
 	});
 </script>
 
-<form on:submit={handleWater} class="flex flex-col gap-y-4">
+<form onsubmit={handleWater} class="flex flex-col gap-y-4">
 	<div class="flex flex-col gap-y-2">
 		{#if errorMessage}
 			<Notice tone="warning">{errorMessage}</Notice>

@@ -1,5 +1,10 @@
 <script lang="ts">
-	export let tone: 'info' | 'warning' | 'success' = 'info'; // Ton bestimmt Farbe
+	interface Props {
+		tone?: 'info' | 'warning' | 'success'; // Ton bestimmt Farbe
+		children?: import('svelte').Snippet;
+	}
+
+	let { tone = 'info', children }: Props = $props();
 </script>
 
 <p
@@ -7,7 +12,7 @@
 		tone === 'info' ? 'text-gray-700' : tone === 'warning' ? 'text-yellow-600' : 'text-green-600'
 	}`}
 >
-	<slot />
+	{@render children?.()}
 </p>
 
 <style>

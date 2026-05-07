@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import {Notice} from '$components/ui';
 
-	let topSpecies: { label: string; count: number }[] = [];
+	let topSpecies: { label: string; count: number }[] = $state([]);
 
 	onMount(async () => {
 		topSpecies = await loadTopSpecies();
@@ -19,7 +19,7 @@
 		selectedTreeFilters.set({ species: updated });
 	}
 
-	$: current = $selectedTreeFilters.species ?? [];
+	let current = $derived($selectedTreeFilters.species ?? []);
 </script>
 
 <div class="w-full max-w-screen-lg mx-auto space-y-10 pt-2">

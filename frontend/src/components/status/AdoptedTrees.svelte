@@ -9,15 +9,20 @@
 	import type { User } from '@supabase/supabase-js';
 	import type { TreeMeta } from '$types/tree';
 
-	// Props
-	export let currentUser: User | null = null;
+	
+	interface Props {
+		// Props
+		currentUser?: User | null;
+	}
+
+	let { currentUser = null }: Props = $props();
 
 	// State
-	let adoptedTrees: TreeMeta[] = [];
-	let loading = true;
+	let adoptedTrees: TreeMeta[] = $state([]);
+	let loading = $state(true);
 	let loggedIn = false;
 
-	let warningMessage: string | null = null;
+	let warningMessage: string | null = $state(null);
 	let warningTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Lifecycle
