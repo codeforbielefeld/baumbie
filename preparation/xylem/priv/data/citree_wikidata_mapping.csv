@@ -111,7 +111,7 @@ Amelanchier species,Felsenbirne,Q156957
 Prunus cerasifera,Kirsch-Pflaume,Q146951
 Fagus sylvatica 'Pendula',Trauer-Buche,Q1642256
 Crataegus species,Weißdorn,Q132557
-Carpinus betulus `Frans Fontaine`,Säulenhainbuche,Q115916785
+Carpinus betulus `Frans Fontaine`,Säulenhainbuche,Q158776
 Crataegus crus-galli,Hahnensporn-Weißdorn,Q916961
 Magnolia species,Magnolie,Q157017
 Malus communis,Johannis Apfel,Q18674606
@@ -156,7 +156,7 @@ Acer saccharum,Zucker-Ahorn,Q214733
 Ilex x altaclarensis,Großblättrige Stechpalme,Q117085
 Chamaecyparis obtusa,Hinoki-Scheinzypresse,Q917187
 Juniperus communis,Gemeiner Wacholder,Q26325
-Fagus sylvatica 'Fastigata',Säulen-Buche,Q130388544
+Fagus sylvatica 'Fastigata',Säulen-Buche,Q110765790
 Sorbus aria 'Magnifica',Sorte der Mehlbeere,Q157960
 Quercus robur 'Fastigiata Aurea',Sorte der Stieleiche,Q165145
 Acer griseum,Zimt-Ahorn,Q203985
@@ -285,7 +285,7 @@ Koelreuteria paniculata,Blasenesche,Q844835
 Acer platanoides 'Dissectum',Geschlitzter Spitzahorn,Q129514890
 Malus tschonoskii,Wollapfel,Q1470571
 Rhamnus frangula,Faulbaum,Q11122869
-Malus toringo,Japanischer Zierapfel,Q1683370
+Malus toringo,Japanischer Zierapfel,Q52626848
 Abies procera,Edel-Tanne,Q1283223
 Magnolia liliiflora,Purpur-Magnolie,Q942031
 Acer platanoides 'Circinatum',Sorte vom Spitz-Ahorn,Q26745
@@ -293,7 +293,7 @@ Sorbus domestica,Speierling,Q159558
 Quercus x hispanica,Spanische Eiche,Q15337558
 Prunus x yedoensis,Yoshino-Kirsche,Q163078
 Acer cappadocicum 'Rubrum',Kolchischer Blut-Ahorn,Q18470510
-Quercus rubra 'Aurea',Sorte der Rot-Eiche,Q55943090
+Quercus rubra 'Aurea',Sorte der Rot-Eiche,Q147525
 Malus domestica `Dülmener Herbstrosenapfel`,`Dülmener Herbstrosenapfel`,
 Acer davidii,Davids-Ahorn,Q657935
 Viburnum rhytidophyllum,Runzelblättriger Schneeball,Q180606
@@ -389,7 +389,7 @@ Prunus x blireana,Gefülltblühende Kirsch-Pflaume,Q190545
 Prunus serrulata,Japanische Bl��ten-Kirsche,Q165321
 Prunus incisa,Fuji-Kirsche,Q3269605
 Tilia cordata 'Erecta',Sorte der Winter-Linde,Q158746
-Prunus cerasus,Sauer-Kirsche,Q2946681
+Prunus cerasus,Sauer-Kirsche,Q131517
 Prunus cerasifera 'Atropurpurea',Sorte der Kirsch-Pflaume,Q146951
 Prunus armeniaca,Kultur-Aprikose,Q37453
 Syringa vulgaris,Garten-Flieder,Q6565319
@@ -404,4 +404,4 @@ Populus x canadensis 'Serotina',Serotina-Hybrig-Pappel,Q149622
 Populus lasiocarpa,Chinesische Großblatt-Pappel,Q1306148
 Tilia americana 'Nova',Sorte der Amerikanischen Linde,Q130533394
 Pinus ponderosa,Gelb-Kiefer,Q460523
-Sorbus hybrida,Nordische Mehlbeere,Q27980
+Sorbus hybrida,Nordische Mehlbeere,Q2532563
