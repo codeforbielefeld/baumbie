@@ -88,4 +88,75 @@ defmodule Xylem.Reconciliation.NormalizerTest do
       assert Normalizer.strip_cultivar("Quercus robur") == "Quercus robur"
     end
   end
+
+  describe "strip_authors/1" do
+    test "strips single author abbreviation" do
+      assert Normalizer.strip_authors("Acer buergerianum Miq.") == "Acer buergerianum"
+    end
+
+    test "strips L. and keeps subsp." do
+      assert Normalizer.strip_authors("Acer campestre L. subsp. campestre") ==
+               "Acer campestre subsp. campestre"
+    end
+
+    test "strips parenthetical author plus following name" do
+      assert Normalizer.strip_authors(
+               "Acer cappadocicum Gleditsch subsp. lobelii (Ten.) de Jong"
+             ) == "Acer cappadocicum subsp. lobelii"
+    end
+
+    test "strips author and keeps var." do
+      assert Normalizer.strip_authors("Acer velutinum Boiss. var. velutinum") ==
+               "Acer velutinum var. velutinum"
+    end
+
+    test "keeps hybrid marker ×" do
+      assert Normalizer.strip_authors("Acer × zoeschense Pax") == "Acer × zoeschense"
+    end
+
+    test "leaves plain binomial unchanged" do
+      assert Normalizer.strip_authors("Acer monspessulanum") == "Acer monspessulanum"
+    end
+
+    test "handles empty/short input" do
+      assert Normalizer.strip_authors("Acer") == "Acer"
+      assert Normalizer.strip_authors("") == ""
+    end
+
+    test "inserts missing space before parenthetical author" do
+      assert Normalizer.strip_authors("Chamaecyparis lawsoniana(A.Murray) Parl.") ==
+               "Chamaecyparis lawsoniana"
+    end
+  end
+
+  describe "extract_top_level_parens/1" do
+    test "extracts single parenthetical" do
+      assert Normalizer.extract_top_level_parens("Foo (bar) baz") == ["bar"]
+    end
+
+    test "extracts multiple parentheticals" do
+      assert Normalizer.extract_top_level_parens("Foo (bar) (qux)") == ["bar", "qux"]
+    end
+
+    test "preserves nested parentheses inside extracted content" do
+      assert Normalizer.extract_top_level_parens("Foo (bar (nested)) baz") ==
+               ["bar (nested)"]
+    end
+
+    test "handles citree-style synonym in parentheses" do
+      assert Normalizer.extract_top_level_parens(
+               "Crataegus x persimilis Sarg. 'MacLeod' (C.x prunifolia Pers.)"
+             ) == ["C.x prunifolia Pers."]
+    end
+
+    test "handles nested author citations" do
+      assert Normalizer.extract_top_level_parens(
+               "Thuja orientalis L. (Platycladus orientalis (L.) Franco)"
+             ) == ["Platycladus orientalis (L.) Franco"]
+    end
+
+    test "returns empty list when no parens" do
+      assert Normalizer.extract_top_level_parens("Acer platanoides") == []
+    end
+  end
 end

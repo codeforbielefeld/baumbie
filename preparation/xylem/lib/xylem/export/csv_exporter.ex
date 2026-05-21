@@ -7,7 +7,7 @@ defmodule Xylem.Export.CSVExporter do
 
   ## Options
 
-  - `:csv_path` - path to input species CSV (default: `priv/data/citree_wikidata_mapping.csv`)
+  - `:csv_path` - path to input species CSV (default: `priv/data/baumbie_wikidata_mapping.csv`)
   - `:property_config_path` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `:processed_dir` - directory of processed .ttl files (default: `priv/data/wikidata/processed`)
   - `:output_path` - output CSV path (default: `priv/data/wikidata/export.csv`)
