@@ -392,3 +392,12 @@ P9799;ExternalId;;;Palynodata taxa ID – Kennung eines Taxons in der Palynodata
 P9826;ExternalId;;;Great Encyclopedia of Cyril and Methodius entry ID – ID for an entry on the Great Encyclopedia of Cyrill and Methodius;skip
 P989;CommonsMedia;;;Audiodatei eines gesprochenen Texts – Audiodatei eines gesprochenen Werkes oder Wikipedia-Artikels;
 P9937;ExternalId;;;Postimees-Themenkennung – numerischer Identifikator für Themen auf der Website der estnischen Tageszeitung „Postimees“;skip
+P13204;ExternalId;;;Wellcome Collection concept ID – identifier for a person or topic, in the Wellcome Collection catalogue;skip
+P13445;ExternalId;;;Deutsche Genbank Obst (DGO) ID – Identifikator für eine Obstsorte in der Deutschen Genbank Obst;skip
+P1349;WikibaseItem;inline;"{""target"": ""ploidiegrad"", ""keep_source"": true}";Ploidiegrad – Anzahl der Chromosomensätze eines Genoms;
+P14254;WikibaseItem;inline;"{""target"": ""regional_conservation_status"", ""keep_source"": true}";regional conservation status – conservation status of species in national or regional Red List publications that follow the IUCN red list criteria;skip
+P2572;String;;;Hashtag – Hashtag (Schlagwort) zum Objekt. Das Rautensymbol („#“) soll nicht mit angegeben werden.;skip
+P4288;ExternalId;;;NFC-ID – Identifikator für eine Obstsorte in der National Fruit Collection;skip
+P523;WikibaseItem;inline;"{""target"": ""zeitliches_auftreten_anfang"", ""keep_source"": true}";zeitliches Auftreten – Anfang – der Anfang eines Prozesses oder das Auftauchen einer Lebensform relativ zur geologischen Zeitskala;
+P528;String;;;Katalognummer – Bezeichnung in einem Katalog, mit Qualifikator P972 zu verwenden;skip
+P740;WikibaseItem;inline;"{""target"": ""gruendungsort"", ""keep_source"": true}";Gründungsort – Ort, an dem eine Gruppe oder Organisation  entstand oder gegründet wurde (für Entstehungsorte kreativer Werke nutze P1071);
