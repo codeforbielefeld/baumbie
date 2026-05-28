@@ -21,13 +21,27 @@
 		goto('/');
 	}
 
+    let categories = {
+        "Baum": {"label": "Steckbrief", "icon": "tree"},
+        "Pflanze": {"label": "Insekten", "icon": "leaf"},
+        "Tier": {"label": "Wasserbedarf", "icon": "paw"},
+		"Vergleich": {"label": "Vergleich", "icon": "balance-scale"},
+		"Geschichte": {"label": "Geschichte", "icon": "history"},
+				"Test": {"label": "Test", "icon": "history"},
+				"test2": {"label": "Test 2", "icon": "history"}
+    }
+
+
 </script>
 
 {#await loadTree(treeId)}
 	<p>Lädt...</p>
 {:then tree}
 	{#if tree}
-		<Card type="tree" data={tree} onClose={handleCardClose} />
+		<Card type="tree"
+				data={tree}
+				onClose={handleCardClose}
+				categories={categories} />
 	{/if}
 {:catch error}
 	<p>Fehler beim Laden: {error.message}</p>
