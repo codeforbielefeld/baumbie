@@ -22,13 +22,35 @@
 	}
 
     let categories = {
-        "Baum": {"label": "Steckbrief", "icon": "tree"},
-        "Pflanze": {"label": "Insekten", "icon": "leaf"},
-        "Tier": {"label": "Wasserbedarf", "icon": "paw"},
-		"Vergleich": {"label": "Vergleich", "icon": "balance-scale"},
-		"Geschichte": {"label": "Geschichte", "icon": "history"},
-				"Test": {"label": "Test", "icon": "history"},
-				"test2": {"label": "Test 2", "icon": "history"}
+        "Baum": {"label": "Steckbrief",
+				"icon": "tree",
+				"slides": [{"title": "Basics",
+							"content": "Vorstellungstext, key facts"},
+							{"title": "Bielefeld-vergleich",
+							"content": "Wie oft in Bielefeld, Abweichung vom Durchschnitt etc"},
+							{"title": "Standort",
+							"content": "Wo in Bielefeld, Standortfaktoren etc"},
+							{"title": "Besonderes",
+							"content": "zB Baum des Jahres, Kultur oder so"}]},
+        "Pflanze": {"label": "Insekten",
+					"icon": "leaf",
+					"slides": []
+					},
+        "Tier": {"label": "Wasserbedarf",
+				"icon": "paw",
+					"slides": []},
+		"Vergleich": {"label": "Vergleich",
+					"icon": "balance-scale",
+					"slides": []},
+		"Geschichte": {"label": "Geschichte",
+						"icon": "history",
+						"slides": []},
+		"Test": {"label": "Test",
+					"icon": "history",
+					"slides": []},
+		"test2": {"label": "Test 2",
+				"icon": "history",
+				"slides": []}
     }
 
 

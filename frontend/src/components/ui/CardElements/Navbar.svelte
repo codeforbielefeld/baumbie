@@ -1,11 +1,13 @@
-<script>
-    let {categories = {}, onCategorySelect = () => {}} = $props();
+<script type="ts">
+    let {
+        categories = {},
+        onCategorySelect = () => {}} = $props();
 
     const categoryKeys = $derived(Object.keys(categories));
     let activeCategory = $state('');
     let buttonRefs = $state({});
 
-    function selectCategory(key) {
+    const selectCategory = (key) => {
         activeCategory = key;
         onCategorySelect({
             category: key,

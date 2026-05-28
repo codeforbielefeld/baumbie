@@ -16,9 +16,12 @@
         : "Unbekannter Datentyp");
 
     let selectedCategoryLabel = $state('');
+    let selectedCategory = $state('');
+    let currentSlides = $derived(categories[selectedCategory]?.slides || []);
 
     function handleCategorySelect(event: {category: string, label: string}) {
         selectedCategoryLabel = event.label;
+        selectedCategory = event.category;
     }
 
 </script>
@@ -35,7 +38,7 @@
             shadow-[0_-4px_16px_rgba(0,0,0,0.15)]">
 
     <!-- Header +Navbar -->
-    <div class="bg-gray-150">
+    <div class="flex flex-col gap-2 pt-2 bg-gray-150">
         <!-- Header mit Titel und Schließen-Button -->
         <div class="flex justify-center items-center p-4">
             <h1 class="text-2xl font-bold">
@@ -60,7 +63,7 @@
         {#if selectedCategoryLabel}
             <h2 class="text-xl font-semibold mb-4">{selectedCategoryLabel}</h2>
         {/if}
-        <Carousel/>
+        <Carousel slides={currentSlides} />
         Hello TreeCard!<br>
         Children: <br>
         CardNavBar<br>
