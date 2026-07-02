@@ -1,0 +1,7 @@
+property_id;type;action;config;description;import
+P18;CommonsMedia;ignore;;Bild;
+P41;CommonsMedia;ignore;;Flaggenbild;
+P105;WikibaseItem;inline;"{""target"": ""taxonomischer_rang""}";taxonomischer Rang;
+P171;WikibaseItem;inline;"{""target"": ""uebergeordnetes_taxon"", ""keep_source"": true}";übergeordnetes Taxon;
+P225;String;;;wissenschaftlicher Name;
+P685;ExternalId;;;NCBI-ID;
