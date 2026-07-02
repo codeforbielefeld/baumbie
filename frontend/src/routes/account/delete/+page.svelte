@@ -4,8 +4,8 @@
 	import { Button, Notice } from '$components/ui';
 	import { deleteCurrentUser } from '$lib/supabase';
 
-	let loading = false;
-	let error: string | null = null;
+	let loading = $state(false);
+	let error: string | null = $state(null);
 
 	const handleCancel = () => goto('/account');
 

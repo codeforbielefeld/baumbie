@@ -2,7 +2,11 @@
 	import L from 'leaflet';
 	import { userMarkerIcon } from '$lib/map';
 
-	export let map: L.Map;
+	interface Props {
+		map: L.Map;
+	}
+
+	let { map }: Props = $props();
 
 	let userMarker: L.Marker | null = null;
 
@@ -49,7 +53,7 @@
 <div class="fixed bottom-[90px] right-4 flex flex-col gap-2 z-[1000]">
 	<!-- 📍 Standort zentrieren -->
 	<button
-		on:click={centerOnUser}
+		onclick={centerOnUser}
 		class="w-12 h-12 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-100 transition"
 		aria-label="Standort zentrieren"
 	>
@@ -58,7 +62,7 @@
 
 	<!-- ➕ Zoom In -->
 	<button
-		on:click={zoomIn}
+		onclick={zoomIn}
 		class="w-12 h-12 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-100 transition"
 		aria-label="Zoom in"
 	>
@@ -67,7 +71,7 @@
 
 	<!-- ➖ Zoom Out -->
 	<button
-		on:click={zoomOut}
+		onclick={zoomOut}
 		class="w-12 h-12 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-100 transition"
 		aria-label="Zoom out"
 	>

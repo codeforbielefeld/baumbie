@@ -1,22 +1,30 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	// === Imports ===
 	import { onMount } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import Message from './Message.svelte';
 	import type { Message as MessageType, RawMessage } from '$types/chat';
 
-	// === Props ===
-	export let treeId: string = '';
-	$: treeId;
-	console.log('Chat got Tree ID: ', treeId);
+	
+	interface Props {
+		// === Props ===
+		treeId?: string;
+	}
+
+	let { treeId = '' }: Props = $props();
+	run(() => {
+		treeId;
+	});
 
 	// === State ===
 	let sessionId: string = '';
-	let messages: MessageType[] = [];
-	let newMessage: string = '';
+	let messages: MessageType[] = $state([]);
+	let newMessage: string = $state('');
 	let chatAvailable: boolean = true;
 
-	let endRef: HTMLDivElement;
+	let endRef: HTMLDivElement = $state();
 
 	// === Lifecycle ===
 	onMount(() => {
@@ -109,15 +117,17 @@
 		}
 	}
 
-	$: {
+	run(() => {
 		if (endRef && messages.length > 0) {
 			queueMicrotask(() => {
 				endRef.scrollIntoView({ behavior: 'smooth' });
 			});
 		}
-	}
+	});
 
-	$: console.log('↪ newMessage:', JSON.stringify(newMessage));
+	run(() => {
+		console.log('↪ newMessage:', JSON.stringify(newMessage));
+	});
 </script>
 
 <!-- Chat innerhalb der Card -->
@@ -143,12 +153,12 @@
 				bind:value={newMessage}
 				class="px-3 py-1 bg-green-500 rounded-full grow placeholder:text-neutral-500 placeholder:italic"
 				placeholder={chatAvailable ? '' : 'Chat beendet.'}
-				on:keyup={handleKeydown}
+				onkeyup={handleKeydown}
 				disabled={!chatAvailable}
 			/>
 			<button
 				class="shrink"
-				on:click={() => newMessage && sendMessage(newMessage)}
+				onclick={() => newMessage && sendMessage(newMessage)}
 				disabled={!chatAvailable}
 			>
 				<img src="/chat/send.svg" class="w-8 h-8" alt="senden" />

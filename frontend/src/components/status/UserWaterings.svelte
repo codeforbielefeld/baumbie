@@ -9,16 +9,21 @@
 	import type { User } from '@supabase/supabase-js';
 	import type { Watering } from '$types/watering';
 
-	// Props
-	export let currentUser: User | null = null;
+	
+	interface Props {
+		// Props
+		currentUser?: User | null;
+	}
+
+	let { currentUser = null }: Props = $props();
 
 	// State
-	let labelsByTreeId: Map<string, string> = new Map();
+	let labelsByTreeId: Map<string, string> = $state(new Map());
 	let currentUserId: string | null = null;
 	let loggedIn = false;
-	let loading = true;
-	let error: string | null = null;
-	let waterings: Watering[] = [];
+	let loading = $state(true);
+	let error: string | null = $state(null);
+	let waterings: Watering[] = $state([]);
 
 	// Lifecycle
 	onMount(async () => {

@@ -4,12 +4,16 @@
 	import { Button } from '$components/ui';
 	import { formatDate } from '$lib/utils/formatDate';
 
-	export let watering: Watering;
-	export let onCancel: () => void;
-	export let onConfirm: () => void;
+	interface Props {
+		watering: Watering;
+		onCancel: () => void;
+		onConfirm: () => void;
+	}
 
-	const dateLabel = `📅\u2003${formatDate(watering.watered_at)}`;
-	const amountLabel = `🚰\u2003${watering.amount_liters} Liter`;
+	let { watering, onCancel, onConfirm }: Props = $props();
+
+	const dateLabel = $derived(`📅\u2003${formatDate(watering.watered_at)}`);
+	const amountLabel = $derived(`🚰\u2003${watering.amount_liters} Liter`);
 </script>
 
 <Modal title="Gießung wirklich löschen?">

@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { Message as MessageType } from '../../types/chat';
 
-	export let message: MessageType;
+	interface Props {
+		message: MessageType;
+	}
+
+	let { message }: Props = $props();
 </script>
 
 <div class="flex gap-1.5 flex-row w-full flex-end">

@@ -5,11 +5,15 @@
 	import type { Watering } from '$types/watering';
 	import { createEventDispatcher } from 'svelte';
 
-	export let watering: Watering;
+	interface Props {
+		watering: Watering;
+	}
+
+	let { watering }: Props = $props();
 
 	const dispatch = createEventDispatcher();
-	let error: string | null = null;
-	let showConfirm = false;
+	let error: string | null = $state(null);
+	let showConfirm = $state(false);
 
 	async function handleConfirmedDelete() {
 		error = null;
