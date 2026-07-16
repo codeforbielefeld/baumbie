@@ -11,6 +11,7 @@ defmodule Xylem.Import.CSVReader do
   NimbleCSV.define(__MODULE__.Parser, separator: ",", escape: "\"")
 
   alias __MODULE__.Parser
+  alias Xylem.ImportInputError
 
   @type species :: %{
           baumart_bo: String.t(),
@@ -25,25 +26,43 @@ defmodule Xylem.Import.CSVReader do
   """
   @spec run(Path.t(), keyword()) :: {:ok, [species()]} | {:error, term()}
   def run(path, _opts \\ []) do
-    with {:ok, content} <- File.read(path),
-         {:ok, species} <- parse(content) do
-      {:ok, species}
+    case File.read(path) do
+      {:ok, content} -> parse(content, path)
+      {:error, reason} -> input_error(path, :file_read, reason)
     end
   end
 
-  defp parse(content) do
+  defp parse(content, path) do
     case Parser.parse_string(content, skip_headers: false) do
       [[header_bo, header_de, header_id] | rows] when is_binary(header_bo) ->
         case validate_headers(header_bo, header_de, header_id) do
-          :ok -> {:ok, Enum.map(rows, &row_to_species/1)}
-          error -> error
+          :ok -> parse_rows(rows, path)
+          {:error, {:missing_column, column}} -> input_error(path, :missing_column, column, 1)
         end
 
       [] ->
-        {:error, :empty_file}
+        input_error(path, :empty_file)
 
       _other ->
-        {:error, :invalid_csv_format}
+        input_error(path, :invalid_csv_format)
+    end
+  rescue
+    error in NimbleCSV.ParseError ->
+      input_error(path, :invalid_csv_format, Exception.message(error))
+  end
+
+  defp parse_rows(rows, path) do
+    rows
+    |> Enum.with_index(2)
+    |> Enum.reduce_while({:ok, []}, fn {row, line}, {:ok, species} ->
+      case row_to_species(row) do
+        {:ok, item} -> {:cont, {:ok, [item | species]}}
+        :error -> {:halt, input_error(path, :invalid_row_format, nil, line)}
+      end
+    end)
+    |> case do
+      {:ok, species} -> {:ok, Enum.reverse(species)}
+      {:error, _error} = error -> error
     end
   end
 
@@ -57,12 +76,24 @@ defmodule Xylem.Import.CSVReader do
   end
 
   defp row_to_species([baumart_bo, baumart_de, wikidata_id | _rest]) do
-    %{
-      baumart_bo: String.trim(baumart_bo),
-      baumart_de: String.trim(baumart_de),
-      wikidata_id: String.trim(wikidata_id)
-    }
+    {:ok,
+     %{
+       baumart_bo: String.trim(baumart_bo),
+       baumart_de: String.trim(baumart_de),
+       wikidata_id: String.trim(wikidata_id)
+     }}
   end
 
-  defp row_to_species(_), do: raise("Invalid row format")
+  defp row_to_species(_), do: :error
+
+  defp input_error(path, reason, details \\ nil, line \\ nil) do
+    {:error,
+     %ImportInputError{
+       source: :mapping_csv,
+       path: path,
+       reason: reason,
+       details: details,
+       line: line
+     }}
+  end
 end

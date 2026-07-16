@@ -4,6 +4,8 @@ defmodule XylemTest do
 
   import ReqCassette
 
+  alias Xylem.ImportInputError
+
   @test_raw_dir "test/fixtures/wikidata_raw"
   @test_processed_dir "test/fixtures/wikidata_processed"
   @test_meta_dir "test/fixtures/wikidata_meta"
@@ -59,12 +61,30 @@ defmodule XylemTest do
     end
 
     test "returns error for missing CSV" do
-      assert {:error, :enoent} =
-               Xylem.run(csv_path: "nonexistent.csv", property_config_path: @test_config_path)
+      assert Xylem.run(
+               csv_path: "nonexistent.csv",
+               property_config_path: @test_config_path
+             ) ==
+               {:error,
+                %ImportInputError{
+                  source: :mapping_csv,
+                  path: "nonexistent.csv",
+                  reason: :file_read,
+                  details: :enoent,
+                  line: nil
+                }}
     end
 
     test "returns error for missing property config" do
-      assert {:error, :enoent} = Xylem.run(property_config_path: "nonexistent.csv")
+      assert Xylem.run(property_config_path: "nonexistent.csv") ==
+               {:error,
+                %ImportInputError{
+                  source: :property_config,
+                  path: "nonexistent.csv",
+                  reason: :file_read,
+                  details: :enoent,
+                  line: nil
+                }}
     end
   end
 end

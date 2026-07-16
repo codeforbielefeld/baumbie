@@ -22,15 +22,16 @@ defmodule Xylem.Wikidata.PropertyConfig do
   - `source` (optional, default: `"rdfs:label"`) - property of the secondary resource to inline
   - `keep_source` (optional, default: `false`) - whether to keep the original link triple
 
-  The `import` field uses JSON and controls Supabase import:
-  - (empty) or `"skip"` - property is not imported
-  - `group` (required) - name of the `tree_attribute_group`
-  - `attribute_name` (optional) - overrides the attribute name (default: label from description)
+  The `import` field controls Supabase import:
+  - (empty) - import with defaults
+  - `skip` - do not import
+  - JSON object with optional `group` and/or `attribute_name` overrides
   """
 
   NimbleCSV.define(__MODULE__.Parser, separator: ";", escape: "\"")
 
   alias __MODULE__.Parser
+  alias Xylem.ImportInputError
 
   @default_path "priv/config/wikidata_properties.csv"
   def default_path, do: @default_path
@@ -47,7 +48,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
           keep_source: boolean()
         }
   @type import_config :: %{
-          group: String.t(),
+          group: String.t() | nil,
           attribute_name: String.t() | nil
         }
   @type entry :: %{
@@ -70,8 +71,9 @@ defmodule Xylem.Wikidata.PropertyConfig do
   def load(opts \\ []) do
     path = Keyword.get(opts, :path, @default_path)
 
-    with {:ok, content} <- File.read(path) do
-      content |> String.trim_leading(@bom) |> parse()
+    case File.read(path) do
+      {:ok, content} -> content |> String.trim_leading(@bom) |> parse(path)
+      {:error, reason} -> input_error(path, :file_read, reason)
     end
   end
 
@@ -249,43 +251,62 @@ defmodule Xylem.Wikidata.PropertyConfig do
     end
   end
 
-  defp parse(content) do
+  defp parse(content, path) do
     case Parser.parse_string(content, skip_headers: false) do
       [["property_id", "type", "action", "config", "description", "import"] | rows] ->
-        entries =
-          rows
-          |> Enum.map(&parse_row/1)
-          |> Enum.reject(&is_nil/1)
-          |> Map.new()
-
-        {:ok, %__MODULE__{entries: entries}}
+        parse_rows(rows, path)
 
       [] ->
         {:ok, %__MODULE__{entries: %{}}}
 
       _other ->
-        {:error, :invalid_csv_format}
+        input_error(path, :invalid_csv_format, nil, 1)
+    end
+  rescue
+    error in NimbleCSV.ParseError ->
+      input_error(path, :invalid_csv_format, Exception.message(error))
+  end
+
+  defp parse_rows(rows, path) do
+    rows
+    |> Enum.with_index(2)
+    |> Enum.reduce_while({:ok, %{}}, fn {row, line}, {:ok, entries} ->
+      case parse_row(row, path, line) do
+        {:ok, nil} -> {:cont, {:ok, entries}}
+        {:ok, {property_id, entry}} -> {:cont, {:ok, Map.put(entries, property_id, entry)}}
+        {:error, _error} = error -> {:halt, error}
+      end
+    end)
+    |> case do
+      {:ok, entries} -> {:ok, %__MODULE__{entries: entries}}
+      {:error, _error} = error -> error
     end
   end
 
-  defp parse_row([property_id, type, action_str, config_str, description, import_str]) do
+  defp parse_row([property_id, type, action_str, config_str, description, import_str], path, line) do
     property_id = String.trim(property_id)
 
-    if property_id != "" do
+    if property_id == "" do
+      {:ok, nil}
+    else
       action = parse_action(action_str)
 
-      {property_id,
-       %{
-         type: String.trim(type),
-         action: action,
-         config: parse_config(action, config_str),
-         description: String.trim(description),
-         import: parse_import(import_str)
-       }}
+      with {:ok, config} <- parse_config(action, config_str, path, line),
+           {:ok, import} <- parse_import(import_str, path, line) do
+        {:ok,
+         {property_id,
+          %{
+            type: String.trim(type),
+            action: action,
+            config: config,
+            description: String.trim(description),
+            import: import
+          }}}
+      end
     end
   end
 
-  defp parse_row(_), do: nil
+  defp parse_row(_row, path, line), do: input_error(path, :invalid_row_format, nil, line)
 
   defp parse_action(str) do
     case String.trim(str) do
@@ -295,53 +316,65 @@ defmodule Xylem.Wikidata.PropertyConfig do
     end
   end
 
-  defp parse_config(:inline, config_str) do
+  defp parse_config(:inline, config_str, path, line) do
     config_str = String.trim(config_str)
 
     if config_str == "" do
-      raise ArgumentError, "inline action requires a config with at least a \"target\" key"
-    end
+      input_error(path, :invalid_inline_config, config_str, line)
+    else
+      case Jason.decode(config_str) do
+        {:ok, %{"target" => target} = map} when is_binary(target) ->
+          {:ok,
+           %{
+             target: target,
+             source: Map.get(map, "source", "rdfs:label"),
+             keep_source: Map.get(map, "keep_source", false)
+           }}
 
-    case Jason.decode(config_str) do
-      {:ok, map} when is_map(map) ->
-        unless Map.has_key?(map, "target") do
-          raise ArgumentError, "inline config must have a \"target\" key, got: #{config_str}"
-        end
-
-        %{
-          target: Map.fetch!(map, "target"),
-          source: Map.get(map, "source", "rdfs:label"),
-          keep_source: Map.get(map, "keep_source", false)
-        }
-
-      _ ->
-        raise ArgumentError,
-              "inline config must be valid JSON with a \"target\" key, got: #{config_str}"
+        _ ->
+          input_error(path, :invalid_inline_config, config_str, line)
+      end
     end
   end
 
-  defp parse_config(_action, _config_str), do: nil
+  defp parse_config(_action, _config_str, _path, _line), do: {:ok, nil}
 
-  defp parse_import(str) do
+  defp parse_import(str, path, line) do
     case String.trim(str) do
       "" ->
-        nil
+        {:ok, nil}
 
       "skip" ->
-        :skip
+        {:ok, :skip}
 
       json ->
         case Jason.decode(json) do
-          {:ok, %{"group" => group} = map} when is_binary(group) ->
-            %{
-              group: group,
-              attribute_name: Map.get(map, "attribute_name")
-            }
+          {:ok, map} when is_map(map) ->
+            group = Map.get(map, "group")
+            attribute_name = Map.get(map, "attribute_name")
+
+            if optional_string?(group) and optional_string?(attribute_name) do
+              {:ok, %{group: group, attribute_name: attribute_name}}
+            else
+              input_error(path, :invalid_import_config, json, line)
+            end
 
           _ ->
-            raise ArgumentError,
-                  "import config must be valid JSON with a \"group\" key, got: #{json}"
+            input_error(path, :invalid_import_config, json, line)
         end
     end
+  end
+
+  defp optional_string?(value), do: is_nil(value) or is_binary(value)
+
+  defp input_error(path, reason, details, line \\ nil) do
+    {:error,
+     %ImportInputError{
+       source: :property_config,
+       path: path,
+       reason: reason,
+       details: details,
+       line: line
+     }}
   end
 end

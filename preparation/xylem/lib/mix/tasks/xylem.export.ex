@@ -30,6 +30,8 @@ defmodule Mix.Tasks.Xylem.Export do
 
   use Mix.Task
 
+  @requirements ["app.config"]
+
   @switches [
     csv: :string,
     config: :string,
@@ -42,7 +44,7 @@ defmodule Mix.Tasks.Xylem.Export do
   def run(args) do
     {opts, _} = OptionParser.parse!(args, strict: @switches)
 
-    Application.ensure_all_started(:xylem)
+    Mix.Task.run("app.start")
 
     exporter_opts =
       []

@@ -36,6 +36,8 @@ defmodule Xylem.MixProject do
       {:jason, "~> 1.4"},
       {:req, "~> 0.5"},
       {:hackney, "~> 1.17"},
+      {:supabase_potion, "~> 0.7"},
+      {:supabase_postgrest, "~> 1.2"},
       {:exvcr, "~> 0.15", only: :test},
       {:req_cassette, "~> 0.1", only: :test}
     ]

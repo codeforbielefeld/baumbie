@@ -2,6 +2,7 @@ defmodule Xylem.Import.CSVReaderTest do
   use ExUnit.Case
 
   alias Xylem.Import.CSVReader
+  alias Xylem.ImportInputError
 
   @fixtures_path "test/fixtures"
 
@@ -19,7 +20,15 @@ defmodule Xylem.Import.CSVReaderTest do
     end
 
     test "returns error for missing file" do
-      assert {:error, :enoent} = CSVReader.run("nonexistent.csv")
+      assert CSVReader.run("nonexistent.csv") ==
+               {:error,
+                %ImportInputError{
+                  source: :mapping_csv,
+                  path: "nonexistent.csv",
+                  reason: :file_read,
+                  details: :enoent,
+                  line: nil
+                }}
     end
 
     @tag :tmp_dir
@@ -28,7 +37,15 @@ defmodule Xylem.Import.CSVReaderTest do
       path = Path.join(tmp_dir, "invalid.csv")
       File.write!(path, csv_content)
 
-      assert {:error, {:missing_column, "baumart_bo"}} = CSVReader.run(path)
+      assert CSVReader.run(path) ==
+               {:error,
+                %ImportInputError{
+                  source: :mapping_csv,
+                  path: path,
+                  reason: :missing_column,
+                  details: "baumart_bo",
+                  line: 1
+                }}
     after
       File.rm_rf!(tmp_dir)
     end

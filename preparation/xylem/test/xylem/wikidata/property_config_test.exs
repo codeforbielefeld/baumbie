@@ -1,6 +1,7 @@
 defmodule Xylem.Wikidata.PropertyConfigTest do
   use ExUnit.Case
 
+  alias Xylem.ImportInputError
   alias Xylem.Wikidata.PropertyConfig
 
   @test_csv_path "test/fixtures/test_properties.csv"
@@ -11,7 +12,15 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "returns error for missing file" do
-      assert {:error, :enoent} = PropertyConfig.load(path: "nonexistent.csv")
+      assert PropertyConfig.load(path: "nonexistent.csv") ==
+               {:error,
+                %ImportInputError{
+                  source: :property_config,
+                  path: "nonexistent.csv",
+                  reason: :file_read,
+                  details: :enoent,
+                  line: nil
+                }}
     end
 
     test "parses all entries" do
@@ -243,6 +252,43 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
 
       assert %{group: "Gefährdung", attribute_name: "IUCN-Status"} =
                PropertyConfig.import_config(config, "P141")
+    end
+
+    test "parses import config with attribute_name but no group" do
+      csv = """
+      property_id;type;action;config;description;import
+      P141;WikibaseItem;;;;"{""attribute_name"": ""IUCN-Status""}"
+      """
+
+      path = "test/fixtures/test_import.csv"
+      File.write!(path, csv)
+      on_exit(fn -> File.rm(path) end)
+
+      {:ok, config} = PropertyConfig.load(path: path)
+
+      assert PropertyConfig.import_config(config, "P141") ==
+               %{group: nil, attribute_name: "IUCN-Status"}
+    end
+
+    test "returns a structured error for invalid import JSON" do
+      csv = """
+      property_id;type;action;config;description;import
+      P141;WikibaseItem;;;;not-json
+      """
+
+      path = "test/fixtures/test_import.csv"
+      File.write!(path, csv)
+      on_exit(fn -> File.rm(path) end)
+
+      assert PropertyConfig.load(path: path) ==
+               {:error,
+                %ImportInputError{
+                  source: :property_config,
+                  path: path,
+                  reason: :invalid_import_config,
+                  details: "not-json",
+                  line: 2
+                }}
     end
 
     test "returns nil for empty import field" do

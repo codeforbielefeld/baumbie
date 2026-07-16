@@ -31,6 +31,8 @@ defmodule Mix.Tasks.Xylem.Generate do
 
   use Mix.Task
 
+  @requirements ["app.config"]
+
   @valid_fetch_modes Enum.map(Xylem.Wikidata.Fetcher.fetch_modes(), &to_string/1)
 
   @switches [
@@ -47,7 +49,7 @@ defmodule Mix.Tasks.Xylem.Generate do
   def run(args) do
     {opts, _} = OptionParser.parse!(args, strict: @switches)
 
-    Application.ensure_all_started(:xylem)
+    Mix.Task.run("app.start")
 
     xylem_opts =
       []

@@ -1,0 +1,14 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Baumart_bo": "Quercus robur",
+        "Baumart_de": "Stiel-Eiche",
+        "Baumart_ku": "q r"
+      },
+      "geometry": null
+    }
+  ]
+}
