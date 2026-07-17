@@ -21,6 +21,8 @@
 		goto('/');
 	}
 
+	
+
     let categories = {
         "Baum": {"label": "Steckbrief",
 				"icon": "tree",

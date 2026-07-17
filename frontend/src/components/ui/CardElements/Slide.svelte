@@ -1,7 +1,12 @@
 <script>
     let { slide = {} } = $props();
-    
 </script>
 
-<h3 class="text-lg font-semibold mb-2">{slide.title}</h3>
-<p class="text-gray-700">{slide.content}</p>
+{#if slide.content}
+    <div class="flex h-full flex-col gap-3 border border-gray-200 p-4">
+        <h3 class="text-lg font-semibold">{slide.title}</h3>
+        <p class="flex-1 overflow-auto text-gray-700">
+            {slide.content}
+        </p>
+    </div>
+{/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-
+	let { height = $bindable(0) } = $props();
 	let isOpen = $state(false);
 	
 
@@ -32,7 +32,8 @@
 	}
 </script>
 
-<footer class="fixed bottom-0 left-0 right-0 z-[700] bg-white flex justify-around items-center py-4 min-h-16">
+<footer class="fixed bottom-0 left-0 right-0 z-[700] bg-white flex justify-around items-center py-4 min-h-16"
+     bind:clientHeight={height}>
 	<button onclick={() => handleButtonbarClick('accountButton')}
 	><img src="/navbar/settings.svg" class="w-8 h-8" alt="" /></button
 	>

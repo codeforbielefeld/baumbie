@@ -1,7 +1,8 @@
 <script type="ts">
     let {
         categories = {},
-        onCategorySelect = () => {}} = $props();
+        onCategorySelect = () => {},
+    } = $props();
 
     const categoryKeys = $derived(Object.keys(categories));
     let activeCategory = $state('');
@@ -46,7 +47,7 @@
             class:bg-white={activeCategory === category}
             class:text-gray-700={activeCategory !== category}>
             <div class="w-4 h-4 rounded-full flex-shrink-0 mr-2"
-                 class:bg-green-500={activeCategory === category}
+                 class:bg-green-600={activeCategory === category}
                  class:bg-gray-300={activeCategory !== category}></div>
             <span class="text-sm font-medium">{categories[category].label}</span>
         </button>
