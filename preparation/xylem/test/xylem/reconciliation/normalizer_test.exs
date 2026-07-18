@@ -100,9 +100,8 @@ defmodule Xylem.Reconciliation.NormalizerTest do
     end
 
     test "strips parenthetical author plus following name" do
-      assert Normalizer.strip_authors(
-               "Acer cappadocicum Gleditsch subsp. lobelii (Ten.) de Jong"
-             ) == "Acer cappadocicum subsp. lobelii"
+      assert Normalizer.strip_authors("Acer cappadocicum Gleditsch subsp. lobelii (Ten.) de Jong") ==
+               "Acer cappadocicum subsp. lobelii"
     end
 
     test "strips author and keeps var." do

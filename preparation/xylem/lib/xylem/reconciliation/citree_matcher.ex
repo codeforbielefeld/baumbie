@@ -83,8 +83,7 @@ defmodule Xylem.Reconciliation.CitreeMatcher do
                 {[Map.put(match, :strain, strain) | matches], unmatched}
 
               :no_match ->
-                {matches,
-                 [%{name_botanic: name, strain: strain, reason: :no_match} | unmatched]}
+                {matches, [%{name_botanic: name, strain: strain, reason: :no_match} | unmatched]}
             end
         end
       end)
@@ -170,7 +169,8 @@ defmodule Xylem.Reconciliation.CitreeMatcher do
     Enum.find_value(candidates, :no_match, fn candidate ->
       case lookup_parenthetical_target(candidate, lookups) do
         {:ok, match} ->
-          {:ok, %{match | name_botanic: name, level: :parenthetical_synonym, baumart_bo: candidate}}
+          {:ok,
+           %{match | name_botanic: name, level: :parenthetical_synonym, baumart_bo: candidate}}
 
         :no_match ->
           nil
