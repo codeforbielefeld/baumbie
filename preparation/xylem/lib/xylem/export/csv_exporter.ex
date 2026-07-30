@@ -3,7 +3,15 @@ defmodule Xylem.Export.CSVExporter do
   Exports processed Wikidata data to a flat review CSV for manual inspection.
 
   Reads processed TTL files and property config to generate a semicolon-separated
-  CSV with one row per property value per species.
+  CSV with one row per property value per target.
+
+  Iterating validated targets rather than raw mapping rows is what keeps the
+  export free of duplicates: a QID serving several tree types contributes its
+  values to each of them exactly once.
+
+  The mapping is validated before the output path is touched, and rows are
+  written to a temporary file that only replaces the previous export once the
+  run has completed — a failure never truncates a reviewed CSV.
 
   ## Options
 
@@ -11,12 +19,13 @@ defmodule Xylem.Export.CSVExporter do
   - `:property_config_path` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `:processed_dir` - directory of processed .ttl files (default: `priv/data/wikidata/processed`)
   - `:output_path` - output CSV path (default: `priv/data/wikidata/export.csv`)
-  - `:limit` - limit number of species to export
+  - `:limit` - limit number of targets to export
   """
 
   require Logger
 
-  alias Xylem.Import.CSVReader
+  alias Xylem.Import.Mapping
+  alias Xylem.ImportInputError
   alias Xylem.Wikidata
   alias Xylem.Wikidata.{Processor, PropertyConfig}
 
@@ -26,10 +35,14 @@ defmodule Xylem.Export.CSVExporter do
   @default_output_path "priv/data/wikidata/export.csv"
   @csv_header "wikidata_id;baumart_bo;baumart_de;property_id;attribute_name;value;group\n"
 
-  @spec run(keyword()) ::
-          {:ok,
-           %{species_count: non_neg_integer(), row_count: non_neg_integer(), output: Path.t()}}
-          | {:error, term()}
+  @type summary :: %{
+          species_count: non_neg_integer(),
+          row_count: non_neg_integer(),
+          missing_processed: non_neg_integer(),
+          output: Path.t()
+        }
+
+  @spec run(keyword()) :: {:ok, summary()} | {:error, term()}
   def run(opts \\ []) do
     csv_path = Keyword.get(opts, :csv_path, Xylem.default_csv_path())
     config_path = Keyword.get(opts, :property_config_path, PropertyConfig.default_path())
@@ -37,38 +50,101 @@ defmodule Xylem.Export.CSVExporter do
     output_path = Keyword.get(opts, :output_path, @default_output_path)
 
     with {:ok, config} <- PropertyConfig.load(path: config_path),
-         {:ok, species_list} <- CSVReader.run(csv_path) do
-      species_list = maybe_limit(species_list, opts[:limit])
+         {:ok, mapping} <- Mapping.load(csv_path) do
+      Mapping.log_warnings(mapping)
+
+      targets = maybe_limit(Mapping.targets(mapping), opts[:limit])
       importable = PropertyConfig.importable_entries(config)
 
       Logger.info(
-        "Exporting #{length(species_list)} species, #{length(importable)} importable properties"
+        "Exporting #{length(targets)} targets, #{length(importable)} importable properties"
       )
 
-      File.mkdir_p!(Path.dirname(output_path))
-      file = File.open!(output_path, [:write, :utf8])
-      IO.write(file, @csv_header)
+      write_export(targets, processed_dir, output_path, importable, config)
+    end
+  end
 
-      {species_count, row_count} =
-        Enum.reduce(species_list, {0, 0}, fn species, {sc, rc} ->
-          ttl_path = Path.join(processed_dir, "#{species.wikidata_id}.ttl")
+  defp write_export(targets, processed_dir, output_path, importable, config) do
+    File.mkdir_p!(Path.dirname(output_path))
+    tmp_path = "#{output_path}.#{:erlang.unique_integer([:positive])}.tmp"
 
-          if File.exists?(ttl_path) do
-            graph = RDF.Turtle.read_file!(ttl_path)
-            rows = export_species(species, graph, importable, config)
-            Enum.each(rows, &IO.write(file, &1))
-            {sc + 1, rc + length(rows)}
-          else
-            Logger.warning("No processed file for #{species.wikidata_id}, skipping")
-            {sc, rc}
+    # The rows are built as iodata and written in one checked call: a streaming
+    # writer would have to inspect every `IO.write/2` and the final flush, and a
+    # single missed error would publish a truncated review CSV.
+    with {:ok, iodata, stats} <- build_rows(targets, processed_dir, importable, config),
+         :ok <- File.write(tmp_path, iodata),
+         :ok <- File.rename(tmp_path, output_path) do
+      Logger.info(
+        "Exported #{stats.row_count} rows for #{stats.species_count} targets to #{output_path}"
+      )
+
+      if stats.missing_processed > 0 do
+        Logger.warning("#{stats.missing_processed} entities had no processed file")
+      end
+
+      {:ok, Map.put(stats, :output, output_path)}
+    else
+      {:error, reason} ->
+        File.rm(tmp_path)
+        {:error, reason}
+    end
+  end
+
+  defp build_rows(targets, processed_dir, importable, config) do
+    with {:ok, graphs, missing} <- load_graphs(targets, processed_dir) do
+      {iodata, species_count, row_count} =
+        Enum.reduce(targets, {[@csv_header], 0, 0}, fn target, {acc, sc, rc} ->
+          case Map.fetch(graphs, target.wikidata_id) do
+            {:ok, graph} ->
+              rows = export_species(target, graph, importable, config)
+              {[acc, rows], sc + 1, rc + length(rows)}
+
+            :error ->
+              {acc, sc, rc}
           end
         end)
 
-      File.close(file)
-
-      Logger.info("Exported #{row_count} rows for #{species_count} species to #{output_path}")
-      {:ok, %{species_count: species_count, row_count: row_count, output: output_path}}
+      {:ok, iodata,
+       %{
+         species_count: species_count,
+         row_count: row_count,
+         missing_processed: MapSet.size(missing)
+       }}
     end
+  end
+
+  # Each entity is read once, no matter how many targets it serves.
+  defp load_graphs(targets, processed_dir) do
+    targets
+    |> Enum.map(& &1.wikidata_id)
+    |> Enum.uniq()
+    |> Enum.reduce_while({:ok, %{}, MapSet.new()}, fn wikidata_id, {:ok, graphs, missing} ->
+      path = Path.join(processed_dir, "#{wikidata_id}.ttl")
+
+      case RDF.Turtle.read_file(path) do
+        {:ok, graph} ->
+          {:cont, {:ok, Map.put(graphs, wikidata_id, graph), missing}}
+
+        {:error, :enoent} ->
+          Logger.warning("No processed file for #{wikidata_id}, skipping")
+          {:cont, {:ok, graphs, MapSet.put(missing, wikidata_id)}}
+
+        {:error, reason} ->
+          {:halt, read_error(path, reason)}
+      end
+    end)
+  end
+
+  defp read_error(path, reason) do
+    details = if is_exception(reason), do: Exception.message(reason), else: inspect(reason)
+
+    {:error,
+     %ImportInputError{
+       source: :processed_ttl,
+       path: path,
+       reason: :invalid_turtle,
+       details: details
+     }}
   end
 
   defp maybe_limit(list, nil), do: list

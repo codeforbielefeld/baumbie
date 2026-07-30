@@ -9,6 +9,7 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapper do
 
   require Logger
 
+  alias Xylem.Import.Mapping
   alias Xylem.ImportInputError
 
   @type species :: %{name_botanic: String.t(), name: String.t(), name_trivial: String.t()}
@@ -16,7 +17,12 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapper do
   @doc """
   Reduces raw GeoJSON features to distinct tree species.
 
-  Deduplicates by `Baumart_bo` (botanical name), keeping the first occurrence.
+  Deduplicates by the canonical form of `Baumart_bo`, keeping the first
+  occurrence, so that cadastre spellings differing only in whitespace or quoting
+  yield a single `tree_type`. The stored `name_botanic` keeps the cadastre
+  spelling with whitespace collapsed; the cadastre stays authoritative for
+  content.
+
   `name` and `name_trivial` are both taken from `Baumart_de`; `Baumart_ku`
   (internal short code) is ignored. A `Baumart_bo` mapped to conflicting
   `Baumart_de` values is logged and the first value wins.
@@ -24,30 +30,52 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapper do
   @spec distinct_species([map()]) :: [species()]
   def distinct_species(features) do
     features
-    |> Enum.reduce({%{}, []}, fn feature, {seen, order} ->
+    |> Enum.reduce({%{}, [], MapSet.new()}, fn feature, {seen, order, merges} ->
       props = Map.get(feature, "properties", %{})
-      name_botanic = props |> Map.get("Baumart_bo", "") |> String.trim()
+      raw_botanic = props |> Map.get("Baumart_bo", "") |> String.trim()
       name_de = props |> Map.get("Baumart_de", "") |> String.trim()
+      key = Mapping.canonical_name(raw_botanic)
 
       cond do
-        name_botanic == "" ->
-          {seen, order}
+        raw_botanic == "" ->
+          {seen, order, merges}
 
-        Map.has_key?(seen, name_botanic) ->
-          maybe_warn_conflict(name_botanic, seen[name_botanic], name_de)
-          {seen, order}
+        existing = Map.get(seen, key) ->
+          maybe_warn_conflict(raw_botanic, existing.species.name, name_de)
+          {seen, order, collect_merge(merges, existing.raw, raw_botanic)}
 
         true ->
-          {Map.put(seen, name_botanic, name_de), [name_botanic | order]}
+          entry = %{
+            raw: raw_botanic,
+            species: %{
+              name_botanic: collapse_whitespace(raw_botanic),
+              name: name_de,
+              name_trivial: name_de
+            }
+          }
+
+          {Map.put(seen, key, entry), [key | order], merges}
       end
     end)
-    |> then(fn {seen, order} ->
-      order
-      |> Enum.reverse()
-      |> Enum.map(fn name_botanic ->
-        name_de = Map.fetch!(seen, name_botanic)
-        %{name_botanic: name_botanic, name: name_de, name_trivial: name_de}
-      end)
+    |> then(fn {seen, order, merges} ->
+      log_merges(merges)
+      order |> Enum.reverse() |> Enum.map(&Map.fetch!(seen, &1).species)
+    end)
+  end
+
+  defp collapse_whitespace(string), do: String.replace(string, ~r/\s+/, " ")
+
+  # Compares the raw cadastre spellings, so a name that is merely normalized
+  # (every occurrence double-spaced) is not mistaken for a merge of two names.
+  defp collect_merge(merges, kept, kept), do: merges
+  defp collect_merge(merges, kept, merged), do: MapSet.put(merges, {kept, merged})
+
+  defp log_merges(merges) do
+    Enum.each(merges, fn {kept, merged} ->
+      Logger.warning(
+        "Merging cadastre species #{inspect(merged)} into #{inspect(kept)} " <>
+          "(same canonical name)"
+      )
     end)
   end
 
@@ -79,7 +107,9 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapper do
   end
 
   @doc """
-  Matches derived species against the Wikidata mapping by botanical name.
+  Matches derived species against the Wikidata mapping by canonical botanical
+  name, so that spelling differences between cadastre and mapping (double
+  spaces, cultivar quote variants) do not cost a species its Wikidata data.
 
   Returns a triple:
   - `matched` — `[{species, wikidata_id}]` (cadastre species with a mapping)
@@ -91,20 +121,23 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapper do
   @spec match_wikidata_ids([species()], [map()]) ::
           {[{species(), String.t()}], [species()], [map()]}
   def match_wikidata_ids(species_list, mapping) do
-    mapping_by_bo = Map.new(mapping, fn %{baumart_bo: bo} = entry -> {bo, entry} end)
+    mapping_by_key =
+      Map.new(mapping, fn %{baumart_bo: bo} = entry -> {Mapping.canonical_name(bo), entry} end)
 
     {matched, unmatched_cadastre} =
       Enum.split_with(species_list, fn %{name_botanic: bo} ->
-        Map.has_key?(mapping_by_bo, bo)
+        Map.has_key?(mapping_by_key, Mapping.canonical_name(bo))
       end)
 
     matched_pairs =
       Enum.map(matched, fn %{name_botanic: bo} = species ->
-        {species, mapping_by_bo[bo].wikidata_id}
+        {species, mapping_by_key[Mapping.canonical_name(bo)].wikidata_id}
       end)
 
-    matched_bos = MapSet.new(species_list, & &1.name_botanic)
-    unmatched_mapping = Enum.reject(mapping, &MapSet.member?(matched_bos, &1.baumart_bo))
+    species_keys = MapSet.new(species_list, &Mapping.canonical_name(&1.name_botanic))
+
+    unmatched_mapping =
+      Enum.reject(mapping, &MapSet.member?(species_keys, Mapping.canonical_name(&1.baumart_bo)))
 
     {matched_pairs, unmatched_cadastre, unmatched_mapping}
   end

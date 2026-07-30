@@ -34,52 +34,95 @@ defmodule Xylem.Wikidata.Fetcher do
   @doc """
   Fetches Wikidata entities for all species in the list.
 
-  Returns `{:ok, %{successful: [...], failed: [...]}}`.
+  Entities are deduplicated by `wikidata_id` first: fetching, writing and
+  parsing depend only on the entity, so one QID serving several tree types must
+  still cause exactly one request.
+
+  Returns `{:ok, %{successful: [...], failed: [...], stale: [...]}}`, where
+  `stale` lists raw files that belong to no requested entity.
 
   ## Options
 
   - `:fetch` - fetch mode (default: `:auto`)
-    - `:auto` - skip if raw directory already has `.ttl` files, fetch otherwise
-    - `:skip` - skip fetching entirely
+    - `:auto` - load entities that are already cached, fetch only the missing ones
+    - `:skip` - skip fetching entirely, load from the raw directory
     - `:force` - always fetch, even if data exists
     - `:clear` - delete existing `.ttl` files and re-fetch
   - `:raw_dir` - directory for raw .ttl files (default: `#{@default_raw_dir}`)
+  - `:stale_scope` - all legitimately known `wikidata_id`s (default: those in
+    `species_list`). Pass the full mapping when `species_list` is a subset, so a
+    limited run does not report the untouched remainder as stale.
   - `:max_concurrent` - max concurrent HTTP requests (default: #{@default_max_concurrent})
   - `:delay_ms` - delay after each request in ms (default: #{@default_delay_ms})
   - `:plug` - Req plug for testing (optional)
   """
   @spec run([species()], keyword()) ::
-          {:ok, %{successful: [species_with_graph()], failed: [fetch_error()]}}
+          {:ok,
+           %{
+             successful: [species_with_graph()],
+             failed: [fetch_error()],
+             stale: [Path.t()]
+           }}
   def run(species_list, opts \\ []) do
     raw_dir = Keyword.get(opts, :raw_dir, @default_raw_dir)
     fetch_mode = Keyword.get(opts, :fetch, :auto)
+    entities = Enum.uniq_by(species_list, & &1.wikidata_id)
 
-    case resolve_fetch_mode(fetch_mode, raw_dir) do
-      :skip ->
-        Logger.info("Skipping Wikidata fetch, loading existing data from #{raw_dir}")
-        load_existing(species_list, raw_dir)
+    stale_scope = Keyword.get(opts, :stale_scope, Enum.map(entities, & &1.wikidata_id))
 
-      :fetch ->
-        do_fetch(species_list, raw_dir, opts)
-    end
+    {cached, to_fetch} = split_by_mode(fetch_mode, entities, raw_dir)
+    stale = stale_files(stale_scope, raw_dir)
+
+    log_plan(cached, to_fetch, stale, raw_dir)
+
+    cached_results = load_existing(cached, raw_dir)
+    fetched_results = do_fetch(to_fetch, raw_dir, opts)
+
+    {:ok,
+     %{
+       successful: cached_results.successful ++ fetched_results.successful,
+       failed: cached_results.failed ++ fetched_results.failed,
+       stale: stale
+     }}
   end
 
-  defp resolve_fetch_mode(:skip, _raw_dir), do: :skip
-  defp resolve_fetch_mode(:force, _raw_dir), do: :fetch
+  defp split_by_mode(:skip, entities, _raw_dir), do: {entities, []}
+  defp split_by_mode(:force, entities, _raw_dir), do: {[], entities}
 
-  defp resolve_fetch_mode(:clear, raw_dir) do
+  defp split_by_mode(:clear, entities, raw_dir) do
     clear_raw_dir!(raw_dir)
-    :fetch
+    {[], entities}
   end
 
-  defp resolve_fetch_mode(:auto, raw_dir) do
-    if raw_dir_has_data?(raw_dir), do: :skip, else: :fetch
+  defp split_by_mode(:auto, entities, raw_dir) do
+    Enum.split_with(entities, &File.exists?(raw_path(raw_dir, &1.wikidata_id)))
   end
 
-  defp raw_dir_has_data?(raw_dir) do
+  # Raw files that belong to no known entity: obsolete QIDs left behind by a
+  # mapping correction, which would otherwise silently linger in the directory.
+  defp stale_files(stale_scope, raw_dir) do
+    known = MapSet.new(stale_scope)
+
     raw_dir
     |> raw_dir_data()
-    |> Enum.any?()
+    |> Enum.reject(&MapSet.member?(known, Path.basename(&1, ".ttl")))
+  end
+
+  defp log_plan(cached, to_fetch, stale, raw_dir) do
+    if cached != [] do
+      Logger.info("Loading #{length(cached)} cached entities from #{raw_dir}")
+    end
+
+    if to_fetch != [] do
+      Logger.info("Fetching #{length(to_fetch)} Wikidata entities")
+    end
+
+    if stale != [] do
+      Logger.warning(
+        "#{length(stale)} stale raw files in #{raw_dir}: " <>
+          Enum.map_join(stale, ", ", &Path.basename(&1, ".ttl"))
+      )
+    end
   end
 
   defp clear_raw_dir!(raw_dir) do
@@ -94,24 +137,27 @@ defmodule Xylem.Wikidata.Fetcher do
     raw_dir |> Path.join("*.ttl") |> Path.wildcard()
   end
 
+  defp raw_path(raw_dir, wikidata_id), do: Path.join(raw_dir, "#{wikidata_id}.ttl")
+
   defp load_existing(species_list, raw_dir) do
-    results =
-      Enum.reduce(species_list, %{successful: [], failed: []}, fn species, acc ->
-        raw_path = Path.join(raw_dir, "#{species.wikidata_id}.ttl")
+    species_list
+    |> Enum.reduce(%{successful: [], failed: []}, fn species, acc ->
+      path = raw_path(raw_dir, species.wikidata_id)
 
-        case RDF.read_file(raw_path) do
-          {:ok, graph} ->
-            species_with_graph = Map.merge(species, %{graph: graph, raw_path: raw_path})
-            %{acc | successful: [species_with_graph | acc.successful]}
+      case RDF.read_file(path) do
+        {:ok, graph} ->
+          species_with_graph = Map.merge(species, %{graph: graph, raw_path: path})
+          %{acc | successful: [species_with_graph | acc.successful]}
 
-          {:error, reason} ->
-            Logger.warning("Failed to load #{species.wikidata_id}: #{inspect(reason)}")
-            %{acc | failed: [Map.put(species, :error, reason) | acc.failed]}
-        end
-      end)
-
-    {:ok, results}
+        {:error, reason} ->
+          Logger.warning("Failed to load #{species.wikidata_id}: #{inspect(reason)}")
+          %{acc | failed: [Map.put(species, :error, reason) | acc.failed]}
+      end
+    end)
+    |> reverse_results()
   end
+
+  defp do_fetch([], _raw_dir, _opts), do: %{successful: [], failed: []}
 
   defp do_fetch(species_list, raw_dir, opts) do
     max_concurrent = Keyword.get(opts, :max_concurrent, @default_max_concurrent)
@@ -119,31 +165,33 @@ defmodule Xylem.Wikidata.Fetcher do
 
     File.mkdir_p!(raw_dir)
 
-    results =
-      species_list
-      |> Task.async_stream(
-        fn species ->
-          result = fetch_species(species, raw_dir, opts)
-          Process.sleep(delay_ms)
-          result
-        end,
-        max_concurrency: max_concurrent,
-        timeout: 60_000,
-        ordered: false
-      )
-      |> Enum.reduce(%{successful: [], failed: []}, fn
-        {:ok, {:ok, species_with_graph}}, acc ->
-          %{acc | successful: [species_with_graph | acc.successful]}
+    species_list
+    |> Task.async_stream(
+      fn species ->
+        result = fetch_species(species, raw_dir, opts)
+        Process.sleep(delay_ms)
+        result
+      end,
+      max_concurrency: max_concurrent,
+      timeout: 60_000,
+      ordered: false
+    )
+    |> Enum.reduce(%{successful: [], failed: []}, fn
+      {:ok, {:ok, species_with_graph}}, acc ->
+        %{acc | successful: [species_with_graph | acc.successful]}
 
-        {:ok, {:error, species, reason}}, acc ->
-          %{acc | failed: [Map.put(species, :error, reason) | acc.failed]}
+      {:ok, {:error, species, reason}}, acc ->
+        %{acc | failed: [Map.put(species, :error, reason) | acc.failed]}
 
-        {:exit, reason}, acc ->
-          Logger.warning("Task exited unexpectedly: #{inspect(reason)}")
-          acc
-      end)
+      {:exit, reason}, acc ->
+        Logger.warning("Task exited unexpectedly: #{inspect(reason)}")
+        acc
+    end)
+    |> reverse_results()
+  end
 
-    {:ok, results}
+  defp reverse_results(%{successful: successful, failed: failed}) do
+    %{successful: Enum.reverse(successful), failed: Enum.reverse(failed)}
   end
 
   @doc """
@@ -158,16 +206,35 @@ defmodule Xylem.Wikidata.Fetcher do
   def fetch_species(species, raw_dir, opts \\ []) do
     wikidata_id = species.wikidata_id
 
+    # Parse before publishing: a 200 response carrying truncated or malformed
+    # Turtle must not replace a cached graph that is still valid, because the
+    # next `:auto` run would consider that entity cached and never refetch it.
     with :ok <- validate_wikidata_id(wikidata_id),
          {:ok, ttl_content} <- fetch_ttl(wikidata_id, opts),
-         raw_path = Path.join(raw_dir, "#{wikidata_id}.ttl"),
-         :ok <- File.write(raw_path, ttl_content),
-         {:ok, graph} <- RDF.Turtle.read_string(ttl_content) do
-      {:ok, Map.merge(species, %{graph: graph, raw_path: raw_path})}
+         {:ok, graph} <- RDF.Turtle.read_string(ttl_content),
+         path = raw_path(raw_dir, wikidata_id),
+         :ok <- write_atomic(path, ttl_content) do
+      {:ok, Map.merge(species, %{graph: graph, raw_path: path})}
     else
       {:error, reason} ->
         Logger.warning("Failed to fetch #{wikidata_id}: #{inspect(reason)}")
         {:error, species, reason}
+    end
+  end
+
+  # Write to a private temporary file and rename, so a concurrent writer or an
+  # aborted run can never leave a half-written graph under the entity's name.
+  # The suffix keeps `*.ttl` globs from picking the temporary file up.
+  defp write_atomic(path, content) do
+    tmp_path = "#{path}.#{:erlang.unique_integer([:positive])}.tmp"
+
+    with :ok <- File.write(tmp_path, content),
+         :ok <- File.rename(tmp_path, path) do
+      :ok
+    else
+      {:error, reason} ->
+        File.rm(tmp_path)
+        {:error, reason}
     end
   end
 

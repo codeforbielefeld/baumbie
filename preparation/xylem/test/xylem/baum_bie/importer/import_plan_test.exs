@@ -169,7 +169,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                   issues: [
                     %{
                       code: :invalid_qid,
-                      source: :mapping,
+                      source: {:mapping, 2},
                       baumart_bo: "Acer campestre",
                       qid: "q158785"
                     }
@@ -192,7 +192,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                   unmatched_mapping: [],
                   skips: [],
                   warnings: [
-                    %{code: :blank_mapping_qid, baumart_bo: "Waldartiger Bestand"}
+                    %{code: :blank_mapping_qid, baumart_bo: "Waldartiger Bestand", line: 2}
                   ],
                   summary: %{
                     tree_types_derived: 1,
@@ -273,7 +273,8 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                     %{
                       code: :conflicting_mapping_qids,
                       baumart_bo: "Quercus robur",
-                      qids: ["Q165145", "Q42"]
+                      qids: ["Q165145", "Q42"],
+                      lines: [2, 3]
                     }
                   ]
                 }}
@@ -447,7 +448,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                   ],
                   value_rows: [value],
                   unmatched_cadastre: [],
-                  unmatched_mapping: [Enum.at(mapping_rows, 1)],
+                  unmatched_mapping: [Map.put(Enum.at(mapping_rows, 1), :line, 3)],
                   skips: [
                     %{
                       reason: :duplicate_value,
@@ -487,7 +488,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                 }}
     end
 
-    test "deduplicates repeated mapping identities with a warning" do
+    test "rejects a repeated mapping identity, even with a diverging German name" do
       oak = species("Quercus robur", "Stiel-Eiche")
 
       mapping_rows = [
@@ -496,32 +497,59 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
       ]
 
       assert ImportPlan.build(config([]), mapping_rows, [], [oak]) ==
-               {:ok,
-                %ImportPlan{
-                  species: [oak],
-                  wikidata_by_bo: %{"Quercus robur" => "Q165145"},
-                  attribute_defs: [],
-                  value_rows: [],
-                  unmatched_cadastre: [],
-                  unmatched_mapping: [],
-                  skips: [],
-                  warnings: [
+               {:error,
+                %ImportPreflightError{
+                  issues: [
                     %{
                       code: :duplicate_mapping,
                       baumart_bo: "Quercus robur",
-                      wikidata_id: "Q165145"
+                      wikidata_id: "Q165145",
+                      lines: [2, 3]
                     }
-                  ],
-                  summary: %{
-                    tree_types_derived: 1,
-                    matched: 1,
-                    unmatched_cadastre: 0,
-                    unmatched_mapping: 0,
-                    attributes: 0,
-                    values: 0,
-                    skipped_values: 0
-                  }
+                  ]
                 }}
+    end
+
+    test "joins review, mapping and cadastre through the canonical name" do
+      # One species, three spellings: cadastre has the double space, the mapping
+      # a single one, the review CSV the mapping's. All must be one tree type.
+      fir = species("Abies  species", "Tanne")
+      fir_mapping = mapping("Abies species", "Tanne", "Q25243")
+      property = entry("taxonomischer_rang")
+      row = review("Abies species", "Tanne", "Q25243", "P105", "taxonomischer_rang", "Gattung")
+
+      assert {:ok, plan} =
+               ImportPlan.build(config(P105: property), [fir_mapping], [row], [fir])
+
+      assert plan.value_rows == [row]
+      assert plan.skips == []
+      assert plan.unmatched_cadastre == []
+      assert plan.unmatched_mapping == []
+      assert plan.wikidata_by_bo == %{"Abies  species" => "Q25243"}
+      assert plan.summary.matched == 1
+    end
+
+    test "deduplicates values whose botanical names differ only in spelling" do
+      oak = species("Quercus robur", "Stiel-Eiche")
+      oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
+      property = entry("taxonomischer_rang")
+
+      row = review("Quercus robur", "Stiel-Eiche", "Q165145", "P105", "taxonomischer_rang", "Art")
+      respelled = %{row | baumart_bo: "Quercus  robur"}
+
+      assert {:ok, plan} =
+               ImportPlan.build(config(P105: property), [oak_mapping], [row, respelled], [oak])
+
+      assert plan.value_rows == [row]
+
+      assert plan.skips == [
+               %{
+                 reason: :duplicate_value,
+                 line: 3,
+                 baumart_bo: "Quercus  robur",
+                 property_id: "P105"
+               }
+             ]
     end
 
     test "records unknown datatype fallbacks in the plan" do

@@ -20,7 +20,7 @@ defmodule Xylem do
 
   require Logger
 
-  alias Xylem.Import.CSVReader
+  alias Xylem.Import.Mapping
   alias Xylem.Wikidata
   alias Xylem.Wikidata.{Processor, Fetcher, VocabGenerator, PropertyConfig}
   alias RDF.XSD
@@ -52,7 +52,8 @@ defmodule Xylem do
   - `:raw_dir` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
   - `:processed_dir` - directory for processed .ttl files (default: `priv/data/wikidata/processed`)
   - `:meta_dir` - directory for vocab.ttl (default: `priv/data/wikidata/meta`)
-  - `:limit` - limit number of species to process (default: all)
+  - `:limit` - limit number of Wikidata entities to process (default: all). Counts
+    distinct entities, not mapping rows — several tree types may share one entity.
   - `:max_concurrent` - max concurrent HTTP fetches (default: 2)
   - `:delay_ms` - delay after each HTTP request in ms (default: 2000)
   - `:plug` - Req plug for testing (optional)
@@ -63,8 +64,8 @@ defmodule Xylem do
     config_path = Keyword.get(opts, :property_config_path, PropertyConfig.default_path())
 
     with {:ok, config} <- PropertyConfig.load(path: config_path),
-         {:ok, species} <- read_csv(csv_path, opts),
-         {:ok, fetch_result} <- fetch_entities(species, opts),
+         {:ok, all_entities, entities} <- read_entities(csv_path, opts),
+         {:ok, fetch_result} <- fetch_entities(entities, all_entities, opts),
          {:ok, processed} <- process_entities(fetch_result.successful, config, opts),
          {:ok, vocab_path} <- generate_vocab(processed, config, opts),
          :ok <- auto_append_properties(config, config_path, processed, vocab_path) do
@@ -74,30 +75,36 @@ defmodule Xylem do
         vocab_path: vocab_path
       }
 
-      log_summary(result, length(species))
+      log_summary(result, length(entities))
       {:ok, result}
     end
   end
 
-  defp read_csv(path, opts) do
-    Logger.info("Reading CSV from #{path}")
+  # Fetching and processing depend only on the entity, so both run once per
+  # distinct QID even when several tree types map to it.
+  defp read_entities(path, opts) do
+    Logger.info("Reading mapping from #{path}")
 
-    with {:ok, species} <- CSVReader.run(path) do
-      species =
-        if limit = Keyword.get(opts, :limit) do
-          Enum.take(species, limit)
-        else
-          species
-        end
+    with {:ok, mapping} <- Mapping.load(path) do
+      Mapping.log_warnings(mapping)
+      all_entities = Mapping.entities(mapping)
 
-      Logger.info("Found #{length(species)} species")
-      {:ok, species}
+      Logger.info(
+        "Found #{length(Mapping.targets(mapping))} targets, #{length(all_entities)} entities"
+      )
+
+      {:ok, all_entities, maybe_limit(all_entities, Keyword.get(opts, :limit))}
     end
   end
 
-  defp fetch_entities(species, opts) do
-    Logger.info("Fetching #{length(species)} Wikidata entities...")
-    Fetcher.run(species, opts)
+  defp maybe_limit(entities, nil), do: entities
+  defp maybe_limit(entities, limit), do: Enum.take(entities, limit)
+
+  # Staleness is judged against the whole mapping, not the limited subset, so a
+  # `--limit` run does not denounce the untouched remainder of the cache.
+  defp fetch_entities(entities, all_entities, opts) do
+    opts = Keyword.put(opts, :stale_scope, Enum.map(all_entities, & &1.wikidata_id))
+    Fetcher.run(entities, opts)
   end
 
   defp process_entities(species_with_graphs, config, opts) do
@@ -211,7 +218,7 @@ defmodule Xylem do
 
     Logger.info("""
     Pipeline complete:
-      Total species: #{total}
+      Total entities: #{total}
       Successful: #{successful}
       Failed fetches: #{failed_fetch}
     """)

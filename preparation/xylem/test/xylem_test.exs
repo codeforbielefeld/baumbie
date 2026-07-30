@@ -60,6 +60,46 @@ defmodule XylemTest do
       end
     end
 
+    test "fetches, processes and limits distinct entities rather than mapping rows" do
+      test_pid = self()
+
+      ttl = """
+      @prefix wd: <http://www.wikidata.org/entity/> .
+      @prefix wdt: <http://www.wikidata.org/prop/direct/> .
+      wd:Q26745 wdt:P105 "Art" .
+      """
+
+      plug = fn conn ->
+        send(test_pid, {:fetched, conn.request_path})
+        Plug.Conn.resp(conn, 200, ttl)
+      end
+
+      # 3 mapping rows, 2 entities: limit 1 must yield the first entity only.
+      {:ok, result} =
+        Xylem.run(
+          csv_path: "test/fixtures/test_species_shared_qid.csv",
+          property_config_path: @test_config_path,
+          raw_dir: @test_raw_dir,
+          processed_dir: @test_processed_dir,
+          meta_dir: @test_meta_dir,
+          fetch: :force,
+          limit: 1,
+          delay_ms: 0,
+          plug: plug,
+          descriptions: RDF.Graph.new()
+        )
+
+      assert_received {:fetched, "/wiki/Special:EntityData/Q26745.ttl"}
+      refute_received {:fetched, _}
+
+      assert Enum.map(result.successful, & &1.wikidata_id) == ["Q26745"]
+      assert Path.wildcard(Path.join(@test_raw_dir, "*")) == ["#{@test_raw_dir}/Q26745.ttl"]
+
+      assert Path.wildcard(Path.join(@test_processed_dir, "*")) == [
+               "#{@test_processed_dir}/Q26745.ttl"
+             ]
+    end
+
     test "returns error for missing CSV" do
       assert Xylem.run(
                csv_path: "nonexistent.csv",

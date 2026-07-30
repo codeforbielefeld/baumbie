@@ -3,12 +3,43 @@ defmodule Xylem.ImportPreflightError do
 
   defexception issues: []
 
+  @type issue :: %{required(:code) => atom(), optional(atom()) => term()}
+  @type t :: %__MODULE__{issues: [issue()]}
+
   @impl Exception
   def message(%__MODULE__{issues: issues}) do
-    "Wikidata import preflight failed:\n" <>
-      Enum.map_join(issues, "\n", fn %{code: code} = issue ->
-        "  - #{code}: #{inspect(Map.delete(issue, :code))}"
-      end)
+    "Wikidata import preflight failed:\n" <> format_issues(issues)
+  end
+
+  @doc false
+  @spec format_issues([issue()]) :: String.t()
+  def format_issues(issues) do
+    Enum.map_join(issues, "\n", fn %{code: code} = issue ->
+      "  - #{code}: #{inspect(Map.delete(issue, :code))}"
+    end)
+  end
+end
+
+defmodule Xylem.MappingValidationError do
+  @moduledoc """
+  Structured failure for a species mapping that cannot yield unambiguous
+  identities.
+
+  Issues use the same shape as `Xylem.ImportPreflightError` so the import
+  preflight can aggregate them with its own findings.
+  """
+
+  alias Xylem.ImportPreflightError
+
+  defexception path: nil, issues: []
+
+  @type t :: %__MODULE__{path: Path.t() | nil, issues: [ImportPreflightError.issue()]}
+
+  @impl Exception
+  def message(%__MODULE__{} = error) do
+    location = if error.path, do: " in #{error.path}", else: ""
+
+    "Mapping validation failed#{location}:\n" <> ImportPreflightError.format_issues(error.issues)
   end
 end
 

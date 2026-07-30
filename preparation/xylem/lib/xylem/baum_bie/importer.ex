@@ -18,6 +18,7 @@ defmodule Xylem.BaumBie.Importer do
   alias Xylem.BaumBie.Repo
   alias Xylem.BaumBie.Importer.{AttributeWriter, ImportPlan, ReviewCSV, TreeTypeMapper}
   alias Xylem.Import.CSVReader
+  alias Xylem.Import.Mapping
   alias Xylem.Supabase
   alias Xylem.UnexpectedSupabaseResponseError
   alias Xylem.Wikidata.PropertyConfig
@@ -171,9 +172,14 @@ defmodule Xylem.BaumBie.Importer do
       row = TreeTypeMapper.build_tree_type_row(sp, Map.get(wikidata_by_bo, sp.name_botanic))
 
       case Repo.upsert(client, "tree_types", row, "name_botanic") do
-        {:ok, %{"uuid" => uuid}} -> {:cont, {:ok, Map.put(acc, sp.name_botanic, uuid)}}
-        {:ok, other} -> {:halt, missing_uuid("tree_types", other)}
-        {:error, _} = error -> {:halt, error}
+        {:ok, %{"uuid" => uuid}} ->
+          {:cont, {:ok, Map.put(acc, Mapping.canonical_name(sp.name_botanic), uuid)}}
+
+        {:ok, other} ->
+          {:halt, missing_uuid("tree_types", other)}
+
+        {:error, _} = error ->
+          {:halt, error}
       end
     end)
   end
@@ -211,7 +217,7 @@ defmodule Xylem.BaumBie.Importer do
       Enum.map(plan.value_rows, fn row ->
         AttributeWriter.build_value_row(
           row,
-          Map.fetch!(tree_type_uuids, row.baumart_bo),
+          Map.fetch!(tree_type_uuids, Mapping.canonical_name(row.baumart_bo)),
           Map.fetch!(current_attribute_uuids, row.property_id),
           Map.fetch!(type_by_property, row.property_id)
         )

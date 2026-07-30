@@ -7,20 +7,25 @@ defmodule Mix.Tasks.Xylem.Export do
 
       $ mix xylem.export [options]
 
+  One row is written per property value per target, where a target is a
+  validated `(baumart_bo, wikidata_id)` pair. The mapping is validated before
+  the output file is opened, and the result replaces the previous export only
+  once the run has completed — a failure leaves a reviewed CSV untouched.
+
   ## Options
 
   - `--csv` - path to input species CSV (default: `priv/data/baumbie_wikidata_mapping.csv`)
   - `--config` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `--processed` - directory of processed .ttl files (default: `priv/data/wikidata/processed`)
   - `--output` - output CSV path (default: `priv/data/wikidata/export.csv`)
-  - `--limit` - limit number of species to export
+  - `--limit` - limit number of targets to export
 
   ## Examples
 
-      # Export all species
+      # Export all targets
       mix xylem.export
 
-      # Export first 10 species
+      # Export the first 10 targets
       mix xylem.export --limit 10
 
       # Custom output path
@@ -57,8 +62,12 @@ defmodule Mix.Tasks.Xylem.Export do
     case Xylem.Export.CSVExporter.run(exporter_opts) do
       {:ok, result} ->
         Mix.shell().info(
-          "Exported #{result.row_count} rows for #{result.species_count} species to #{result.output}"
+          "Exported #{result.row_count} rows for #{result.species_count} targets to #{result.output}"
         )
+
+        if result.missing_processed > 0 do
+          Mix.shell().info("Entities without a processed file: #{result.missing_processed}")
+        end
 
       {:error, reason} ->
         Mix.shell().error("Export failed: #{inspect(reason)}")

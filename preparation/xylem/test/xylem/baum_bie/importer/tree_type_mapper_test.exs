@@ -55,6 +55,65 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapperTest do
 
       assert result =~ "conflicting Baumart_de"
     end
+
+    test "merges cadastre names that differ only in whitespace into one tree type" do
+      features = [
+        feature("Crataegus species", "Weißdorn"),
+        feature("Crataegus  species", "Weißdorn")
+      ]
+
+      log =
+        capture_log(fn ->
+          assert TreeTypeMapper.distinct_species(features) == [
+                   %{
+                     name_botanic: "Crataegus species",
+                     name: "Weißdorn",
+                     name_trivial: "Weißdorn"
+                   }
+                 ]
+        end)
+
+      assert log =~ ~s(Merging cadastre species "Crataegus  species" into "Crataegus species")
+    end
+
+    test "collapses whitespace in the stored botanical name" do
+      assert TreeTypeMapper.distinct_species([feature("Abies  species", "Tanne")]) == [
+               %{name_botanic: "Abies species", name: "Tanne", name_trivial: "Tanne"}
+             ]
+    end
+
+    test "does not report a merge when only one spelling occurs" do
+      # Every occurrence is double-spaced: the name is normalized, not merged.
+      features = List.duplicate(feature("Ulmus  species", "Ulme"), 3)
+
+      log =
+        capture_log(fn ->
+          assert TreeTypeMapper.distinct_species(features) == [
+                   %{name_botanic: "Ulmus species", name: "Ulme", name_trivial: "Ulme"}
+                 ]
+        end)
+
+      refute log =~ "Merging cadastre species"
+    end
+
+    test "reports a merge once regardless of how many features share the name" do
+      features =
+        [feature("Crataegus species", "Weißdorn")] ++
+          List.duplicate(feature("Crataegus  species", "Weißdorn"), 5)
+
+      log =
+        capture_log(fn ->
+          assert TreeTypeMapper.distinct_species(features) == [
+                   %{
+                     name_botanic: "Crataegus species",
+                     name: "Weißdorn",
+                     name_trivial: "Weißdorn"
+                   }
+                 ]
+        end)
+
+      assert log |> String.split("Merging cadastre species") |> length() == 2
+    end
   end
 
   describe "build_tree_type_row/2" do
@@ -85,7 +144,7 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapperTest do
     test "splits into matched, unmatched cadastre and unmatched mapping" do
       species = [
         %{name_botanic: "Quercus robur", name: "Stiel-Eiche", name_trivial: "Stiel-Eiche"},
-        %{name_botanic: "Abies  species", name: "Tanne", name_trivial: "Tanne"}
+        %{name_botanic: "Betula utilis", name: "Himalaja-Birke", name_trivial: "Himalaja-Birke"}
       ]
 
       mapping = [
@@ -95,6 +154,32 @@ defmodule Xylem.BaumBie.Importer.TreeTypeMapperTest do
 
       assert TreeTypeMapper.match_wikidata_ids(species, mapping) ==
                {[{Enum.at(species, 0), "Q165145"}], [Enum.at(species, 1)], [Enum.at(mapping, 1)]}
+    end
+
+    test "matches across whitespace and cultivar quote differences" do
+      species = [
+        %{name_botanic: "Abies  species", name: "Tanne", name_trivial: "Tanne"},
+        %{
+          name_botanic: "Acer platanoides `Globosum`",
+          name: "Kugel-Ahorn",
+          name_trivial: "Kugel-Ahorn"
+        }
+      ]
+
+      mapping = [
+        %{baumart_bo: "Abies species", baumart_de: "Tanne", wikidata_id: "Q25243"},
+        %{
+          baumart_bo: "Acer platanoides 'Globosum'",
+          baumart_de: "Kugel-Ahorn",
+          wikidata_id: "Q9577526"
+        }
+      ]
+
+      assert TreeTypeMapper.match_wikidata_ids(species, mapping) ==
+               {[
+                  {Enum.at(species, 0), "Q25243"},
+                  {Enum.at(species, 1), "Q9577526"}
+                ], [], []}
     end
   end
 

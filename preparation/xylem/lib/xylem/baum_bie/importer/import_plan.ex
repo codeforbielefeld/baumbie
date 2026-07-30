@@ -7,10 +7,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
   """
 
   alias Xylem.BaumBie.Importer.{TreeTypeMapper, TypeMapper}
+  alias Xylem.Import.Mapping
   alias Xylem.ImportPreflightError
+  alias Xylem.Wikidata
   alias Xylem.Wikidata.PropertyConfig
-
-  @qid ~r/^Q[1-9][0-9]*$/
 
   @enforce_keys [
     :species,
@@ -120,48 +120,12 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
     end
   end
 
-  defp prepare_mapping(mapping) do
-    {by_name, order, warnings, issues} =
-      Enum.reduce(mapping, {%{}, [], [], []}, fn entry, {by_name, order, warnings, issues} ->
-        name = entry.baumart_bo
-        qid = entry.wikidata_id
-
-        cond do
-          qid == "" ->
-            warning = %{code: :blank_mapping_qid, baumart_bo: name}
-            {by_name, order, [warning | warnings], issues}
-
-          not valid_qid?(qid) ->
-            issue = %{code: :invalid_qid, source: :mapping, baumart_bo: name, qid: qid}
-            {by_name, order, warnings, [issue | issues]}
-
-          existing = Map.get(by_name, name) ->
-            if existing.wikidata_id == qid do
-              warning = %{code: :duplicate_mapping, baumart_bo: name, wikidata_id: qid}
-              {by_name, order, [warning | warnings], issues}
-            else
-              issue = %{
-                code: :conflicting_mapping_qids,
-                baumart_bo: name,
-                qids: [existing.wikidata_id, qid]
-              }
-
-              {by_name, order, warnings, [issue | issues]}
-            end
-
-          true ->
-            {Map.put(by_name, name, entry), [name | order], warnings, issues}
-        end
-      end)
-
-    deduplicated = order |> Enum.reverse() |> Enum.map(&Map.fetch!(by_name, &1))
-
-    {deduplicated, warnings |> Enum.reverse() |> Enum.uniq(),
-     issues |> Enum.reverse() |> Enum.uniq()}
-  end
+  # Delegated so export and import cannot drift apart on what a mapping identity
+  # is; the issues come back in this module's shape and join its own preflight.
+  defp prepare_mapping(mapping), do: Mapping.validate(mapping)
 
   defp validate_review_rows(indexed_rows, mapping, config) do
-    mapping_by_name = Map.new(mapping, &{&1.baumart_bo, &1})
+    mapping_by_name = Map.new(mapping, &{Mapping.canonical_name(&1.baumart_bo), &1})
 
     indexed_rows
     |> Enum.reduce({[], []}, fn {row, line}, {warnings, issues} ->
@@ -177,10 +141,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
   end
 
   defp validate_identity(row, line, mapping_by_name) do
-    mapping = Map.get(mapping_by_name, row.baumart_bo)
+    mapping = Map.get(mapping_by_name, Mapping.canonical_name(row.baumart_bo))
 
     cond do
-      not valid_qid?(row.wikidata_id) ->
+      not Wikidata.valid_id?(row.wikidata_id) ->
         {[],
          [
            %{
@@ -296,8 +260,8 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
       TreeTypeMapper.match_wikidata_ids(species, mapping)
 
     wikidata_by_bo = Map.new(matched, fn {item, qid} -> {item.name_botanic, qid} end)
-    mapping_names = MapSet.new(mapping, & &1.baumart_bo)
-    species_names = MapSet.new(species, & &1.name_botanic)
+    mapping_names = MapSet.new(mapping, &Mapping.canonical_name(&1.baumart_bo))
+    species_names = MapSet.new(species, &Mapping.canonical_name(&1.name_botanic))
     attributes_by_property = Map.new(attribute_defs, &{&1.property_id, &1})
 
     {value_rows, skips} =
@@ -336,11 +300,12 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
     indexed_rows
     |> Enum.reduce({[], [], MapSet.new()}, fn {row, line}, {values, skips, seen} ->
       attribute = Map.get(attributes_by_property, row.property_id)
+      name_key = Mapping.canonical_name(row.baumart_bo)
 
       reason =
         cond do
-          not MapSet.member?(mapping_names, row.baumart_bo) -> :missing_mapping
-          not MapSet.member?(species_names, row.baumart_bo) -> :no_cadastre_tree_type
+          not MapSet.member?(mapping_names, name_key) -> :missing_mapping
+          not MapSet.member?(species_names, name_key) -> :no_cadastre_tree_type
           not PropertyConfig.importable?(config, row.property_id) -> :property_not_importable
           is_nil(attribute) -> :missing_attribute_name
           MapSet.member?(seen, value_key(row, attribute)) -> :duplicate_value
@@ -356,8 +321,11 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
     |> then(fn {values, skips, _seen} -> {Enum.reverse(values), Enum.reverse(skips)} end)
   end
 
+  # Mirrors the database identity (tree_type, attribute, value, unit). The
+  # botanical name is canonicalized so deduplication cannot slip past a mere
+  # spelling difference; `unit` is a placeholder until the export carries it.
   defp value_key(row, attribute) do
-    {row.baumart_bo, attribute.attribute_name, row.value, nil}
+    {Mapping.canonical_name(row.baumart_bo), attribute.attribute_name, row.value, nil}
   end
 
   defp skip(row, line, reason) do
@@ -368,6 +336,4 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
       property_id: row.property_id
     }
   end
-
-  defp valid_qid?(qid), do: is_binary(qid) and Regex.match?(@qid, qid)
 end

@@ -20,7 +20,13 @@ defmodule Xylem.BaumBie.Repo do
 
   # PostgREST encodes `in` filters into the request URL. Keep each DELETE below
   # Kong/nginx's common 8 KiB request-line limit and retain headroom for the path.
+  # Both filters need chunking. A percent-encoded UUID inside an `in` list costs
+  # 39 bytes, so one tree-type chunk of 100 leaves room for only ~90 attributes.
+  # The Wikidata provider owns ~70 today and the property config grows by
+  # auto-append, so the attribute filter is chunked rather than left to drift
+  # into the limit.
   @delete_tree_type_chunk_size 100
+  @delete_attribute_chunk_size 40
   @max_delete_request_target_bytes 7_500
   @attribute_values_table "tree_type_attribute_values"
 
@@ -103,8 +109,9 @@ defmodule Xylem.BaumBie.Repo do
   Deletes `tree_type_attribute_values` for the given tree types, restricted to
   the given attributes (so only Wikidata-provider values are removed).
 
-  Tree types are split into bounded chunks because PostgREST represents both
-  filters in the request URL.
+  Both filters are split into bounded chunks because PostgREST represents them
+  in the request URL; the deletion is therefore issued as one request per
+  combination of a tree-type chunk and an attribute chunk.
   """
   @spec delete_values_for(Supabase.Client.t(), [String.t()], [String.t()]) ::
           :ok | {:error, term()}
@@ -113,9 +120,9 @@ defmodule Xylem.BaumBie.Repo do
 
   def delete_values_for(client, tree_type_uuids, attribute_uuids) do
     tree_type_uuids
-    |> delete_tree_type_chunks()
-    |> Enum.reduce_while(:ok, fn tree_type_chunk, :ok ->
-      case delete_values_chunk(client, tree_type_chunk, attribute_uuids) do
+    |> delete_chunk_pairs(attribute_uuids)
+    |> Enum.reduce_while(:ok, fn {tree_type_chunk, attribute_chunk}, :ok ->
+      case delete_values_chunk(client, tree_type_chunk, attribute_chunk) do
         :ok -> {:cont, :ok}
         {:error, _} = error -> {:halt, error}
       end
@@ -123,18 +130,32 @@ defmodule Xylem.BaumBie.Repo do
   end
 
   @doc false
-  @spec delete_tree_type_chunks([String.t()]) :: [[String.t()]]
-  def delete_tree_type_chunks(tree_type_uuids) do
-    Enum.chunk_every(tree_type_uuids, @delete_tree_type_chunk_size)
+  @spec delete_chunk_pairs([String.t()], [String.t()]) :: [{[String.t()], [String.t()]}]
+  def delete_chunk_pairs(tree_type_uuids, attribute_uuids) do
+    for tree_type_chunk <- Enum.chunk_every(tree_type_uuids, @delete_tree_type_chunk_size),
+        attribute_chunk <- Enum.chunk_every(attribute_uuids, @delete_attribute_chunk_size),
+        do: {tree_type_chunk, attribute_chunk}
+  end
+
+  @doc false
+  @spec delete_request_target_bytes(Supabase.Client.t(), [String.t()], [String.t()]) ::
+          non_neg_integer()
+  def delete_request_target_bytes(client, tree_type_uuids, attribute_uuids) do
+    client
+    |> delete_request(tree_type_uuids, attribute_uuids)
+    |> request_target_bytes()
+  end
+
+  defp delete_request(client, tree_type_uuids, attribute_uuids) do
+    client
+    |> PostgREST.from(@attribute_values_table)
+    |> PostgREST.within("tree_type_uuid", tree_type_uuids)
+    |> PostgREST.within("tree_type_attribute_uuid", attribute_uuids)
+    |> PostgREST.delete(returning: :minimal)
   end
 
   defp delete_values_chunk(client, tree_type_uuids, attribute_uuids) do
-    request =
-      client
-      |> PostgREST.from(@attribute_values_table)
-      |> PostgREST.within("tree_type_uuid", tree_type_uuids)
-      |> PostgREST.within("tree_type_attribute_uuid", attribute_uuids)
-      |> PostgREST.delete(returning: :minimal)
+    request = delete_request(client, tree_type_uuids, attribute_uuids)
 
     with :ok <- validate_delete_request_size(request),
          {:ok, _response} <- execute_minimal(request) do
@@ -142,6 +163,8 @@ defmodule Xylem.BaumBie.Repo do
     end
   end
 
+  # Backstop: the chunk sizes above already keep every request within budget, so
+  # this only fires if the encoding or an identifier format changes.
   defp validate_delete_request_size(%Request{} = request) do
     request_target_bytes = request_target_bytes(request)
 

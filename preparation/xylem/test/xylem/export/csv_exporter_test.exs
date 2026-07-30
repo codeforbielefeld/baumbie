@@ -73,7 +73,7 @@ defmodule Xylem.Export.CSVExporterTest do
     refute Enum.any?(data_rows, &String.contains?(&1, ";P41;"))
   end
 
-  test "skips species without processed TTL" do
+  test "skips species without processed TTL and reports how many" do
     assert {:ok, result} =
              CSVExporter.run(
                csv_path: @test_species_path,
@@ -84,5 +84,128 @@ defmodule Xylem.Export.CSVExporterTest do
 
     # Q165145 has a TTL, Q158776 does not
     assert result.species_count == 1
+    assert result.missing_processed == 1
+  end
+
+  describe "shared entities and multi-values" do
+    @shared_qid_path "test/fixtures/export_test/shared_qid.csv"
+
+    @multi_value_ttl """
+    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix wdt: <http://www.wikidata.org/prop/direct/> .
+    @prefix wd: <http://www.wikidata.org/entity/> .
+
+    wd:Q26745
+        rdfs:label "Spitzahorn"@de ;
+        <https://www.baumbie.org/xylem/vocab/uebergeordnetes_taxon> "Seifenbaumartige"@de, "Ahorne"@de ;
+        wdt:P171 wd:Q42292, wd:Q156901 ;
+        wdt:P225 "Acer platanoides", "Acer platanoides L." .
+
+    wd:Q42292 rdfs:label "Seifenbaumartige"@de .
+    wd:Q156901 rdfs:label "Ahorne"@de .
+    """
+
+    setup do
+      File.write!(Path.join(@test_processed_dir, "Q26745.ttl"), @multi_value_ttl)
+
+      File.write!(@shared_qid_path, """
+      baumart_bo,baumart_de,wikidata_id
+      Acer platanoides,Spitz-Ahorn,Q26745
+      Acer platanoides 'Columnaris',Säulen-Ahorn,Q26745
+      """)
+
+      :ok
+    end
+
+    test "emits every value once per target and keeps genuine multi-values" do
+      assert {:ok, result} =
+               CSVExporter.run(
+                 csv_path: @shared_qid_path,
+                 property_config_path: @test_config_path,
+                 processed_dir: @test_processed_dir,
+                 output_path: @test_output_path
+               )
+
+      assert result.species_count == 2
+
+      [_header | rows] = @test_output_path |> File.read!() |> String.split("\n", trim: true)
+
+      # Sorted because the object order within one property is not guaranteed by
+      # RDF.ex; every other aspect of the expectation is exact.
+      assert Enum.sort(rows) ==
+               Enum.sort([
+                 "Q26745;Acer platanoides;Spitz-Ahorn;P171;uebergeordnetes_taxon;Seifenbaumartige;",
+                 "Q26745;Acer platanoides;Spitz-Ahorn;P171;uebergeordnetes_taxon;Ahorne;",
+                 "Q26745;Acer platanoides;Spitz-Ahorn;P225;wissenschaftlicher_name;Acer platanoides;",
+                 "Q26745;Acer platanoides;Spitz-Ahorn;P225;wissenschaftlicher_name;Acer platanoides L.;",
+                 "Q26745;Acer platanoides 'Columnaris';Säulen-Ahorn;P171;uebergeordnetes_taxon;Seifenbaumartige;",
+                 "Q26745;Acer platanoides 'Columnaris';Säulen-Ahorn;P171;uebergeordnetes_taxon;Ahorne;",
+                 "Q26745;Acer platanoides 'Columnaris';Säulen-Ahorn;P225;wissenschaftlicher_name;Acer platanoides;",
+                 "Q26745;Acer platanoides 'Columnaris';Säulen-Ahorn;P225;wissenschaftlicher_name;Acer platanoides L.;"
+               ])
+
+      assert length(rows) == length(Enum.uniq(rows))
+    end
+  end
+
+  describe "output safety" do
+    @sentinel "reviewed;content;must;survive\n"
+    @broken_mapping_path "test/fixtures/export_test/broken_mapping.csv"
+
+    setup do
+      File.write!(@test_output_path, @sentinel)
+      :ok
+    end
+
+    test "leaves an existing export untouched when the mapping is invalid" do
+      File.write!(@broken_mapping_path, """
+      baumart_bo,baumart_de,wikidata_id
+      Quercus robur,Stiel-Eiche,Q165145
+      Quercus robur,Stiel-Eiche,Q165145
+      """)
+
+      assert {:error, %Xylem.MappingValidationError{issues: [%{code: :duplicate_mapping}]}} =
+               CSVExporter.run(
+                 csv_path: @broken_mapping_path,
+                 property_config_path: @test_config_path,
+                 processed_dir: @test_processed_dir,
+                 output_path: @test_output_path
+               )
+
+      assert File.read!(@test_output_path) == @sentinel
+    end
+
+    @tag :write_failure
+    test "leaves an existing export untouched when the write itself fails" do
+      dir = Path.dirname(@test_output_path)
+      File.chmod!(dir, 0o500)
+      on_exit(fn -> File.chmod(dir, 0o755) end)
+
+      result =
+        CSVExporter.run(
+          csv_path: @test_species_path,
+          property_config_path: @test_config_path,
+          processed_dir: @test_processed_dir,
+          output_path: @test_output_path
+        )
+
+      assert {:error, :eacces} = result
+      assert File.read!(@test_output_path) == @sentinel
+    end
+
+    test "leaves an existing export untouched when a processed TTL is broken" do
+      File.write!(Path.join(@test_processed_dir, "Q165145.ttl"), "this is not turtle")
+
+      assert {:error, %Xylem.ImportInputError{source: :processed_ttl, reason: :invalid_turtle}} =
+               CSVExporter.run(
+                 csv_path: @test_species_path,
+                 property_config_path: @test_config_path,
+                 processed_dir: @test_processed_dir,
+                 output_path: @test_output_path
+               )
+
+      assert File.read!(@test_output_path) == @sentinel
+      assert Path.wildcard(@test_output_path <> "*") == [@test_output_path]
+    end
   end
 end

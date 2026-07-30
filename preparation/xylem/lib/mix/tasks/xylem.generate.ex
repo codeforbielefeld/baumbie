@@ -10,19 +10,24 @@ defmodule Mix.Tasks.Xylem.Generate do
 
   - `--csv` - path to input CSV file (default: `priv/data/baumbie_wikidata_mapping.csv`)
   - `--config` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
-  - `--fetch` - Wikidata fetch mode: `auto` (default), `skip`, `force`, or `clear`
+  - `--fetch` - Wikidata fetch mode: `auto` (default), `skip`, `force`, or `clear`.
+    `auto` loads already cached entities and fetches only the missing ones.
   - `--raw` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
   - `--processed` - directory for processed .ttl files (default: `priv/data/wikidata/processed`)
   - `--meta` - directory for vocab.ttl (default: `priv/data/wikidata/meta`)
-  - `--limit` - limit number of species to process
+  - `--limit` - limit number of Wikidata entities to process. Counts distinct
+    entities, not mapping rows — several tree types may share one entity.
 
   ## Examples
 
-      # Process all species
+      # Process all entities
       mix xylem.generate
 
-      # Process first 10 species, skip fetching
+      # Process the first 10 entities, without fetching
       mix xylem.generate --limit 10 --fetch skip
+
+      # Re-fetch everything from scratch, dropping obsolete raw files
+      mix xylem.generate --fetch clear
 
       # Use custom paths
       mix xylem.generate --csv my_species.csv --processed output/processed
@@ -63,7 +68,7 @@ defmodule Mix.Tasks.Xylem.Generate do
 
     case Xylem.run(xylem_opts) do
       {:ok, result} ->
-        Mix.shell().info("Processed #{length(result.successful)} species")
+        Mix.shell().info("Processed #{length(result.successful)} entities")
 
         if length(result.failed_fetches) > 0 do
           Mix.shell().info("Failed fetches: #{length(result.failed_fetches)}")

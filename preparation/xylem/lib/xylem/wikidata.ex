@@ -6,7 +6,9 @@ defmodule Xylem.Wikidata do
   @wikidata_base_url "https://www.wikidata.org/wiki/Special:EntityData"
   @wdt_prefix "http://www.wikidata.org/prop/direct/"
   @wd_prefix "http://www.wikidata.org/entity/"
-  @wikidata_id_pattern ~r/^Q\d+$/
+  # Entity IDs are numbered from 1 upwards, so neither "Q0" nor a leading zero
+  # can denote a real entity.
+  @wikidata_id_pattern ~r/^Q[1-9][0-9]*$/
 
   def wdt_prefix, do: @wdt_prefix
   def wd_prefix, do: @wd_prefix
@@ -28,9 +30,13 @@ defmodule Xylem.Wikidata do
   """
   def entity_url(wikidata_id), do: "#{@wikidata_base_url}/#{wikidata_id}.ttl?uselang=de"
 
+  @doc "Returns whether `id` is a syntactically valid Wikidata entity ID."
+  @spec valid_id?(term()) :: boolean()
+  def valid_id?(id), do: is_binary(id) and Regex.match?(@wikidata_id_pattern, id)
+
   @doc "Validates a Wikidata ID (e.g., 'Q12345')."
   def validate_wikidata_id(id) do
-    if Regex.match?(@wikidata_id_pattern, id) do
+    if valid_id?(id) do
       :ok
     else
       {:error, {:invalid_wikidata_id, id}}
