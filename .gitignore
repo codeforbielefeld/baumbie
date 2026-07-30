@@ -18,10 +18,16 @@
 # Python-Preprocessing / Vorbereitung
 # ============================
 
+# Generated Python bytecode caches.
+__pycache__/
+*.py[cod]
+
+# Canonical Python environment; `venv` remains ignored for legacy local setups.
+preparation/.venv
+preparation/venv
+
 preparation/segments
 preparation/input
-preparation/venv
-preparation/__pycache__
 preparation/citree-scraper/data
 preparation/citree-scraper/images
 preparation/citree-scraper/tree-information.json
