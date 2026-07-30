@@ -401,3 +401,12 @@ P4288;ExternalId;;;NFC-ID – Identifikator für eine Obstsorte in der National 
 P523;WikibaseItem;inline;"{""target"": ""zeitliches_auftreten_anfang"", ""keep_source"": true}";zeitliches Auftreten – Anfang – der Anfang eines Prozesses oder das Auftauchen einer Lebensform relativ zur geologischen Zeitskala;
 P528;String;;;Katalognummer – Bezeichnung in einem Katalog, mit Qualifikator P972 zu verwenden;skip
 P740;WikibaseItem;inline;"{""target"": ""gruendungsort"", ""keep_source"": true}";Gründungsort – Ort, an dem eine Gruppe oder Organisation  entstand oder gegründet wurde (für Entstehungsorte kreativer Werke nutze P1071);
+P11493;ExternalId;;;Biblissima-Kennung – Identifikator eines Eintrags in der Biblissima-Normdatenbank;skip
+P13772;ExternalId;;;Harper's-Schlagwort – Schlagwort im Harper's-Magazin;skip
+P14541;ExternalId;;;Enzyklopädie-von-China-Kennung (dritte Ausgabe) – Identifikator für Artikel in der Onlineversion der Enzyklopädie von China (dritte Ausgabe);skip
+P2386;Quantity;;;Durchmesser – Durchmesser eines kreisförmigen oder sphärischen Objekts;
+P462;WikibaseItem;inline;"{""target"": ""farbe"", ""keep_source"": true}";Farbe – Farbe des Subjekts;
+P6030;ExternalId;;;ECOS ID – identifier for a taxon on the United States' 'Environmental Conservation Online System' website;skip
+P7688;ExternalId;;;Mississippi Encyclopedia ID – identifier for an entry on the Mississippi Encyclopedia website;skip
+P8590;ExternalId;;;Jewish-Encyclopedia-Kennung (1906) – Identifikator für einen Eintrag in Jewish Encyclopedia von 1906;skip
+P9983;ExternalId;;;Enciclopedia-dei-ragazzi-ID – identifier for an item in the Enciclopedia dei ragazzi on the Institute of the Italian Encyclopaedia website;skip
