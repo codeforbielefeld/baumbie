@@ -1,20 +1,39 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { Notice } from '$components/ui';
 	import type { HTMLInputTypeAttribute } from 'svelte/elements';
 
-	export let id: string | undefined = undefined;
-	export let label: string | undefined = undefined;
-	export let value: number = 0;
-	export let placeholder: string = '';
-	export let errorMessage: string | null = null;
-	export let error: boolean = false;
 
-	export let type: HTMLInputTypeAttribute;
-	export let inputClass: string | undefined = undefined;
+	interface Props {
+		id?: string | undefined;
+		label?: string | undefined;
+		value?: number;
+		placeholder?: string;
+		errorMessage?: string | null;
+		error?: boolean;
+		type: HTMLInputTypeAttribute;
+		inputClass?: string | undefined;
+	}
 
-	$: value, type;
+	let {
+		id = undefined,
+		label = undefined,
+		value = $bindable(0),
+		placeholder = '',
+		errorMessage = null,
+		error = $bindable(false),
+		type,
+		inputClass = undefined
+	}: Props = $props();
 
-	$: error = value <= 0 || value > 100;
+	run(() => {
+		value, type;
+	});
+
+	run(() => {
+		error = value <= 0 || value > 100;
+	});
 </script>
 
 {#if id && label}

@@ -13,20 +13,33 @@
 	import { isMobile } from '$lib/utils/media';
 	import type { Watering } from '$types/watering';
 
-	// Liste der Gießvorgänge
-	export let waterings: Watering[] = [];
+	
 
-	// ID des aktuell eingeloggten Nutzers (zur Rechteprüfung)
-	export let currentUserId: string | null = null;
+	
 
 	// Optional: Map für benutzerdefinierte Labels je Baum-UUID.
 	// Ermöglicht eine schnellere Anzeige, da der Button nicht selbst nachladen muss.
 	// Diese Komponente benötigt sie nicht zwingend – sie zeigt Nutzer-Gießungen an –
-	// aber die zusätzliche Prop kann zur Optimierung der Darstellung genutzt werden.
-	export let labelsByTreeId: Map<string, string> = new Map();
+	
 
-	// Modus zur Darstellung (z.B. zeigt in "user"-Modus den Baum statt den Gießer an)
-	export let mode: 'tree' | 'user' = 'tree';
+	
+	interface Props {
+		// Liste der Gießvorgänge
+		waterings?: Watering[];
+		// ID des aktuell eingeloggten Nutzers (zur Rechteprüfung)
+		currentUserId?: string | null;
+		// aber die zusätzliche Prop kann zur Optimierung der Darstellung genutzt werden.
+		labelsByTreeId?: Map<string, string>;
+		// Modus zur Darstellung (z.B. zeigt in "user"-Modus den Baum statt den Gießer an)
+		mode?: 'tree' | 'user';
+	}
+
+	let {
+		waterings = [],
+		currentUserId = null,
+		labelsByTreeId = new Map(),
+		mode = 'tree'
+	}: Props = $props();
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -38,33 +51,41 @@
 	<div class="mt-3 space-y-3">
 		{#each waterings as watering}
 			<WateringCard {watering} {mode} {currentUserId}>
-				<svelte:fragment slot="treeButton" let:watering let:setWarning>
-					<FlyToTreeButton
-						treeId={watering.tree_uuid}
-						label={labelsByTreeId.get(watering.tree_uuid)}
-						on:warning={(e) => setWarning(e.detail.message)}
-					/>
-				</svelte:fragment>
+				{#snippet treeButton({ watering, setWarning })}
+									
+						<FlyToTreeButton
+							treeId={watering.tree_uuid}
+							label={labelsByTreeId.get(watering.tree_uuid)}
+							on:warning={(e) => setWarning(e.detail.message)}
+						/>
+					
+									{/snippet}
 
-				<svelte:fragment slot="deleteButton" let:watering>
-					<DeleteWateringButton {watering} on:reload={() => dispatch('reload')} />
-				</svelte:fragment>
+				{#snippet deleteButton({ watering })}
+									
+						<DeleteWateringButton {watering} on:reload={() => dispatch('reload')} />
+					
+									{/snippet}
 			</WateringCard>
 		{/each}
 	</div>
 {:else}
 	<!-- 💻 Desktop/Tabletdarstellung -->
 	<WateringTable {waterings} {currentUserId} {mode}>
-		<svelte:fragment slot="treeButton" let:watering let:setWarning>
-			<FlyToTreeButton
-				treeId={watering.tree_uuid}
-				label={labelsByTreeId.get(watering.tree_uuid)}
-				on:warning={(e) => setWarning?.(e.detail.message, watering.uuid)}
-			/>
-		</svelte:fragment>
+		{#snippet treeButton({ watering, setWarning })}
+					
+				<FlyToTreeButton
+					treeId={watering.tree_uuid}
+					label={labelsByTreeId.get(watering.tree_uuid)}
+					on:warning={(e) => setWarning?.(e.detail.message, watering.uuid)}
+				/>
+			
+					{/snippet}
 
-		<svelte:fragment slot="deleteButton" let:watering>
-			<DeleteWateringButton {watering} on:reload={() => dispatch('reload')} />
-		</svelte:fragment>
+		{#snippet deleteButton({ watering })}
+					
+				<DeleteWateringButton {watering} on:reload={() => dispatch('reload')} />
+			
+					{/snippet}
 	</WateringTable>
 {/if}

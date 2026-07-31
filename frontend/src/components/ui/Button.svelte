@@ -1,16 +1,28 @@
-<script context="module" lang="ts">
+<script module lang="ts">
 	export type ButtonVariant = 'default' | 'primary' | 'secondary' | 'danger' | 'watering';
 </script>
 
 <script lang="ts">
 	type ButtonType = 'submit' | 'button' | 'reset';
 
-	export let variant: ButtonVariant = 'default';
-	export let className: string = '';
-	export let type: ButtonType = 'button';
-	export let disabled: boolean = false;
 
-	export let onClick: (e: MouseEvent) => void = () => {};
+	interface Props {
+		variant?: ButtonVariant;
+		className?: string;
+		type?: ButtonType;
+		disabled?: boolean;
+		onClick?: (e: MouseEvent) => void;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		variant = 'default',
+		className = '',
+		type = 'button',
+		disabled = false,
+		onClick = () => {},
+		children
+	}: Props = $props();
 
 	const variantClasses: Record<ButtonVariant, string> = {
 		default:
@@ -32,7 +44,7 @@
 		${variantClasses[variant]}
 		${disabled ? 'opacity-50 cursor-not-allowed' : ''}
 		${className}`}
-	on:click={!disabled ? onClick : undefined}
+	onclick={!disabled ? onClick : undefined}
 >
-	<slot />
+	{@render children?.()}
 </button>

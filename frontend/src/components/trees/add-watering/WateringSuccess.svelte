@@ -13,11 +13,11 @@
 
 	const PARTICLE_EMOJIS = ['💦', '🌱', '🍃'];
 
-	let showBigDrop = false;
-	let showParticles = false;
-	let showTree = false;
-	let showText = false;
-	let emojiRain: EmojiParticle[] = [];
+	let showBigDrop = $state(false);
+	let showParticles = $state(false);
+	let showTree = $state(false);
+	let showText = $state(false);
+	let emojiRain: EmojiParticle[] = $state([]);
 
 	onMount(() => {
 		// PHASE 1: Tropfen fällt

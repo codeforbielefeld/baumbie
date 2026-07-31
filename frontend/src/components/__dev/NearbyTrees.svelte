@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase';
 
-	let trees;
-	$: trees = [];
+	let trees = $state([]);
+	
 
-	let lat;
-	$: lat = 51.967253570179;
-	let long;
-	$: long = 8.40436126403756;
+	let lat = $state(51.967253570179);
+	
+	let long = $state(8.40436126403756);
+	
 
 	const getTrees = () => {
 		supabase
@@ -42,7 +42,7 @@
 			/>
 		</div>
 
-		<button on:click={() => getTrees()}>Bäume laden</button>
+		<button onclick={() => getTrees()}>Bäume laden</button>
 	</div>
 
 	<div>Bäume in der Nähe:</div>

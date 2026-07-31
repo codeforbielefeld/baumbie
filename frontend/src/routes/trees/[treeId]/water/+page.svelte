@@ -3,8 +3,8 @@
 	import { AddWateringForm, WateringSuccess } from '$components/trees';
 	import Notice from '$components/ui/Notice.svelte';
 
-	let modalOpen = true;
-	let showSuccess = false;
+	let modalOpen = $state(true);
+	let showSuccess = $state(false);
 </script>
 
 {#if modalOpen}

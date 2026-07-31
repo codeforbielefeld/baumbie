@@ -1,11 +1,21 @@
 <script lang="ts">
-	export let label: string;
-	export let value: number;
-	export let unit: string;
-	export let max: number;
-	export let position: 'top' | 'right' | 'bottom';
+	interface Props {
+		label: string;
+		value: number;
+		unit: string;
+		max: number;
+		position: 'top' | 'right' | 'bottom';
+	}
 
-	$: percent = Math.min(100, Math.max(0, (value / max) * 100));
+	let {
+		label,
+		value,
+		unit,
+		max,
+		position
+	}: Props = $props();
+
+	let percent = $derived(Math.min(100, Math.max(0, (value / max) * 100)));
 </script>
 
 <div class="relative flex flex-col items-center p-3 text-center gap-2">
@@ -36,7 +46,7 @@
 				<div
 					class="absolute bottom-0 left-0 w-full bg-green-600 rounded"
 					style="height: {percent}%;"
-				/>
+				></div>
 			</div>
 		{:else if position === 'top'}
 			<!-- Horizontaler Balken oben -->
@@ -44,7 +54,7 @@
 				<div
 					class="absolute top-0 left-0 h-full bg-green-600 rounded"
 					style="width: {percent}%; left: {50 - percent / 2}%;"
-				/>
+				></div>
 			</div>
 		{:else if position === 'bottom'}
 			<!-- Horizontaler Balken unten (nun volle Breite, wie oben) -->
@@ -52,7 +62,7 @@
 				<div
 					class="absolute top-0 left-0 h-full bg-green-600 rounded"
 					style="width: {percent}%; left: {50 - percent / 2}%;"
-				/>
+				></div>
 			</div>
 		{/if}
 	</div>

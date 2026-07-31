@@ -3,7 +3,11 @@
 	import { Button } from '$components/ui';
 	import { goto } from '$app/navigation';
 
-	export let tree: TreeData;
+	interface Props {
+		tree: TreeData;
+	}
+
+	let { tree }: Props = $props();
 </script>
 
 {#if tree}

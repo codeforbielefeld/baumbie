@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: Can't migrate code with afterUpdate. Please migrate by hand. -->
 <!--Übernommen aus https://svelte.dev/playground/c109f83f3c114cb7829f04fe2440ef94?version=5.28.2, dann modifiziert ⚒️-->
 <script lang="ts">
 	import { onMount, afterUpdate, tick, createEventDispatcher } from 'svelte';

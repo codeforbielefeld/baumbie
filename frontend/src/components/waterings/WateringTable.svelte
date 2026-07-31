@@ -12,14 +12,27 @@
 	// Lifecycle
 	import { onDestroy } from 'svelte';
 
-	// Props
-	export let waterings: Watering[] = [];
-	export let currentUserId: string | null = null;
-	export let mode: 'tree' | 'user' = 'tree';
+	
+	interface Props {
+		// Props
+		waterings?: Watering[];
+		currentUserId?: string | null;
+		mode?: 'tree' | 'user';
+		treeButton?: import('svelte').Snippet<[any]>;
+		deleteButton?: import('svelte').Snippet<[any]>;
+	}
+
+	let {
+		waterings = [],
+		currentUserId = null,
+		mode = 'tree',
+		treeButton,
+		deleteButton
+	}: Props = $props();
 
 	// Warning logic
-	let warningMessage: string | null = null;
-	let activeWarningId: string | null = null;
+	let warningMessage: string | null = $state(null);
+	let activeWarningId: string | null = $state(null);
 	let warningTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	function setWarning(msg: string, id: string) {
@@ -67,13 +80,13 @@
 					{#if mode === 'tree'}
 						<em>{currentUserId && w.user_uuid === currentUserId ? 'Du' : 'anonym'}</em>
 					{:else}
-						<slot name="treeButton" watering={w} {setWarning} />
+						{@render treeButton?.({ watering: w, setWarning, })}
 					{/if}
 				</td>
 
 				<td class="px-3 py-2">
 					{#if currentUserId && w.user_uuid === currentUserId}
-						<slot name="deleteButton" watering={w} />
+						{@render deleteButton?.({ watering: w, })}
 					{:else}
 						<em>-</em>
 					{/if}

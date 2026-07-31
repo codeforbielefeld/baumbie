@@ -3,11 +3,11 @@
 	import { registerWithEmailPassword } from '$lib/supabase';
 	import { EmailField, PasswordField, Button, Notice } from '$components/ui';
 
-	let email = '';
-	let password = '';
-	let passwordConfirmation = '';
-	let errorMessage: string | null = null;
-	let isSubmitting = false;
+	let email = $state('');
+	let password = $state('');
+	let passwordConfirmation = $state('');
+	let errorMessage: string | null = $state(null);
+	let isSubmitting = $state(false);
 	let errorTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	const handleRegistration = async (e: SubmitEvent) => {
@@ -62,7 +62,7 @@
 	}
 </script>
 
-<form on:submit={handleRegistration} class="flex flex-col gap-y-4">
+<form onsubmit={handleRegistration} class="flex flex-col gap-y-4">
 	<div class="flex flex-col gap-y-2">
 		<EmailField
 			id="email"

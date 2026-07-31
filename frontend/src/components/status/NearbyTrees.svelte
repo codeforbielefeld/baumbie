@@ -10,11 +10,11 @@
 	import type { TreeNearby } from '$types/tree';
 	import { findNearbyTrees, selectedTreeFilters } from '$lib/trees';
 
-	let treesNearby: TreeNearby[] = [];
-	let errorMessage: string | null = null;
+	let treesNearby: TreeNearby[] = $state([]);
+	let errorMessage: string | null = $state(null);
 
-	$: isFiltered = ($selectedTreeFilters.species?.length ?? 0) > 0;
-	$: selectedSpecies = $selectedTreeFilters.species ?? [];
+	let isFiltered = $derived(($selectedTreeFilters.species?.length ?? 0) > 0);
+	let selectedSpecies = $derived($selectedTreeFilters.species ?? []);
 
 	async function findTreesNearby() {
 		treesNearby = [];

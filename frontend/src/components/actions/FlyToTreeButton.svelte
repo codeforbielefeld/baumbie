@@ -6,10 +6,14 @@
 	import { onMount, createEventDispatcher } from 'svelte';
 	import { fetchSpecies } from '$lib/supabase/trees';
 
-	export let treeId: string;
-	export let label: string | null = null;
+	interface Props {
+		treeId: string;
+		label?: string | null;
+	}
 
-	let species: string | null = null;
+	let { treeId, label = null }: Props = $props();
+
+	let species: string | null = $state(null);
 
 	const dispatch = createEventDispatcher();
 

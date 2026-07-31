@@ -1,14 +1,31 @@
 <script lang="ts">
+	import { run, createBubbler, stopPropagation } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { goto } from '$app/navigation';
 	import Heading from '$components/ui/Heading.svelte';
 	import { onMount } from 'svelte';
 	import { resetHighlight } from '$lib/map';
 
-	export let title;
-	export let closeable: boolean | undefined = true;
-	export let open: boolean = true;
+	interface Props {
+		title: any;
+		closeable?: boolean | undefined;
+		open?: boolean;
+		navigation?: import('svelte').Snippet;
+		children?: import('svelte').Snippet;
+	}
 
-	$: open, closeable;
+	let {
+		title,
+		closeable = $bindable(true),
+		open = $bindable(true),
+		navigation,
+		children
+	}: Props = $props();
+
+	run(() => {
+		open, closeable;
+	});
 
 	onMount(() => {
 		if (closeable === undefined) {
@@ -37,14 +54,14 @@
 
 <!-- Panel START -->
 {#if open}
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions a11y-no-noninteractive-tabindex -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions, a11y_no_noninteractive_tabindex -->
 	<div
 		role="dialog"
 		tabindex="0"
 		aria-label="Dialogfenster"
 		aria-modal="true"
-		on:click|stopPropagation
-		on:keyup={handleKeyUp}
+		onclick={stopPropagation(bubble('click'))}
+		onkeyup={handleKeyUp}
 		class="fixed bottom-[64px] top-[80px] left-0 right-0 z-[800] flex justify-center"
 	>
 		<!-- Inhalt mit max-Breite und Padding -->
@@ -55,18 +72,18 @@
 			<header class="flex flex-row items-center justify-between shrink-0">
 				<Heading level={1}>{title}</Heading>
 				{#if closeable}
-					<button on:click={close} class="translate-y-[-12px]">
+					<button onclick={close} class="translate-y-[-12px]">
 						<img src="/card/cross.svg" alt="close" />
 					</button>
 				{/if}
 			</header>
 
-			<slot name="navigation" />
+			{@render navigation?.()}
 
 			<!-- Hauptinhalt -->
 			<div class="grow min-h-0 flex flex-col">
 				<div class="overflow-y-auto grow min-h-0">
-					<slot />
+					{@render children?.()}
 				</div>
 			</div>
 		</div>

@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { TreeData } from '$types/tree';
 	import { Button, Notice } from '$components/ui';
 	import { getCurrentUser, isTreeAdopted, toggleTreeAdoption } from '$lib/supabase';
+	import type { TreeData } from '$types/tree';
 
-	export let tree: TreeData;
+	interface Props {
+		tree: TreeData;
+	}
 
-	let adopted = false;
-	let authorized = false;
-	let message: string | null = null;
-	let messageTone: 'success' | 'warning' | 'info' | undefined = undefined;
+	let { tree }: Props = $props();
 
-	$: label = adopted ? 'Adoption aufheben' : 'Adoptiere diesen Baum';
+	let adopted = $state(false);
+	let authorized = $state(false);
+	let message: string | null = $state(null);
+	let messageTone: 'success' | 'warning' | 'info' | undefined = $state(undefined);
+
+	let label = $derived(adopted ? 'Adoption aufheben' : 'Adoptiere diesen Baum');
 
 	onMount(async () => {
 		const user = await getCurrentUser();

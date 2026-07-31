@@ -10,13 +10,26 @@
 	// Types
 	import type { Watering } from '$types/watering';
 
-	// Props
-	export let watering: Watering;
-	export let mode: 'tree' | 'user';
-	export let currentUserId: string | null;
+	
+	interface Props {
+		// Props
+		watering: Watering;
+		mode: 'tree' | 'user';
+		currentUserId: string | null;
+		treeButton?: import('svelte').Snippet<[any]>;
+		deleteButton?: import('svelte').Snippet<[any]>;
+	}
+
+	let {
+		watering,
+		mode,
+		currentUserId,
+		treeButton,
+		deleteButton
+	}: Props = $props();
 
 	// Local state for warning message
-	let warningMessage: string | null = null;
+	let warningMessage: string | null = $state(null);
 	let warningTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	function setWarning(msg: string) {
@@ -42,7 +55,7 @@
 <div class="bg-white border-2 border-[#7C98B2] rounded-xl shadow-sm p-4 text-sm">
 	{#if mode === 'user'}
 		<div class="flex justify-left mb-4">
-			<slot name="treeButton" {watering} {setWarning} />
+			{@render treeButton?.({ watering, setWarning, })}
 		</div>
 	{/if}
 
@@ -78,7 +91,7 @@
 
 	{#if currentUserId && watering.user_uuid === currentUserId}
 		<div class="mt-2 flex justify-end">
-			<slot name="deleteButton" {watering} />
+			{@render deleteButton?.({ watering, })}
 		</div>
 	{/if}
 </div>

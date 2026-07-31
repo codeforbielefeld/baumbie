@@ -7,8 +7,8 @@
 
 	import type { User } from '@supabase/supabase-js';
 
-	let currentUser: User | null = null;
-	let loadingUser = true;
+	let currentUser: User | null = $state(null);
+	let loadingUser = $state(true);
 
 	onMount(async () => {
 		currentUser = await getCurrentUser();
