@@ -23,6 +23,7 @@ preparation/input
 preparation/venv
 preparation/.venv
 preparation/__pycache__
+preparation/utils/__pycache__
 preparation/citree-scraper/data
 preparation/citree-scraper/images
 preparation/citree-scraper/tree-information.json
