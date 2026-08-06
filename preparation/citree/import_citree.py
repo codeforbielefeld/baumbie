@@ -39,6 +39,15 @@ def value_to_string(value):
         return ", ".join(str(v) for v in value)
     return str(value)
 
+def s3_file_exists(supabase, bucket_name, file_path):
+    """Check if a file exists in the Supabase storage bucket."""
+    response = supabase.storage.from_(bucket_name).list(path=os.path.dirname(file_path))
+    if len(response) == 0:
+        return False
+    for file_info in response:
+        if file_info["name"] == os.path.basename(file_path):
+            return True
+    return False
 
 # 1. Create the "citree" provider
 
@@ -91,6 +100,14 @@ attribute_rows = [
         "tree_type_attribute_group_uuid": group_uuid_map[attribute_to_group[attr_name]],
     }
     for attr_name in attribute_to_group
+] + [
+    {
+        "name": "CiTree-Bild",
+        "description": None,
+        "type": "string",
+        "provider_uuid": provider_uuid,
+        "tree_type_attribute_group_uuid": None,  # No group for images
+    }
 ]
 attr_result = supabase.table("tree_type_attributes").upsert(
     attribute_rows, on_conflict="provider_uuid,name"
@@ -132,6 +149,18 @@ for tree in data["trees"]:
         val = tree.get(attr_name)
         if val is None:
             continue
+        
+        # separate information with multiple values into multiple rows, one for each value
+        if isinstance(val, list):
+            for item in val:
+                value_rows.append({
+                    "tree_type_uuid": tree_type_uuid,
+                    "tree_type_attribute_uuid": attr_uuid,
+                    "type": value_type(item),
+                    "value": value_to_string(item),
+                })
+            continue
+
         value_rows.append({
             "tree_type_uuid": tree_type_uuid,
             "tree_type_attribute_uuid": attr_uuid,
@@ -139,10 +168,39 @@ for tree in data["trees"]:
             "value": value_to_string(val),
         })
 
+image_rows = []
+for tree in data["trees"]:
+    for image_url in tree.get("images", []):
+        print(f"Processing image {image_url} for tree {tree['id']}")
+        s3_image_url = f"{tree['id']}/{image_url}"
+        if not s3_file_exists(supabase, "tree_type_images", s3_image_url):
+            image_rows.append({
+                "tree_type_uuid": tree_type_uuid,
+                "filename": f"images/{image_url}",
+            })
+            upload_response = supabase.storage.from_("tree_type_images").upload(s3_image_url, open(f"../citree-scraper/images/{image_url}", "rb"), {
+                "content-type": "image/jpeg",
+            })
+            print(json.loads(upload_response.content.decode("utf-8"))['Key'])
+            print(f"Uploaded image {image_url} to Supabase storage: {upload_response}")
+        else:
+            print(f"Image {image_url} already exists in Supabase storage, skipping upload.")
+        
+        value_rows.append({
+            "tree_type_uuid": tree_type_uuid,
+            "tree_type_attribute_uuid": attr_uuid_map["CiTree-Bild"],
+            "type": "string",
+            "value": supabase.storage.from_("tree_type_images").get_public_url(s3_image_url),
+        })
+
 # Insert in batches
 for i in range(0, len(value_rows), BATCH_SIZE):
     batch = value_rows[i : i + BATCH_SIZE]
-    supabase.table("tree_type_attribute_values").insert(batch).execute()
+    try:
+        supabase.table("tree_type_attribute_values").insert(batch).execute()
+    except Exception as e:
+        print(f"Error inserting batch {i // BATCH_SIZE + 1}: {e}")
+        print(batch)
     print(f"Inserted attribute values batch {i // BATCH_SIZE + 1} ({len(batch)} rows)")
 
 print(f"Total attribute values: {len(value_rows)}")
