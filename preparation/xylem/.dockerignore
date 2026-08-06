@@ -22,3 +22,6 @@ doc/
 
 # Temp
 tmp/
+
+# Data
+priv/
