@@ -1,0 +1,27 @@
+# Build artifacts
+_build/
+deps/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Test
+test/
+
+# Docs
+doc/
+
+# Git
+.git/
+.gitignore
+
+# macOS
+.DS_Store
+
+# Temp
+tmp/
+
+# Data
+priv/

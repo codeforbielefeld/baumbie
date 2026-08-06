@@ -1,0 +1,6 @@
+services:
+  xylem:
+    build: .
+    volumes:
+      - ./data:/app/data
+      - ./priv:/app/priv

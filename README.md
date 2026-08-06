@@ -130,7 +130,7 @@ Die virtuelle Umgebung stellt sicher, dass alle benötigten Python-Pakete sauber
 Installiere anschließend alle benötigten Abhängigkeiten:
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 #### 📥 Baumdaten importieren
@@ -138,7 +138,7 @@ pip install -r requirements.txt
 Lege deine GeoJSON-Datei am besten im Verzeichnis `preparation/input/` ab. Führe dann das Importskript aus und gib dabei den Pfad zu deiner Datei an, z.B.:
 
 ```bash
-python import.py input/trees.geojson
+./.venv/bin/python import.py input/trees.geojson
 ```
 
 Das Skript verwendet automatisch die Umgebungsvariablen aus `.env.local` (falls vorhanden) oder `.env`, um sich mit Supabase zu verbinden.
