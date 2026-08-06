@@ -21,6 +21,7 @@
 preparation/segments
 preparation/input
 preparation/venv
+preparation/.venv
 preparation/__pycache__
 preparation/citree-scraper/data
 preparation/citree-scraper/images

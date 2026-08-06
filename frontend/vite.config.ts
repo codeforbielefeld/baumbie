@@ -14,5 +14,8 @@ export default defineConfig({
 			$components: path.resolve(__dirname, 'src/components'),
 			$types: path.resolve(__dirname, 'src/types')
 		}
+	},
+	server: {
+		allowedHosts: true
 	}
 });
