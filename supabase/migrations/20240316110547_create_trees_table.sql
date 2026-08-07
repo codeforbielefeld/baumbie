@@ -12,7 +12,7 @@ create table public.trees
     uuid                uuid default uuid_generate_v4() primary key,
     provider_id         uuid references public.providers (uuid) on delete set null on update cascade default null,
     source_id           varchar not null, -- ID from the source (pitID)
-    location            bigint not null,  -- Standord_N
+    location            bigint not null,  -- Standort_N
     location_addition   varchar, -- Zusatz
     current_number      bigint, -- laufende_n
     chopped             boolean, -- gefaellt
