@@ -5,9 +5,9 @@
 	import { onMount } from 'svelte';
 	import { supabase } from '$lib/supabase';
 	import Message from './Message.svelte';
-	import type { Message as MessageType, RawMessage } from '$types/chat';
+	import type { Message as MessageType } from '$types/chat';
 
-	
+
 	interface Props {
 		// === Props ===
 		treeId?: string;
@@ -55,46 +55,35 @@
 		}
 
 		const { data, error } = response as { data: any; error: any };
+		const jsonData = JSON.parse(data);
 
 		if (error !== null) {
 			console.error('Error fetching chat messages:', error);
 			return;
 		}
 
-		sessionId = data.sessionId;
 		messages = [
 			...messages,
-			...data.messages
-				.filter((msg: RawMessage) => !['no-reply', 'path'].includes(msg.type))
-				.map((msg: RawMessage): MessageType => {
-					const buttons = Array.isArray(msg.payload?.buttons)
-						? msg.payload!.buttons!.map((btn: { name: string; request: any }) => ({
-								label: btn.name,
-								request: btn.request
-							}))
-						: [];
-
-					return {
-						text: msg.payload?.message ?? '',
-						label: '',
-						type: msg.payload?.type ?? msg.type,
-						sender: 'bot',
-						buttons,
-						ai: msg.payload?.ai === true
-					};
-				})
+			...jsonData.messages.map((msg: MessageType): MessageType => {
+				return {
+					content: msg.content,
+					type: 'text',
+					role: 'assistant',
+					ai: true
+				};
+			})
 		];
 	};
 
-	function sendMessage(text: string) {
-		if (text === '') {
+	function sendMessage(content: string) {
+		if (content === '') {
 			return;
 		}
 		const newUserMessage: MessageType = {
-			text,
-			label: '',
+			content,
 			type: 'text',
-			sender: 'user'
+			role: 'user',
+			ai: false
 		};
 
 		messages = [...messages, newUserMessage];
@@ -102,8 +91,8 @@
 		supabase.functions
 			.invoke('chat', {
 				body: {
-					sessionId,
-					text
+					treeId,
+					messages
 				}
 			})
 			.then(handleNewChatMessages);
