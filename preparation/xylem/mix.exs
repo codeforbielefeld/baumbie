@@ -7,13 +7,15 @@ defmodule Xylem.MixProject do
       version: "0.1.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
   def cli do
     [
       preferred_envs: [
+        check: :test,
         vcr: :test,
         "vcr.delete": :test,
         "vcr.check": :test,
@@ -25,6 +27,18 @@ defmodule Xylem.MixProject do
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+  defp aliases do
+    [
+      check: [
+        "clean",
+        "deps.unlock --check-unused",
+        "compile --all-warnings --warnings-as-errors",
+        "format --check-formatted",
+        "test --warnings-as-errors"
+      ]
     ]
   end
 
