@@ -74,10 +74,24 @@ defmodule Mix.Tasks.Xylem.Generate do
           Mix.shell().info("Failed fetches: #{length(result.failed_fetches)}")
         end
 
+        report_appended_properties(result)
+
       {:error, reason} ->
         Mix.shell().error("Pipeline failed: #{inspect(reason)}")
         exit({:shutdown, 1})
     end
+  end
+
+  # Auto-appended properties carry defaults derived from their Wikidata type,
+  # which must be reviewed before the next export.
+  defp report_appended_properties(%{appended_properties: []}), do: :ok
+
+  defp report_appended_properties(result) do
+    Mix.shell().info(
+      "#{length(result.appended_properties)} new properties appended to " <>
+        "#{result.property_config_path}, please review: " <>
+        Enum.join(result.appended_properties, ", ")
+    )
   end
 
   defp maybe_put(opts, _key, nil), do: opts

@@ -31,7 +31,9 @@ defmodule Xylem do
   @type result :: %{
           successful: [map()],
           failed_fetches: [map()],
-          vocab_path: Path.t() | nil
+          vocab_path: Path.t() | nil,
+          appended_properties: [String.t()],
+          property_config_path: Path.t()
         }
 
   @default_csv_path "priv/data/baumbie_wikidata_mapping.csv"
@@ -68,11 +70,13 @@ defmodule Xylem do
          {:ok, fetch_result} <- fetch_entities(entities, all_entities, opts),
          {:ok, processed} <- process_entities(fetch_result.successful, config, opts),
          {:ok, vocab_path} <- generate_vocab(processed, config, opts),
-         :ok <- auto_append_properties(config, config_path, processed, vocab_path) do
+         {:ok, appended} <- auto_append_properties(config, config_path, processed, vocab_path) do
       result = %{
         successful: processed,
         failed_fetches: fetch_result.failed,
-        vocab_path: vocab_path
+        vocab_path: vocab_path,
+        appended_properties: appended,
+        property_config_path: config_path
       }
 
       log_summary(result, length(entities))
@@ -221,6 +225,7 @@ defmodule Xylem do
       Total entities: #{total}
       Successful: #{successful}
       Failed fetches: #{failed_fetch}
+      New properties: #{length(result.appended_properties)}
     """)
 
     if failed_fetch > 0 do
