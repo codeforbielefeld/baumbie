@@ -11,8 +11,8 @@ defmodule Mix.Tasks.Xylem.ReconcileCitree do
 
   - `--citree` - path to Citree input CSV (default: `priv/data/citree_matching/mapping.csv`)
   - `--baumbie` - path to BaumBie/Wikidata mapping CSV (default: `priv/data/baumbie_wikidata_mapping.csv`)
-  - `--synonyms` - path to synonym table CSV (default: `priv/data/citree_matching/synonyms.csv`)
-  - `--manual` - path to manual Wikidata ID assignments CSV (default: `priv/data/citree_matching/manual_wikidata_ids.csv`)
+  - `--synonyms` - path to synonym table CSV (default: `priv/config/citree_matching/synonyms.csv`)
+  - `--manual` - path to manual Wikidata ID assignments CSV (default: `priv/config/citree_matching/manual_wikidata_ids.csv`)
   - `--output` - output path (default: overwrites `--citree`)
   - `--dry-run` - show results without writing
 
@@ -40,8 +40,8 @@ defmodule Mix.Tasks.Xylem.ReconcileCitree do
 
   @default_citree_path "priv/data/citree_matching/mapping.csv"
   @default_baumbie_path "priv/data/baumbie_wikidata_mapping.csv"
-  @default_synonyms_path "priv/data/citree_matching/synonyms.csv"
-  @default_manual_path "priv/data/citree_matching/manual_wikidata_ids.csv"
+  @default_synonyms_path "priv/config/citree_matching/synonyms.csv"
+  @default_manual_path "priv/config/citree_matching/manual_wikidata_ids.csv"
 
   @switches [
     citree: :string,
