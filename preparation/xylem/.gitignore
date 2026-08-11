@@ -24,3 +24,5 @@ xylem-*.tar
 
 # Output data
 /priv/data/wikidata/
+# Generated pipeline artifacts (fetched, processed and derived data).
+/priv/cache/

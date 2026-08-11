@@ -9,7 +9,7 @@ defmodule Xylem.Wikidata.VocabGenerator do
 
   ## Options
 
-  - `:meta_dir` - output directory for vocab.ttl (default: `priv/data/wikidata/meta`)
+  - `:meta_dir` - output directory for vocab.ttl (default: `priv/cache/wikidata/meta`)
   - `:property_config` - a loaded `PropertyConfig` struct (for baumbie: labels and inline IRI collection)
   - `:property_config_path` - path to the property config CSV (fallback)
   - `:descriptions` - pre-fetched RDF graph of property descriptions (optional, skips SPARQL)
@@ -23,7 +23,7 @@ defmodule Xylem.Wikidata.VocabGenerator do
 
   alias RDF.NS.RDFS
 
-  @default_meta_dir "priv/data/wikidata/meta"
+  @default_meta_dir "priv/cache/wikidata/meta"
   @wikidata_sparql_endpoint "https://query.wikidata.org/sparql"
   @rdfs_label RDFS.label()
   @default_batch_size 20

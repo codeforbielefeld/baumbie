@@ -12,9 +12,9 @@ defmodule Mix.Tasks.Xylem.Generate do
   - `--config` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `--fetch` - Wikidata fetch mode: `auto` (default), `skip`, `force`, or `clear`.
     `auto` loads already cached entities and fetches only the missing ones.
-  - `--raw` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
-  - `--processed` - directory for processed .ttl files (default: `priv/data/wikidata/processed`)
-  - `--meta` - directory for vocab.ttl (default: `priv/data/wikidata/meta`)
+  - `--raw` - directory for raw .ttl files (default: `priv/cache/wikidata/raw`)
+  - `--processed` - directory for processed .ttl files (default: `priv/cache/wikidata/processed`)
+  - `--meta` - directory for vocab.ttl (default: `priv/cache/wikidata/meta`)
   - `--limit` - limit number of Wikidata entities to process. Counts distinct
     entities, not mapping rows — several tree types may share one entity.
 

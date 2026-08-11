@@ -9,7 +9,7 @@ defmodule Xylem.Wikidata.Fetcher do
   require Logger
   import Xylem.Wikidata
 
-  @default_raw_dir "priv/data/wikidata/raw"
+  @default_raw_dir "priv/cache/wikidata/raw"
   @default_max_concurrent 2
   @default_delay_ms 2000
 

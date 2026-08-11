@@ -51,9 +51,9 @@ defmodule Xylem do
   - `:csv_path` - path to input CSV file (default: `priv/data/baumbie_wikidata_mapping.csv`)
   - `:property_config_path` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `:fetch` - Wikidata fetch mode: `:auto` (default), `:skip`, `:force`, or `:clear`
-  - `:raw_dir` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
-  - `:processed_dir` - directory for processed .ttl files (default: `priv/data/wikidata/processed`)
-  - `:meta_dir` - directory for vocab.ttl (default: `priv/data/wikidata/meta`)
+  - `:raw_dir` - directory for raw .ttl files (default: `priv/cache/wikidata/raw`)
+  - `:processed_dir` - directory for processed .ttl files (default: `priv/cache/wikidata/processed`)
+  - `:meta_dir` - directory for vocab.ttl (default: `priv/cache/wikidata/meta`)
   - `:limit` - limit number of Wikidata entities to process (default: all). Counts
     distinct entities, not mapping rows — several tree types may share one entity.
   - `:max_concurrent` - max concurrent HTTP fetches (default: 2)
