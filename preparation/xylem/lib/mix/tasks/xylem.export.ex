@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Xylem.Export do
 
   - `--csv` - path to input species CSV (default: `priv/data/baumbie_wikidata_mapping.csv`)
   - `--config` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
-  - `--processed` - directory of processed .ttl files (default: `priv/data/wikidata/processed`)
+  - `--processed` - directory of processed .ttl files (default: `priv/cache/wikidata/processed`)
   - `--output` - output CSV path (default: `priv/data/wikidata/export.csv`)
   - `--limit` - limit number of targets to export
 

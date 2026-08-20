@@ -31,7 +31,9 @@ defmodule Xylem do
   @type result :: %{
           successful: [map()],
           failed_fetches: [map()],
-          vocab_path: Path.t() | nil
+          vocab_path: Path.t() | nil,
+          appended_properties: [String.t()],
+          property_config_path: Path.t()
         }
 
   @default_csv_path "priv/data/baumbie_wikidata_mapping.csv"
@@ -49,9 +51,9 @@ defmodule Xylem do
   - `:csv_path` - path to input CSV file (default: `priv/data/baumbie_wikidata_mapping.csv`)
   - `:property_config_path` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
   - `:fetch` - Wikidata fetch mode: `:auto` (default), `:skip`, `:force`, or `:clear`
-  - `:raw_dir` - directory for raw .ttl files (default: `priv/data/wikidata/raw`)
-  - `:processed_dir` - directory for processed .ttl files (default: `priv/data/wikidata/processed`)
-  - `:meta_dir` - directory for vocab.ttl (default: `priv/data/wikidata/meta`)
+  - `:raw_dir` - directory for raw .ttl files (default: `priv/cache/wikidata/raw`)
+  - `:processed_dir` - directory for processed .ttl files (default: `priv/cache/wikidata/processed`)
+  - `:meta_dir` - directory for vocab.ttl (default: `priv/cache/wikidata/meta`)
   - `:limit` - limit number of Wikidata entities to process (default: all). Counts
     distinct entities, not mapping rows — several tree types may share one entity.
   - `:max_concurrent` - max concurrent HTTP fetches (default: 2)
@@ -68,11 +70,13 @@ defmodule Xylem do
          {:ok, fetch_result} <- fetch_entities(entities, all_entities, opts),
          {:ok, processed} <- process_entities(fetch_result.successful, config, opts),
          {:ok, vocab_path} <- generate_vocab(processed, config, opts),
-         :ok <- auto_append_properties(config, config_path, processed, vocab_path) do
+         {:ok, appended} <- auto_append_properties(config, config_path, processed, vocab_path) do
       result = %{
         successful: processed,
         failed_fetches: fetch_result.failed,
-        vocab_path: vocab_path
+        vocab_path: vocab_path,
+        appended_properties: appended,
+        property_config_path: config_path
       }
 
       log_summary(result, length(entities))
@@ -221,6 +225,7 @@ defmodule Xylem do
       Total entities: #{total}
       Successful: #{successful}
       Failed fetches: #{failed_fetch}
+      New properties: #{length(result.appended_properties)}
     """)
 
     if failed_fetch > 0 do

@@ -170,12 +170,16 @@ defmodule Xylem.Wikidata.PropertyConfig do
   for any properties not yet in the configuration. Uses metadata from the
   vocabulary file to populate type and description.
 
+  Returns the appended property IDs, so callers can point at the entries that
+  still need a manual review.
+
   ## Options
 
   - `:metadata` - map from property ID to `%{type: String.t(), description: String.t()}`
     (default: `%{}`)
   """
-  @spec append_unknown(t(), Path.t(), [String.t()], keyword()) :: :ok | {:error, term()}
+  @spec append_unknown(t(), Path.t(), [String.t()], keyword()) ::
+          {:ok, [String.t()]} | {:error, term()}
   def append_unknown(%__MODULE__{} = config, csv_path, property_ids, opts \\ []) do
     metadata = Keyword.get(opts, :metadata, %{})
 
@@ -186,7 +190,7 @@ defmodule Xylem.Wikidata.PropertyConfig do
       |> Enum.sort()
 
     if unknown_ids == [] do
-      :ok
+      {:ok, []}
     else
       ensure_csv_file(csv_path)
       existing = File.read!(csv_path)
@@ -197,7 +201,9 @@ defmodule Xylem.Wikidata.PropertyConfig do
           Enum.map_join(unknown_ids, "\n", &build_line(&1, Map.get(metadata, &1, %{}))) <>
           "\n"
 
-      File.write(csv_path, content, [:append])
+      with :ok <- File.write(csv_path, content, [:append]) do
+        {:ok, unknown_ids}
+      end
     end
   end
 

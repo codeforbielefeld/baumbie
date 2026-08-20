@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Xylem.Import do
   - `--input` - review CSV path (default: `priv/data/wikidata/export.csv`)
   - `--config` - property config CSV path (default: `priv/config/wikidata_properties.csv`)
   - `--mapping` - Wikidata mapping CSV path (default: `priv/data/baumbie_wikidata_mapping.csv`)
-  - `--trees` - cadastre GeoJSON path (default: `../trees2.geojson`)
+  - `--trees` - cadastre GeoJSON path (default: `../input/trees2.geojson`)
   - `--dry-run` - report what would be imported without any write access
 
   ## Examples

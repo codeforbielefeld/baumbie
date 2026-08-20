@@ -24,7 +24,7 @@ defmodule Xylem.BaumBie.Importer do
   alias Xylem.Wikidata.PropertyConfig
 
   @default_input "priv/data/wikidata/export.csv"
-  @default_trees "../trees2.geojson"
+  @default_trees "../input/trees2.geojson"
   @provider_name "wikidata"
 
   @type summary :: %{

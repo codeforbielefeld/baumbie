@@ -13,7 +13,7 @@ defmodule Xylem.Wikidata.Processor do
 
   alias RDF.NS.RDFS
 
-  @default_processed_dir "priv/data/wikidata/processed"
+  @default_processed_dir "priv/cache/wikidata/processed"
   def default_processed_dir, do: @default_processed_dir
 
   @kept_languages MapSet.new(["de", "en"])

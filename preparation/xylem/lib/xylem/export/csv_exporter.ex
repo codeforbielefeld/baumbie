@@ -17,7 +17,7 @@ defmodule Xylem.Export.CSVExporter do
 
   - `:csv_path` - path to input species CSV (default: `priv/data/baumbie_wikidata_mapping.csv`)
   - `:property_config_path` - path to property config CSV (default: `priv/config/wikidata_properties.csv`)
-  - `:processed_dir` - directory of processed .ttl files (default: `priv/data/wikidata/processed`)
+  - `:processed_dir` - directory of processed .ttl files (default: `priv/cache/wikidata/processed`)
   - `:output_path` - output CSV path (default: `priv/data/wikidata/export.csv`)
   - `:limit` - limit number of targets to export
   """
@@ -159,8 +159,12 @@ defmodule Xylem.Export.CSVExporter do
         attr_name = PropertyConfig.attribute_name(config, property_id)
         group = PropertyConfig.import_group(config, property_id)
 
+        # The values are sorted because the export is versioned: their natural
+        # order comes from the RDF description and may reshuffle when a single
+        # value is added upstream, which would bury the real change in noise.
         description
         |> extract_values(property_id, entry, graph)
+        |> Enum.sort()
         |> Enum.map(&format_row(species, property_id, attr_name, &1, group))
       end)
     else

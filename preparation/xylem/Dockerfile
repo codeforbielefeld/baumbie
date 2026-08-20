@@ -24,6 +24,9 @@ COPY lib lib
 
 RUN mix compile
 
-VOLUME ["/app/data", "/app/priv"]
+VOLUME ["/app/priv"]
 
-ENTRYPOINT ["mix", "xylem.generate"]
+# Any Mix task can be selected: `docker run <image> xylem.export`.
+# Without arguments the generate pipeline runs.
+ENTRYPOINT ["mix"]
+CMD ["xylem.generate"]

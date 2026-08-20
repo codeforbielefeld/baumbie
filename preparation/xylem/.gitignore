@@ -22,5 +22,5 @@ xylem-*.tar
 # Temporary files, for example, from tests.
 /tmp/
 
-# Output data
-/priv/data/wikidata/
+# Generated pipeline artifacts (fetched, processed and derived data).
+/priv/cache/

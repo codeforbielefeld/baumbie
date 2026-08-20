@@ -107,7 +107,8 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "appends unknown properties to CSV", %{config: config} do
-      :ok = PropertyConfig.append_unknown(config, @append_csv_path, ["P999", "P888"])
+      assert PropertyConfig.append_unknown(config, @append_csv_path, ["P999", "P888"]) ==
+               {:ok, ["P888", "P999"]}
 
       {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
       assert PropertyConfig.known?(updated, "P999")
@@ -115,7 +116,7 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "uses metadata for type and description", %{config: config} do
-      :ok =
+      {:ok, _} =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
           metadata: %{"P999" => %{type: "Quantity", description: "Testbeschreibung"}}
         )
@@ -126,7 +127,7 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "generates inline config for WikibaseItem properties", %{config: config} do
-      :ok =
+      {:ok, _} =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
           metadata: %{
             "P999" => %{
@@ -145,7 +146,7 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "WikibaseItem without label falls back to property ID as target", %{config: config} do
-      :ok =
+      {:ok, _} =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
           metadata: %{"P999" => %{type: "WikibaseItem", description: "test"}}
         )
@@ -155,7 +156,7 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "sets import to skip for ExternalId properties", %{config: config} do
-      :ok =
+      {:ok, _} =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999"],
           metadata: %{"P999" => %{type: "ExternalId", description: "Some ID"}}
         )
@@ -165,7 +166,8 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "skips already known properties", %{config: config} do
-      :ok = PropertyConfig.append_unknown(config, @append_csv_path, ["P18", "P225", "P999"])
+      assert PropertyConfig.append_unknown(config, @append_csv_path, ["P18", "P225", "P999"]) ==
+               {:ok, ["P999"]}
 
       {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
       # P18 and P225 already exist, only P999 is new
@@ -176,25 +178,26 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
 
     test "does nothing for empty list", %{config: config} do
       original_content = File.read!(@append_csv_path)
-      :ok = PropertyConfig.append_unknown(config, @append_csv_path, [])
+      assert PropertyConfig.append_unknown(config, @append_csv_path, []) == {:ok, []}
       assert File.read!(@append_csv_path) == original_content
     end
 
     test "does nothing when all properties are known", %{config: config} do
       original_content = File.read!(@append_csv_path)
-      :ok = PropertyConfig.append_unknown(config, @append_csv_path, ["P18", "P225"])
+      assert PropertyConfig.append_unknown(config, @append_csv_path, ["P18", "P225"]) == {:ok, []}
       assert File.read!(@append_csv_path) == original_content
     end
 
     test "deduplicates property IDs", %{config: config} do
-      :ok = PropertyConfig.append_unknown(config, @append_csv_path, ["P999", "P999", "P999"])
+      assert PropertyConfig.append_unknown(config, @append_csv_path, ["P999", "P999", "P999"]) ==
+               {:ok, ["P999"]}
 
       {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
       assert length(PropertyConfig.all_property_ids(updated)) == 7
     end
 
     test "new properties default to keep action", %{config: config} do
-      :ok = PropertyConfig.append_unknown(config, @append_csv_path, ["P999"])
+      {:ok, _} = PropertyConfig.append_unknown(config, @append_csv_path, ["P999"])
 
       {:ok, updated} = PropertyConfig.load(path: @append_csv_path)
       refute PropertyConfig.ignored?(updated, "P999")
@@ -202,7 +205,7 @@ defmodule Xylem.Wikidata.PropertyConfigTest do
     end
 
     test "sorts appended properties by ID", %{config: config} do
-      :ok =
+      {:ok, _} =
         PropertyConfig.append_unknown(config, @append_csv_path, ["P999", "P100", "P500"],
           metadata: %{
             "P100" => %{type: "", description: "first"},
