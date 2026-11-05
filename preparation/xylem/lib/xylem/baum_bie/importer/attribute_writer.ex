@@ -1,14 +1,30 @@
 defmodule Xylem.BaumBie.Importer.AttributeWriter do
   @moduledoc """
-  Builds the `tree_type_attributes` and `tree_type_attribute_values` rows for
-  the Wikidata import.
+  Builds the `tree_types`, `tree_type_attributes` and
+  `tree_type_attribute_values` rows for the Wikidata import.
 
   Pure row builders only — the actual upserts, deletes and batch inserts are
   orchestrated in `Xylem.BaumBie.Importer`, which owns the UUID caches.
   """
 
   alias Xylem.BaumBie.Importer.TypeMapper
+  alias Xylem.Import.Mapping
   alias Xylem.Wikidata.PropertyConfig
+
+  @doc """
+  Builds a `tree_types` upsert row from a mapping target.
+
+  Citree-owned fields are omitted so reruns cannot clear existing metadata.
+  """
+  @spec build_tree_type_row(Mapping.target()) :: map()
+  def build_tree_type_row(%{baumart_bo: name_botanic, baumart_de: name, wikidata_id: wikidata_id}) do
+    %{
+      "name" => name,
+      "name_trivial" => name,
+      "name_botanic" => name_botanic,
+      "wikidata_id" => wikidata_id
+    }
+  end
 
   @doc """
   Builds a `tree_type_attributes` upsert row for a property.
