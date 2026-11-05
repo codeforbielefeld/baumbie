@@ -8,8 +8,8 @@ defmodule Mix.Tasks.Xylem.ReconcileCadastre do
       $ mix xylem.reconcile_cadastre [options]
 
   Run this when a new cadastre arrives: a species missing in the mapping gets no
-  `tree_type` until it is added there. Mapping entries missing in the cadastre
-  are harmless.
+  `tree_type` until it is added there, so the task then exits with status 1.
+  Mapping entries missing in the cadastre are harmless.
 
   ## Options
 
@@ -46,7 +46,10 @@ defmodule Mix.Tasks.Xylem.ReconcileCadastre do
 
     with {:ok, species} <- CadastreDrift.load_species(trees_path),
          {:ok, mapping} <- CSVReader.run(mapping_path) do
-      print_report(species, mapping, CadastreDrift.compare(species, mapping))
+      drift = CadastreDrift.compare(species, mapping)
+      print_report(species, mapping, drift)
+
+      if drift.missing_in_mapping != [], do: exit({:shutdown, 1})
     else
       {:error, error} ->
         Mix.shell().error("Failed: #{Exception.message(error)}")
