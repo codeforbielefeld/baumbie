@@ -53,25 +53,6 @@ Wenn die verarbeiteten RDF-Daten bereits aktuell sind, genügt der Ablauf ab
 `mix xylem.export`. Wenn eine fertige und geprüfte Review-CSV vorliegt, genügt
 der Ablauf ab `mix xylem.import --dry-run`.
 
-### Automatischer Refresh per GitHub Actions
-
-Die ersten beiden Schritte laufen zusätzlich automatisch: Der Workflow
-`.github/workflows/xylem-wikidata-refresh.yml` im Repository-Root führt
-monatlich (und per `workflow_dispatch` jederzeit) `mix xylem.generate --fetch
-force` und `mix xylem.export` aus und öffnet auf dem Branch
-`xylem/wikidata-refresh` einen Pull Request, sobald sich
-`priv/config/wikidata_properties.csv` oder `priv/data/wikidata/export.csv`
-gegenüber `main` unterscheiden. Ein offener PR wird beim nächsten Lauf
-aktualisiert, sein Branch dabei aus `main` neu aufgebaut – eigene Commits
-darauf gehen verloren. Korrekturen an der Property-Config gehören deshalb in
-einen eigenen PR; der nächste Lauf exportiert dann mit der neuen Config.
-
-Anschließend läuft `mix xylem.import --dry-run` gegen die neuen Daten. Er
-braucht weder Supabase noch das Baumkataster. Das Ergebnis steht mit Link auf
-den Lauf im PR-Text. Schlägt der Dry-Run fehl, wird der Lauf als fehlgeschlagen
-markiert, der PR aber trotzdem erzeugt. Der schreibende Import bleibt ein
-manueller Schritt nach dem Merge.
-
 ## Citree-Zuordnungen aktualisieren
 
 Der Citree-Abgleich ist ein separater Datenpflege-Schritt. Änderungen immer
