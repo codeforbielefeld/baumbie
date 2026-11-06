@@ -5,13 +5,11 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
   alias Xylem.ImportPreflightError
   alias Xylem.Wikidata.PropertyConfig
 
-  defp species(name_botanic, name) do
-    %{name_botanic: name_botanic, name: name, name_trivial: name}
-  end
-
   defp mapping(name_botanic, name, qid) do
     %{baumart_bo: name_botanic, baumart_de: name, wikidata_id: qid}
   end
+
+  defp target(mapping_row, line), do: Map.put(mapping_row, :line, line)
 
   defp review(name_botanic, name, qid, property_id, attribute_name, value) do
     %{
@@ -43,9 +41,8 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     %PropertyConfig{entries: Map.new(entries, fn {id, value} -> {to_string(id), value} end)}
   end
 
-  describe "build/4" do
+  describe "build/3" do
     test "builds the complete import decision once" do
-      oak = species("Quercus robur", "Stiel-Eiche")
       oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
       property = entry("taxonomischer_rang")
 
@@ -59,11 +56,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
           "Art"
         )
 
-      assert ImportPlan.build(config(P105: property), [oak_mapping], [row], [oak]) ==
+      assert ImportPlan.build(config(P105: property), [oak_mapping], [row]) ==
                {:ok,
                 %ImportPlan{
-                  species: [oak],
-                  wikidata_by_bo: %{"Quercus robur" => "Q165145"},
+                  targets: [target(oak_mapping, 2)],
                   attribute_defs: [
                     %{
                       property_id: "P105",
@@ -73,15 +69,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                     }
                   ],
                   value_rows: [row],
-                  unmatched_cadastre: [],
-                  unmatched_mapping: [],
                   skips: [],
                   warnings: [],
                   summary: %{
-                    tree_types_derived: 1,
-                    matched: 1,
-                    unmatched_cadastre: 0,
-                    unmatched_mapping: 0,
+                    tree_types: 1,
                     attributes: 1,
                     values: 1,
                     skipped_values: 0
@@ -89,12 +80,22 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                 }}
     end
 
-    test "allows multiple tree types to share a QID" do
-      species_list = [
-        species("Acer platanoides", "Spitz-Ahorn"),
-        species("Acer platanoides 'Columnaris'", "Säulen-Ahorn")
-      ]
+    test "plans a tree type for a target without review values" do
+      maple_mapping = mapping("Acer campestre", "Feld-Ahorn", "Q158785")
 
+      assert ImportPlan.build(config([]), [maple_mapping], []) ==
+               {:ok,
+                %ImportPlan{
+                  targets: [target(maple_mapping, 2)],
+                  attribute_defs: [],
+                  value_rows: [],
+                  skips: [],
+                  warnings: [],
+                  summary: %{tree_types: 1, attributes: 0, values: 0, skipped_values: 0}
+                }}
+    end
+
+    test "allows multiple tree types to share a QID" do
       mapping_rows = [
         mapping("Acer platanoides", "Spitz-Ahorn", "Q26745"),
         mapping("Acer platanoides 'Columnaris'", "Säulen-Ahorn", "Q26745")
@@ -121,19 +122,13 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
         )
       ]
 
-      assert ImportPlan.build(
-               config(P225: property),
-               mapping_rows,
-               review_rows,
-               species_list
-             ) ==
+      assert ImportPlan.build(config(P225: property), mapping_rows, review_rows) ==
                {:ok,
                 %ImportPlan{
-                  species: species_list,
-                  wikidata_by_bo: %{
-                    "Acer platanoides" => "Q26745",
-                    "Acer platanoides 'Columnaris'" => "Q26745"
-                  },
+                  targets: [
+                    target(Enum.at(mapping_rows, 0), 2),
+                    target(Enum.at(mapping_rows, 1), 3)
+                  ],
                   attribute_defs: [
                     %{
                       property_id: "P225",
@@ -143,15 +138,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                     }
                   ],
                   value_rows: review_rows,
-                  unmatched_cadastre: [],
-                  unmatched_mapping: [],
                   skips: [],
                   warnings: [],
                   summary: %{
-                    tree_types_derived: 2,
-                    matched: 2,
-                    unmatched_cadastre: 0,
-                    unmatched_mapping: 0,
+                    tree_types: 2,
                     attributes: 1,
                     values: 2,
                     skipped_values: 0
@@ -160,10 +150,9 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     end
 
     test "rejects malformed QIDs" do
-      maple = species("Acer campestre", "Feld-Ahorn")
       invalid_mapping = mapping("Acer campestre", "Feld-Ahorn", "q158785")
 
-      assert ImportPlan.build(config([]), [invalid_mapping], [], [maple]) ==
+      assert ImportPlan.build(config([]), [invalid_mapping], []) ==
                {:error,
                 %ImportPreflightError{
                   issues: [
@@ -177,32 +166,20 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                 }}
     end
 
-    test "treats an empty mapping QID as an unmapped cadastre species" do
-      stock = species("Waldartiger Bestand", "Waldartiger Bestand")
+    test "derives no tree type from a mapping row with an empty QID" do
       empty_mapping = mapping("Waldartiger Bestand", "Waldartiger Bestand", "")
 
-      assert ImportPlan.build(config([]), [empty_mapping], [], [stock]) ==
+      assert ImportPlan.build(config([]), [empty_mapping], []) ==
                {:ok,
                 %ImportPlan{
-                  species: [stock],
-                  wikidata_by_bo: %{},
+                  targets: [],
                   attribute_defs: [],
                   value_rows: [],
-                  unmatched_cadastre: [stock],
-                  unmatched_mapping: [],
                   skips: [],
                   warnings: [
                     %{code: :blank_mapping_qid, baumart_bo: "Waldartiger Bestand", line: 2}
                   ],
-                  summary: %{
-                    tree_types_derived: 1,
-                    matched: 0,
-                    unmatched_cadastre: 1,
-                    unmatched_mapping: 0,
-                    attributes: 0,
-                    values: 0,
-                    skipped_values: 0
-                  }
+                  summary: %{tree_types: 0, attributes: 0, values: 0, skipped_values: 0}
                 }}
     end
 
@@ -219,11 +196,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
           "Art"
         )
 
-      assert ImportPlan.build(config(P105: property), [], [row], []) ==
+      assert ImportPlan.build(config(P105: property), [], [row]) ==
                {:ok,
                 %ImportPlan{
-                  species: [],
-                  wikidata_by_bo: %{},
+                  targets: [],
                   attribute_defs: [
                     %{
                       property_id: "P105",
@@ -233,8 +209,6 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                     }
                   ],
                   value_rows: [],
-                  unmatched_cadastre: [],
-                  unmatched_mapping: [],
                   skips: [
                     %{
                       reason: :missing_mapping,
@@ -246,27 +220,17 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                   warnings: [
                     %{code: :missing_mapping, baumart_bo: "Tilia × europaea"}
                   ],
-                  summary: %{
-                    tree_types_derived: 0,
-                    matched: 0,
-                    unmatched_cadastre: 0,
-                    unmatched_mapping: 0,
-                    attributes: 1,
-                    values: 0,
-                    skipped_values: 1
-                  }
+                  summary: %{tree_types: 0, attributes: 1, values: 0, skipped_values: 1}
                 }}
     end
 
     test "rejects conflicting mapping QIDs for one botanical name" do
-      oak = species("Quercus robur", "Stiel-Eiche")
-
       mapping_rows = [
         mapping("Quercus robur", "Stiel-Eiche", "Q165145"),
         mapping("Quercus robur", "Stiel-Eiche", "Q42")
       ]
 
-      assert ImportPlan.build(config([]), mapping_rows, [], [oak]) ==
+      assert ImportPlan.build(config([]), mapping_rows, []) ==
                {:error,
                 %ImportPreflightError{
                   issues: [
@@ -281,7 +245,6 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     end
 
     test "rejects a review QID that differs from the mapping" do
-      oak = species("Quercus robur", "Stiel-Eiche")
       oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
 
       row =
@@ -294,12 +257,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
           "Art"
         )
 
-      assert ImportPlan.build(
-               config(P105: entry("taxonomischer_rang")),
-               [oak_mapping],
-               [row, row],
-               [oak]
-             ) ==
+      assert ImportPlan.build(config(P105: entry("taxonomischer_rang")), [oak_mapping], [row, row]) ==
                {:error,
                 %ImportPreflightError{
                   issues: [
@@ -315,11 +273,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     end
 
     test "rejects a malformed review QID" do
-      oak = species("Quercus robur", "Stiel-Eiche")
       oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
       row = review("Quercus robur", "Stiel-Eiche", "Q0165145", "P105", "unused", "Art")
 
-      assert ImportPlan.build(config([]), [oak_mapping], [row], [oak]) ==
+      assert ImportPlan.build(config([]), [oak_mapping], [row]) ==
                {:error,
                 %ImportPreflightError{
                   issues: [
@@ -334,7 +291,6 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     end
 
     test "rejects an attribute name changed since the review export" do
-      oak = species("Quercus robur", "Stiel-Eiche")
       oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
 
       row =
@@ -347,7 +303,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
           "Art"
         )
 
-      assert ImportPlan.build(config(P105: entry("neuer_name")), [oak_mapping], [row], [oak]) ==
+      assert ImportPlan.build(config(P105: entry("neuer_name")), [oak_mapping], [row]) ==
                {:error,
                 %ImportPreflightError{
                   issues: [
@@ -363,7 +319,6 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     end
 
     test "rejects two properties resolving to the same database attribute key" do
-      oak = species("Quercus robur", "Stiel-Eiche")
       oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
       first = entry("taxonomie")
       second = entry("taxonomie")
@@ -373,12 +328,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
         review("Quercus robur", "Stiel-Eiche", "Q165145", "P31", "taxonomie", "Taxon")
       ]
 
-      assert ImportPlan.build(
-               config(P105: first, P31: second),
-               [oak_mapping],
-               rows,
-               [oak]
-             ) ==
+      assert ImportPlan.build(config(P105: first, P31: second), [oak_mapping], rows) ==
                {:error,
                 %ImportPreflightError{
                   issues: [
@@ -392,13 +342,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     end
 
     test "deduplicates identical values and records every skip reason" do
-      oak = species("Quercus robur", "Stiel-Eiche")
-
-      mapping_rows = [
-        mapping("Quercus robur", "Stiel-Eiche", "Q165145"),
-        mapping("Fagus sylvatica", "Rotbuche", "Q146149")
-      ]
-
+      oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
       property = entry("taxonomischer_rang")
       skipped_property = %{entry("ignored") | import: :skip}
       unnamed_property = entry(nil, description: "")
@@ -430,14 +374,12 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
 
       assert ImportPlan.build(
                config(P105: property, P999: skipped_property, P998: unnamed_property),
-               mapping_rows,
-               rows,
-               [oak]
+               [oak_mapping],
+               rows
              ) ==
                {:ok,
                 %ImportPlan{
-                  species: [oak],
-                  wikidata_by_bo: %{"Quercus robur" => "Q165145"},
+                  targets: [target(oak_mapping, 2)],
                   attribute_defs: [
                     %{
                       property_id: "P105",
@@ -447,8 +389,6 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                     }
                   ],
                   value_rows: [value],
-                  unmatched_cadastre: [],
-                  unmatched_mapping: [Map.put(Enum.at(mapping_rows, 1), :line, 3)],
                   skips: [
                     %{
                       reason: :duplicate_value,
@@ -469,34 +409,24 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                       property_id: "P998"
                     },
                     %{
-                      reason: :no_cadastre_tree_type,
+                      reason: :missing_mapping,
                       line: 6,
                       baumart_bo: "Fagus sylvatica",
                       property_id: "P105"
                     }
                   ],
-                  warnings: [],
-                  summary: %{
-                    tree_types_derived: 1,
-                    matched: 1,
-                    unmatched_cadastre: 0,
-                    unmatched_mapping: 1,
-                    attributes: 1,
-                    values: 1,
-                    skipped_values: 4
-                  }
+                  warnings: [%{code: :missing_mapping, baumart_bo: "Fagus sylvatica"}],
+                  summary: %{tree_types: 1, attributes: 1, values: 1, skipped_values: 4}
                 }}
     end
 
     test "rejects a repeated mapping identity, even with a diverging German name" do
-      oak = species("Quercus robur", "Stiel-Eiche")
-
       mapping_rows = [
         mapping("Quercus robur", "Stiel-Eiche", "Q165145"),
         mapping("Quercus robur", "Stiel-Eiche (beschädigt)", "Q165145")
       ]
 
-      assert ImportPlan.build(config([]), mapping_rows, [], [oak]) ==
+      assert ImportPlan.build(config([]), mapping_rows, []) ==
                {:error,
                 %ImportPreflightError{
                   issues: [
@@ -510,27 +440,19 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                 }}
     end
 
-    test "joins review, mapping and cadastre through the canonical name" do
-      # One species, three spellings: cadastre has the double space, the mapping
-      # a single one, the review CSV the mapping's. All must be one tree type.
-      fir = species("Abies  species", "Tanne")
+    test "joins review and mapping through the canonical name" do
       fir_mapping = mapping("Abies species", "Tanne", "Q25243")
       property = entry("taxonomischer_rang")
-      row = review("Abies species", "Tanne", "Q25243", "P105", "taxonomischer_rang", "Gattung")
+      row = review("Abies  species", "Tanne", "Q25243", "P105", "taxonomischer_rang", "Gattung")
 
-      assert {:ok, plan} =
-               ImportPlan.build(config(P105: property), [fir_mapping], [row], [fir])
+      assert {:ok, plan} = ImportPlan.build(config(P105: property), [fir_mapping], [row])
 
       assert plan.value_rows == [row]
       assert plan.skips == []
-      assert plan.unmatched_cadastre == []
-      assert plan.unmatched_mapping == []
-      assert plan.wikidata_by_bo == %{"Abies  species" => "Q25243"}
-      assert plan.summary.matched == 1
+      assert plan.targets == [target(fir_mapping, 2)]
     end
 
     test "deduplicates values whose botanical names differ only in spelling" do
-      oak = species("Quercus robur", "Stiel-Eiche")
       oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
       property = entry("taxonomischer_rang")
 
@@ -538,7 +460,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
       respelled = %{row | baumart_bo: "Quercus  robur"}
 
       assert {:ok, plan} =
-               ImportPlan.build(config(P105: property), [oak_mapping], [row, respelled], [oak])
+               ImportPlan.build(config(P105: property), [oak_mapping], [row, respelled])
 
       assert plan.value_rows == [row]
 
@@ -553,13 +475,11 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
     end
 
     test "records unknown datatype fallbacks in the plan" do
-      oak = species("Quercus robur", "Stiel-Eiche")
       oak_mapping = mapping("Quercus robur", "Stiel-Eiche", "Q165145")
       property = entry("zeitpunkt", type: "Time")
       row = review("Quercus robur", "Stiel-Eiche", "Q165145", "P574", "zeitpunkt", "2020")
 
-      assert {:ok, plan} =
-               ImportPlan.build(config(P574: property), [oak_mapping], [row], [oak])
+      assert {:ok, plan} = ImportPlan.build(config(P574: property), [oak_mapping], [row])
 
       assert plan.warnings == [
                %{code: :unknown_datatype, property_id: "P574", datatype: "Time"}
@@ -570,11 +490,10 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
   describe "details/1" do
     test "projects deterministic dry-run details from the plan" do
       plan = %ImportPlan{
-        species: [
-          species("Tilia cordata", "Winter-Linde"),
-          species("Acer campestre", "Feld-Ahorn")
+        targets: [
+          target(mapping("Tilia cordata", "Winter-Linde", "Q158746"), 2),
+          target(mapping("Acer campestre", "Feld-Ahorn", "Q158785"), 3)
         ],
-        wikidata_by_bo: %{"Acer campestre" => "Q158785"},
         attribute_defs: [
           %{property_id: "P225", attribute_name: "wissenschaftlicher_name", type: "string"},
           %{property_id: "P105", attribute_name: "taxonomischer_rang", type: "string"}
@@ -584,11 +503,9 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
           %{baumart_bo: "Acer campestre", property_id: "P225"},
           %{baumart_bo: "Acer campestre", property_id: "P105"}
         ],
-        unmatched_cadastre: [],
-        unmatched_mapping: [],
         skips: [
           %{baumart_bo: "Acer campestre", reason: :duplicate_value},
-          %{baumart_bo: "Tilia cordata", reason: :missing_mapping}
+          %{baumart_bo: "Tilia cordata", reason: :property_not_importable}
         ],
         warnings: [
           %{code: :duplicate_mapping},
@@ -602,17 +519,15 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                species: [
                  %{
                    name_botanic: "Acer campestre",
-                   status: :matched,
                    wikidata_id: "Q158785",
                    value_count: 3,
                    skips: %{duplicate_value: 1}
                  },
                  %{
                    name_botanic: "Tilia cordata",
-                   status: :unmatched,
-                   wikidata_id: nil,
+                   wikidata_id: "Q158746",
                    value_count: 0,
-                   skips: %{missing_mapping: 1}
+                   skips: %{property_not_importable: 1}
                  }
                ],
                attributes: [
@@ -630,7 +545,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlanTest do
                  }
                ],
                warnings: %{duplicate_mapping: 2, unknown_datatype: 1},
-               skips: %{duplicate_value: 1, missing_mapping: 1}
+               skips: %{duplicate_value: 1, property_not_importable: 1}
              }
     end
   end

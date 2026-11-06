@@ -2,48 +2,38 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
   @moduledoc """
   Builds the complete, side-effect-free decision for a Wikidata import.
 
+  The validated mapping targets are the `tree_types`, so export and import work
+  on the same species list.
+
   The dry-run and write path consume the same plan so validation and skip
   decisions cannot diverge after Supabase writes have started.
   """
 
-  alias Xylem.BaumBie.Importer.{TreeTypeMapper, TypeMapper}
+  alias Xylem.BaumBie.Importer.TypeMapper
   alias Xylem.Import.Mapping
   alias Xylem.ImportPreflightError
   alias Xylem.Wikidata
   alias Xylem.Wikidata.PropertyConfig
 
-  @enforce_keys [
-    :species,
-    :wikidata_by_bo,
-    :attribute_defs,
-    :value_rows,
-    :unmatched_cadastre,
-    :unmatched_mapping,
-    :skips,
-    :warnings,
-    :summary
-  ]
+  @enforce_keys [:targets, :attribute_defs, :value_rows, :skips, :warnings, :summary]
   defstruct @enforce_keys
 
   @type t :: %__MODULE__{
-          species: [TreeTypeMapper.species()],
-          wikidata_by_bo: %{String.t() => String.t()},
+          targets: [Mapping.target()],
           attribute_defs: [map()],
           value_rows: [map()],
-          unmatched_cadastre: [TreeTypeMapper.species()],
-          unmatched_mapping: [map()],
           skips: [map()],
           warnings: [map()],
           summary: map()
         }
 
   @doc "Builds and validates an import plan from already parsed inputs."
-  @spec build(PropertyConfig.t(), [map()], [map()], [TreeTypeMapper.species()]) ::
+  @spec build(PropertyConfig.t(), [map()], [map()]) ::
           {:ok, t()} | {:error, ImportPreflightError.t()}
-  def build(%PropertyConfig{} = config, mapping, review_rows, species) do
+  def build(%PropertyConfig{} = config, mapping, review_rows) do
     indexed_rows = Enum.with_index(review_rows, 2)
-    {mapping, mapping_warnings, mapping_issues} = prepare_mapping(mapping)
-    {review_warnings, review_issues} = validate_review_rows(indexed_rows, mapping, config)
+    {targets, mapping_warnings, mapping_issues} = prepare_mapping(mapping)
+    {review_warnings, review_issues} = validate_review_rows(indexed_rows, targets, config)
     attribute_defs = attribute_defs(config, review_rows)
 
     issues = mapping_issues ++ review_issues ++ attribute_key_issues(attribute_defs)
@@ -52,9 +42,8 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
       {:ok,
        build_plan(
          config,
-         mapping,
+         targets,
          indexed_rows,
-         species,
          attribute_defs,
          mapping_warnings ++ review_warnings ++ datatype_warnings(attribute_defs)
        )}
@@ -75,17 +64,14 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
       |> Map.new(fn {name, skips} -> {name, Enum.frequencies_by(skips, & &1.reason)} end)
 
     species =
-      plan.species
-      |> Enum.sort_by(& &1.name_botanic)
-      |> Enum.map(fn item ->
-        wikidata_id = Map.get(plan.wikidata_by_bo, item.name_botanic)
-
+      plan.targets
+      |> Enum.sort_by(& &1.baumart_bo)
+      |> Enum.map(fn target ->
         %{
-          name_botanic: item.name_botanic,
-          status: if(wikidata_id, do: :matched, else: :unmatched),
-          wikidata_id: wikidata_id,
-          value_count: Map.get(values_by_species, item.name_botanic, 0),
-          skips: Map.get(skips_by_species, item.name_botanic, %{})
+          name_botanic: target.baumart_bo,
+          wikidata_id: target.wikidata_id,
+          value_count: Map.get(values_by_species, target.baumart_bo, 0),
+          skips: Map.get(skips_by_species, target.baumart_bo, %{})
         }
       end)
 
@@ -111,14 +97,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
 
   @doc false
   @spec warning_counts(t()) :: %{optional(atom()) => pos_integer()}
-  def warning_counts(%__MODULE__{} = plan) do
-    counts = Enum.frequencies_by(plan.warnings, & &1.code)
-
-    case length(plan.unmatched_mapping) do
-      0 -> counts
-      count -> Map.update(counts, :unmatched_mapping, count, &(&1 + count))
-    end
-  end
+  def warning_counts(%__MODULE__{} = plan), do: Enum.frequencies_by(plan.warnings, & &1.code)
 
   # Delegated so export and import cannot drift apart on what a mapping identity
   # is; the issues come back in this module's shape and join its own preflight.
@@ -255,48 +234,33 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
     end
   end
 
-  defp build_plan(config, mapping, indexed_rows, species, attribute_defs, warnings) do
-    {matched, unmatched_cadastre, unmatched_mapping} =
-      TreeTypeMapper.match_wikidata_ids(species, mapping)
-
-    wikidata_by_bo = Map.new(matched, fn {item, qid} -> {item.name_botanic, qid} end)
-    mapping_names = MapSet.new(mapping, &Mapping.canonical_name(&1.baumart_bo))
-    species_names = MapSet.new(species, &Mapping.canonical_name(&1.name_botanic))
+  defp build_plan(config, targets, indexed_rows, attribute_defs, warnings) do
+    target_names = MapSet.new(targets, &Mapping.canonical_name(&1.baumart_bo))
     attributes_by_property = Map.new(attribute_defs, &{&1.property_id, &1})
 
     {value_rows, skips} =
-      classify_values(indexed_rows, config, mapping_names, species_names, attributes_by_property)
+      classify_values(indexed_rows, config, target_names, attributes_by_property)
 
     summary = %{
-      tree_types_derived: length(species),
-      matched: length(matched),
-      unmatched_cadastre: length(unmatched_cadastre),
-      unmatched_mapping: length(unmatched_mapping),
+      tree_types: length(targets),
       attributes: length(attribute_defs),
       values: length(value_rows),
       skipped_values: length(skips)
     }
 
     %__MODULE__{
-      species: species,
-      wikidata_by_bo: wikidata_by_bo,
+      targets: targets,
       attribute_defs: attribute_defs,
       value_rows: value_rows,
-      unmatched_cadastre: unmatched_cadastre,
-      unmatched_mapping: unmatched_mapping,
       skips: skips,
       warnings: Enum.uniq(warnings),
       summary: summary
     }
   end
 
-  defp classify_values(
-         indexed_rows,
-         config,
-         mapping_names,
-         species_names,
-         attributes_by_property
-       ) do
+  # The review CSV is a versioned file and may be older than the mapping. A row
+  # for a species that left the mapping has no tree type, so it must be skipped.
+  defp classify_values(indexed_rows, config, target_names, attributes_by_property) do
     indexed_rows
     |> Enum.reduce({[], [], MapSet.new()}, fn {row, line}, {values, skips, seen} ->
       attribute = Map.get(attributes_by_property, row.property_id)
@@ -304,8 +268,7 @@ defmodule Xylem.BaumBie.Importer.ImportPlan do
 
       reason =
         cond do
-          not MapSet.member?(mapping_names, name_key) -> :missing_mapping
-          not MapSet.member?(species_names, name_key) -> :no_cadastre_tree_type
+          not MapSet.member?(target_names, name_key) -> :missing_mapping
           not PropertyConfig.importable?(config, row.property_id) -> :property_not_importable
           is_nil(attribute) -> :missing_attribute_name
           MapSet.member?(seen, value_key(row, attribute)) -> :duplicate_value

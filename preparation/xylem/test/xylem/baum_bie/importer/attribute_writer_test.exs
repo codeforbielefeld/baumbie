@@ -3,6 +3,24 @@ defmodule Xylem.BaumBie.Importer.AttributeWriterTest do
 
   alias Xylem.BaumBie.Importer.AttributeWriter
 
+  describe "build_tree_type_row/1" do
+    test "builds the owned tree type fields without CitTree metadata" do
+      target = %{
+        baumart_bo: "Quercus robur",
+        baumart_de: "Stiel-Eiche",
+        wikidata_id: "Q165145",
+        line: 2
+      }
+
+      assert AttributeWriter.build_tree_type_row(target) == %{
+               "name" => "Stiel-Eiche",
+               "name_trivial" => "Stiel-Eiche",
+               "name_botanic" => "Quercus robur",
+               "wikidata_id" => "Q165145"
+             }
+    end
+  end
+
   describe "build_attribute_row/4" do
     test "builds a row with the mapped type, provider metadata and no group" do
       entry = %{

@@ -66,6 +66,23 @@ mix xylem.reconcile_citree
 Den schreibenden Lauf erst starten, nachdem Matches und Unmatched-Einträge des
 Dry-Runs geprüft wurden.
 
+## Neuen Katasterstand prüfen
+
+`priv/data/baumbie_wikidata_mapping.csv` ist die einzige Artenliste der
+Pipeline: Aus ihr entstehen die `tree_types`, das Baumkataster der Stadt
+Bielefeld wird dafür nicht gelesen. Liegt ein neues Kataster vor, zeigt dieser
+Task die Abweichungen, ohne etwas zu schreiben:
+
+```bash
+mix xylem.reconcile_cadastre --trees ../input/trees2.geojson
+```
+
+Arten, die im Mapping fehlen, bekommen keinen `tree_type` und müssen dort mit
+Wikidata-ID ergänzt werden. Der Task endet in diesem Fall mit Exit-Code 1.
+Mapping-Einträge, die im Kataster fehlen, sind unkritisch. Zeilen mit leerer
+`wikidata_id` wie `Waldartiger Bestand` gelten als bekannt und erzeugen keinen
+`tree_type`.
+
 ## Dateien in `priv`
 
 `priv` ist in drei Ebenen aufgeteilt:
@@ -144,10 +161,11 @@ reproduzierbar.
 
 ### Das Baumkataster liegt außerhalb von `priv`
 
-`mix xylem.import` leitet die `tree_types` aus den Baumkataster-Daten der Stadt
-Bielefeld ab und liest sie per Default aus `../input/trees2.geojson` – also aus
-`preparation/input/`, wo auch die übrigen Preprocessing-Skripte ihre GeoJSON-
-Eingaben erwarten. Wer sie woanders liegen hat, gibt den Pfad mit `--trees` an.
+Das Baumkataster der Stadt Bielefeld ist nicht versioniert und für die Pipeline
+nicht nötig. Nur `mix xylem.reconcile_cadastre` liest es, per Default aus
+`../input/trees2.geojson` – also aus `preparation/input/`, wo auch die übrigen
+Preprocessing-Skripte ihre GeoJSON-Eingaben erwarten. Wer es woanders liegen
+hat, gibt den Pfad mit `--trees` an.
 
 ## Task-Hilfe
 
@@ -156,6 +174,7 @@ mix help xylem.generate
 mix help xylem.export
 mix help xylem.import
 mix help xylem.reconcile_citree
+mix help xylem.reconcile_cadastre
 ```
 
 Damit sind alle projektspezifischen Mix-Tasks abgedeckt:
@@ -164,6 +183,7 @@ Damit sind alle projektspezifischen Mix-Tasks abgedeckt:
 - `xylem.export` – Review-CSV erzeugen
 - `xylem.import` – Review-CSV nach Supabase importieren
 - `xylem.reconcile_citree` – Citree-Namen mit dem BaumBie-Mapping abgleichen
+- `xylem.reconcile_cadastre` – Baumkataster mit dem BaumBie-Mapping vergleichen
 
 ## Nutzung mit Docker
 
@@ -183,11 +203,10 @@ docker compose run --rm xylem xylem.export
 docker compose run --rm xylem help xylem.export
 ```
 
-`mix xylem.import` läuft bewusst nur lokal: Das Image bekommt weder die
-Supabase-Zugangsdaten aus der Umgebung noch das Baumkataster (`trees2.geojson`
-liegt außerhalb der gemounteten Verzeichnisse), und `localhost` zeigt im
-Container nicht auf eine lokale Supabase-Instanz. Der schreibende Import soll
-dort laufen, wo sicher erkennbar ist, auf welche Instanz er zeigt.
+`mix xylem.import` läuft bewusst nur lokal: Das Image bekommt die
+Supabase-Zugangsdaten nicht aus der Umgebung, und `localhost` zeigt im Container
+nicht auf eine lokale Supabase-Instanz. Der schreibende Import soll dort laufen,
+wo sicher erkennbar ist, auf welche Instanz er zeigt.
 
 ## Entwicklung
 
