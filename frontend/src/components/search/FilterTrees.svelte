@@ -1,4 +1,9 @@
 <script lang="ts">
+//to do: x weiter weg vom Label im Button, wenn viele Buttons,dann sollte man durch sliden können
+//to do: animation weg, wenn man geklickt
+//Tabelleninhalt sollte nicht moven, sondern je nach token tabelle filtern
+//bei sehr wenigen: weniger als 0,1%
+
 	import { Searchfield } from '$components/ui';
 	import { selectedTreeFilters, loadTopSpecies, getSpeciesStats } from '$lib/trees';
 	import type { TopSpecies } from '$lib/trees';
