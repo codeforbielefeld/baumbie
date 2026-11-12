@@ -1,4 +1,4 @@
-learname: Frontend image
+name: Frontend image
 
 on:
   pull_request:
