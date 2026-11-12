@@ -1,9 +1,16 @@
-name: Frontend image
+learname: Frontend image
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
-    paths: [frontend/**, preparation/supa_splitter.py, .github/workflows/frontend-image.yml]
+    paths:
+      [
+        frontend/**,
+        preparation/supa_splitter.py,
+        .github/workflows/frontend-image.yml,
+      ]
   workflow_dispatch:
 
 jobs:
@@ -16,7 +23,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       # Segments are gitignored; generate them from Supabase so the image ships current trees.
       - name: Generate tree segments
         env:
