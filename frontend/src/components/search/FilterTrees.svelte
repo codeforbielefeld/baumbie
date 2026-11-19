@@ -1,7 +1,5 @@
 <script lang="ts">
-//to do: wenn viele Buttons,dann sollte man durch sliden können
 //to do: animation weg, wenn man geklickt
-//Tabelleninhalt sollte nicht moven, sondern je nach token tabelle filtern
 
 	import { Searchfield } from '$components/ui';
 	import { selectedTreeFilters, loadTopSpecies, getSpeciesStats } from '$lib/trees';
@@ -15,7 +13,6 @@
 	let searchQuery = $state('');
 	let sortKey: 'label' | 'count' = $state('count');
 	let sortDirection: 'asc' | 'desc' = $state('desc');
-	let tableElement = $state<HTMLDivElement>();
 	let hasInteracted = $state(false);
 	let animatedSpeciesIndex = $state<number | null>(null);
 
@@ -50,9 +47,22 @@
 		animatedSpeciesIndex = null;
 	}
 
+	function selectFirstSearchResult(event: KeyboardEvent) {
+		const firstSpecies = visibleSpecies[0];
+		if (!searchQuery.trim() || !firstSpecies) return;
+
+		event.preventDefault();
+		if (!current.includes(firstSpecies.label)) {
+			toggleSpecies(firstSpecies.label);
+		}
+	}
+
 	let current = $derived($selectedTreeFilters.species ?? []);
 	let visibleSpecies = $derived(
 		topSpecies
+			.filter((species) =>
+				species.label.toLocaleLowerCase().includes(searchQuery.trim().toLocaleLowerCase())
+			)
 			.toSorted((left, right) => {
 				const comparison =
 					sortKey === 'label'
@@ -87,17 +97,6 @@
 		return () => window.clearInterval(interval);
 	});
 
-	$effect(() => {
-		const query = searchQuery.trim().toLocaleLowerCase();
-		if (!query || !tableElement) return;
-
-		const matchingIndex = visibleSpecies.findIndex((species) =>
-			species.label.toLocaleLowerCase().includes(query)
-		);
-		if (matchingIndex >= 0) {
-			tableElement.scrollTo({ top: matchingIndex * 48, behavior: 'smooth' });
-		}
-	});
 </script>
 
 <div class="w-full max-w-screen-lg mx-auto space-y-7 pt-2">
@@ -119,6 +118,7 @@
 		showSuggestions={false}
 		onFocus={stopTableAnimation}
 		onInput={handleSearchInput}
+		onEnter={selectFirstSearchResult}
 	/>
 
 
@@ -151,11 +151,11 @@
 			</button>
 		</div>
 
-		<div bind:this={tableElement} class="max-h-96 divide-y divide-gray-100 overflow-y-auto">
-			{#each visibleSpecies as species (species.label)}
+		<div class="max-h-96 divide-y divide-gray-100 overflow-y-auto">
+			{#each visibleSpecies as species, index (species.label)}
 				<button
 					type="button"
-					class={`grid h-12 w-full grid-cols-[minmax(0,1fr)_minmax(10rem,max-content)] text-left transition ${current.includes(species.label) ? 'bg-green-300 hover:!bg-green-300' : animatedSpeciesIndex === visibleSpecies.indexOf(species) ? 'bg-green-100' : 'bg-white hover:bg-green-100'}`}
+					class={`grid h-12 w-full grid-cols-[minmax(0,1fr)_minmax(10rem,max-content)] text-left transition ${current.includes(species.label) ? 'bg-green-300 hover:!bg-green-300' : (searchQuery.trim() && index === 0) || animatedSpeciesIndex === index ? 'bg-green-100' : 'bg-white hover:bg-green-100'}`}
 					onmouseenter={stopTableAnimation}
 					onclick={() => toggleSpecies(species.label)}
 				>

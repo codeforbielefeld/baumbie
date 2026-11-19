@@ -20,6 +20,7 @@
 		onFocus?: () => void;
 		onInput?: (value: string) => void;
 		onSelect?: (item: SearchItem) => void;
+		onEnter?: (event: KeyboardEvent) => void;
 	}
 
 	let {
@@ -40,7 +41,8 @@
 		noResultsText = 'Keine passenden Vorschläge',
 		onFocus = () => {},
 		onInput = () => {},
-		onSelect = () => {}
+		onSelect = () => {},
+		onEnter = () => {}
 	}: Props = $props();
 
 	let isOpen = $state(false);
@@ -97,6 +99,11 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		if (!showSuggestions) {
+			if (event.key === 'Enter' && !event.isComposing && !event.repeat) onEnter(event);
+			return;
+		}
+
 		if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			isOpen = true;
