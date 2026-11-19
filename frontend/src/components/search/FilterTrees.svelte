@@ -11,7 +11,8 @@
 	let topSpecies: TopSpecies[] = $state([]);
 	let speciesStats: SpeciesStats = $state({ totalTrees: 0, distinctSpecies: 0 });
 	let searchQuery = $state('');
-	let sortKey: 'label' | 'count' = $state('count');
+	//let sortKey: 'label' | 'count' = $state('count');
+	let sortKey = $state('count');
 	let sortDirection: 'asc' | 'desc' = $state('desc');
 	let hasInteracted = $state(false);
 	let animatedSpeciesIndex = $state<number | null>(null);
@@ -99,44 +100,51 @@
 
 </script>
 
-<div class="w-full max-w-screen-lg mx-auto space-y-7 pt-2">
+<div class="mx-auto flex h-full min-h-0 w-full max-w-screen-lg flex-col gap-7 pt-2">
 	<!-- Beschreibung -->
-	<div class="space-y-2 text-lg text-gray-800 leading-relaxed">
+	<div class="shrink-0 space-y-2 text-lg text-gray-800 leading-relaxed">
 		<Notice tone="info">
 			Es gibt <strong>{speciesStats.totalTrees} Stadtbäume</strong> in Bielefeld, darunter
 			<strong>{speciesStats.distinctSpecies} verschiedene Arten</strong>.<br>
-			Wähle hier, welche Arten du in der Karte sehen willst.
+			<br>
+			<span class="inline-flex items-start gap-1.5">
+				<span>Tippe in der Tabelle auf die Baumarten, die du in der Karte sehen willst. Oder such nach einer Baumart.</span>
+			</span>
 		</Notice>
 	</div>
 	
-	<Searchfield
-		items={topSpecies}
-		labelKey="label"
-		valueKey="label"
-		placeholder="Baumart suchen ..."
-		bind:value={searchQuery}
-		showSuggestions={false}
-		onFocus={stopTableAnimation}
-		onInput={handleSearchInput}
-		onEnter={selectFirstSearchResult}
-	/>
+	<div class="shrink-0">
+		<Searchfield
+			items={topSpecies}
+			labelKey="label"
+			valueKey="label"
+			placeholder="Baumart suchen ..."
+			bind:value={searchQuery}
+			showSuggestions={false}
+			onFocus={stopTableAnimation}
+			onInput={handleSearchInput}
+			onEnter={selectFirstSearchResult}
+		/>
+	</div>
 
 
-	<div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
-		<div class="grid grid-cols-[minmax(0,1fr)_minmax(10rem,max-content)] border-b
+	<div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
+		<div class="grid shrink-0 grid-cols-[minmax(0,1fr)_minmax(10rem,max-content)] border-b
 				border-gray-200 bg-gray-100
 				text-left text-sm font-semibold text-gray-700">
-			<button
+			<!-- <button
 				type="button"
 				class="flex items-center justify-between px-4 py-3 text-left hover:bg-gray-200"
 				onclick={() => changeSort('label')}
-			>
-				Baumart
-				{#if sortKey === 'label'}<span aria-hidden="true">{sortDirection === 'asc' ? '↑' : '↓'}</span>{/if}
-			</button>
+			> -->
+				<div class="flex items-center justify-between px-4 py-3 text-left">
+					Baumart
+				</div>
+				<!-- {#if sortKey === 'label'}<span aria-hidden="true">{sortDirection === 'asc' ? '↑' : '↓'}</span>{/if} -->
+			<!-- </button> -->
 			<button
 				type="button"
-				class="flex items-center justify-end gap-2 whitespace-nowrap border-l border-gray-200 px-4 py-3 text-right hover:bg-gray-200"
+				class="flex items-center justify-end gap-2 whitespace-nowrap border-l border-gray-200 px-4 py-3 text-right"
 				onclick={() => changeSort('count')}
 			>
 				Häufigkeit
@@ -151,7 +159,7 @@
 			</button>
 		</div>
 
-		<div class="max-h-96 divide-y divide-gray-100 overflow-y-auto">
+		<div class="min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto">
 			{#each visibleSpecies as species, index (species.label)}
 				<button
 					type="button"
@@ -165,7 +173,7 @@
 						({ species.share >= 0.1 ?
 							species.share.toLocaleString(
 							'de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }
-						) : "<0.1" } %)
+						) : '<\u20090.1' }&thinsp;%)
 					</span>
 				</button>
 			{:else}

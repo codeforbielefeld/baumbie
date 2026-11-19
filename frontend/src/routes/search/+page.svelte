@@ -4,7 +4,7 @@
 </script>
 
 <DialogPanel title={'Nach Baumarten filtern'} open={true}>
-	<div class="pt-2 pb-6 space-y-4">
+	<div class="h-full min-h-[24rem] pt-2 pb-6">
 		<FilterTrees />
 	</div>
 </DialogPanel>
