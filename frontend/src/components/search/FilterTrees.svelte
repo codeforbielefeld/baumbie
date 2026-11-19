@@ -162,7 +162,11 @@
 				>
 					<span class="truncate px-4 py-3 font-medium text-gray-900">{species.label}</span>
 					<span class="whitespace-nowrap border-l border-gray-100 px-4 py-3 text-right text-gray-700">
-						{species.count} ({species.share.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %)
+						{species.count} 
+						({ species.share >= 0.1 ?
+							species.share.toLocaleString(
+							'de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }
+						) : "<0.1" } %)
 					</span>
 				</button>
 			{:else}
