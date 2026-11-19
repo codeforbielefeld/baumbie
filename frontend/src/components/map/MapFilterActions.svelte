@@ -27,7 +27,7 @@
 	{#each current as species (species)}
 		<Button
 			variant="secondary"
-			className="!border-green-600 !bg-green-300 !px-3 !py-1 !text-sm !text-green-900 shadow-md hover:!bg-green-300"
+			className="gap-2 !border-green-600 !bg-green-300 !px-3 !py-1 !text-sm !text-green-900 shadow-md hover:!bg-green-300"
 			onClick={() => toggleSpecies(species)}
 			ariaLabel={`${species} abwählen`}
 		>
