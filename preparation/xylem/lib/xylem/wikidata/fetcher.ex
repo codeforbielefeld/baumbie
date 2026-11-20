@@ -244,6 +244,7 @@ defmodule Xylem.Wikidata.Fetcher do
 
     req_opts =
       [
+        headers: [user_agent: user_agent()],
         max_retries: 5
       ]
       |> maybe_add_plug(opts)

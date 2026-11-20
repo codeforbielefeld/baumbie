@@ -1,0 +1,170 @@
+# Zeitgesteuerter Refresh der Wikidata-Review-Daten von Xylem.
+#
+# Führt die ersten Pipeline-Schritte (`mix xylem.generate`, `mix xylem.export`)
+# aus und öffnet einen Pull Request, sobald sich
+# `priv/config/wikidata_properties.csv` oder `priv/data/wikidata/export.csv`
+# gegenüber `main` unterscheiden. Ein bestehender PR wird aktualisiert.
+#
+# Anschließend läuft `mix xylem.import --dry-run` gegen die neuen Daten. Er
+# braucht weder Supabase noch das Baumkataster. Sein Ergebnis steht mit Link
+# auf den Lauf im PR-Text; schlägt er fehl, wird der Lauf rot markiert, der PR
+# aber trotzdem erzeugt.
+name: Xylem Wikidata refresh
+
+on:
+  schedule:
+    # Jeden Donnerstag um 06:1. Schedules laufen nur auf dem Default-Branch.
+    - cron: "17 6 * * 4"
+      timezone: "Europe/Berlin"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: xylem-wikidata-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Generate, export, dry-run
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        # Explizites `bash` aktiviert `pipefail`, damit ein fehlschlagender
+        # Mix-Task hinter `tee` den Step scheitern lässt.
+        shell: bash
+        working-directory: preparation/xylem
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Erlang/OTP and Elixir
+        id: beam
+        uses: erlef/setup-beam@v1
+        with:
+          version-file: preparation/xylem/.tool-versions
+          version-type: strict
+
+      - name: Cache Mix dependencies and build
+        uses: actions/cache@v6
+        with:
+          path: |
+            preparation/xylem/deps
+            preparation/xylem/_build
+          key: mix-${{ runner.os }}-otp${{ steps.beam.outputs.otp-version }}-elixir${{ steps.beam.outputs.elixir-version }}-${{ hashFiles('preparation/xylem/mix.lock') }}
+          restore-keys: |
+            mix-${{ runner.os }}-otp${{ steps.beam.outputs.otp-version }}-elixir${{ steps.beam.outputs.elixir-version }}-
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Compile
+        run: mix compile
+
+      - name: Generate (fetch and process Wikidata entities)
+        run: |
+          mix xylem.generate --fetch force 2>&1 | tee "$RUNNER_TEMP/generate.log"
+          # Der Task meldet fehlgeschlagene Fetches, ohne selbst zu scheitern.
+          # Unvollständige Daten würden im Export als gelöschte Zeilen
+          # erscheinen, deshalb hier abbrechen statt einen PR zu öffnen.
+          if grep -q '^Failed fetches:' "$RUNNER_TEMP/generate.log"; then
+            echo "::error::Some Wikidata entities could not be fetched; not opening a PR from incomplete data."
+            exit 1
+          fi
+
+      - name: Export review CSV
+        run: |
+          mix xylem.export 2>&1 | tee "$RUNNER_TEMP/export.log"
+          if grep -q '^Entities without a processed file:' "$RUNNER_TEMP/export.log"; then
+            echo "::error::Export skipped entities without processed data; not opening a PR from incomplete data."
+            exit 1
+          fi
+          git --no-pager diff --stat -- priv/config/wikidata_properties.csv priv/data/wikidata/export.csv
+
+      - name: Import dry-run
+        id: dry_run
+        continue-on-error: true
+        run: mix xylem.import --dry-run 2>&1 | tee "$RUNNER_TEMP/dry_run.log"
+
+      - name: Compose pull request body
+        env:
+          DRY_RUN_OUTCOME: ${{ steps.dry_run.outcome }}
+          # Die Check-Run-ID ist zugleich die ID in der URL der Job-Seite.
+          JOB_ID: ${{ job.check_run_id }}
+        run: |
+          run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          job_url="$run_url${JOB_ID:+/job/$JOB_ID}"
+
+          entities=$(sed -nE 's/^Processed ([0-9]+) entities.*/\1/p' "$RUNNER_TEMP/generate.log")
+          rows=$(sed -nE 's/^Exported ([0-9]+) rows for ([0-9]+) targets.*/\1 Zeilen für \2 Arten/p' \
+            "$RUNNER_TEMP/export.log")
+          appended=$(sed -nE 's/^([0-9]+) new properties appended.*please review: (.*)/\1 neue Properties (\2)/p' \
+            "$RUNNER_TEMP/generate.log")
+
+          if [ "$DRY_RUN_OUTCOME" = success ]; then
+            dry_run="✅ erfolgreich"
+          else
+            dry_run="❌ fehlgeschlagen"
+          fi
+
+          # Nur die Summary-Zeilen: Die Detail-Logs des Dry-Runs folgen ihr im Log.
+          summary=$(sed -n '/Import summary:/,/^ *warnings:/p' "$RUNNER_TEMP/dry_run.log" 2>/dev/null \
+            | tail -n +2 || true)
+
+          {
+            echo "Automatischer Wikidata-Refresh vom $(date -u +%Y-%m-%d): $entities Entities verarbeitet, $rows exportiert."
+            if [ -n "$appended" ]; then
+              echo
+              echo "⚠️ $appended in \`wikidata_properties.csv\` tragen nur Defaults für \`action\` und \`import\`, bitte prüfen."
+            fi
+            echo
+            echo "**Import-Dry-Run:** $dry_run ([Build]($job_url))"
+            if [ -n "$summary" ]; then
+              echo
+              echo '```'
+              echo "$summary"
+              echo '```'
+            fi
+            echo
+            echo "Der Branch wird bei jedem Lauf aus \`main\` neu aufgebaut, Korrekturen an der Property-Config deshalb in einem eigenen PR. Nach dem Merge \`mix xylem.import\` manuell ausführen."
+          } > "$RUNNER_TEMP/pr-body.md"
+          cat "$RUNNER_TEMP/pr-body.md"
+
+      # Ohne Unterschied zu `main` passiert nichts; ein offener PR ohne
+      # verbleibenden Diff wird automatisch geschlossen.
+      - name: Create or update pull request
+        id: pr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          add-paths: |
+            preparation/xylem/priv/config/wikidata_properties.csv
+            preparation/xylem/priv/data/wikidata/export.csv
+          branch: xylem/wikidata-refresh
+          delete-branch: true
+          commit-message: Refresh Wikidata review data
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          title: Refresh Wikidata review data
+          body-path: ${{ runner.temp }}/pr-body.md
+
+      - name: Write job summary
+        env:
+          PR_OPERATION: ${{ steps.pr.outputs.pull-request-operation }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+        run: |
+          {
+            case "$PR_OPERATION" in
+              created|updated) echo "Pull request $PR_OPERATION: $PR_URL" ;;
+              closed) echo "Pull request closed, no difference to main any more: $PR_URL" ;;
+              *) echo "No changes in the review files, no pull request." ;;
+            esac
+            echo
+            cat "$RUNNER_TEMP/pr-body.md"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail the run if the dry-run did not succeed
+        if: steps.dry_run.outcome == 'failure'
+        run: |
+          echo "::error::The import dry-run did not succeed, see the steps above. The pull request links to this run."
+          exit 1

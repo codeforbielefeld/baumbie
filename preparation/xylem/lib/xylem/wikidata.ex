@@ -13,6 +13,11 @@ defmodule Xylem.Wikidata do
   def wdt_prefix, do: @wdt_prefix
   def wd_prefix, do: @wd_prefix
 
+  # Wikimedia asks clients to identify themselves; generic agents are throttled
+  # or blocked, especially from cloud IP ranges such as CI runners.
+  @user_agent "XylemBot/1.0 (BaumBie project; bielefeld@codefor.de)"
+  def user_agent, do: @user_agent
+
   @doc "Converts a wdt: property IRI to its wd: entity IRI for label lookup."
   def wdt_to_wd(iri), do: String.replace(iri, @wdt_prefix, @wd_prefix)
 

@@ -191,7 +191,7 @@ defmodule Xylem.Wikidata.VocabGenerator do
   defp sparql_construct(query, retries \\ 0) do
     case SPARQL.Client.query(query, @wikidata_sparql_endpoint,
            request_method: :get,
-           headers: %{"User-Agent" => "XylemBot/1.0 (BaumBie project; bielefeld@codefor.de)"}
+           headers: %{"User-Agent" => Wikidata.user_agent()}
          ) do
       {:ok, graph} ->
         {:ok, graph}
