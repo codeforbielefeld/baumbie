@@ -7,7 +7,7 @@
 
 	// console.log('BotMessage received:', message);
 
-	
+
 
 	interface Props {
 		message: Message;
@@ -34,12 +34,12 @@
 	let selectedLabel: string | null = $state(null);
 
 	run(() => {
-		if (message?.text && message.text !== lastMessageText) {
-			const current = message.text;
+		if (message?.content && message.content !== lastMessageText) {
+			const current = message.content;
 			lastMessageText = current;
 
 			parseMarkdown(current).then((result) => {
-				if (message.text === current) htmlText = result;
+				if (message.content === current) htmlText = result;
 			});
 		}
 	});
