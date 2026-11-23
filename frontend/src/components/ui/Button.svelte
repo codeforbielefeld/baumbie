@@ -1,5 +1,5 @@
 <script module lang="ts">
-	export type ButtonVariant = 'default' | 'primary' | 'secondary' | 'danger' | 'watering';
+	export type ButtonVariant = 'default' | 'primary' | 'secondary' | 'danger' | 'watering' | 'unstyled';
 </script>
 
 <script lang="ts">
@@ -12,7 +12,9 @@
 		type?: ButtonType;
 		disabled?: boolean;
 		ariaLabel?: string;
+		ariaPressed?: boolean;
 		onClick?: (e: MouseEvent) => void;
+		onMouseEnter?: (e: MouseEvent) => void;
 		children?: import('svelte').Snippet;
 	}
 
@@ -22,7 +24,9 @@
 		type = 'button',
 		disabled = false,
 		ariaLabel = undefined,
+		ariaPressed = undefined,
 		onClick = () => {},
+		onMouseEnter = undefined,
 		children
 	}: Props = $props();
 
@@ -35,7 +39,8 @@
 		danger:
 			'border-red-600 text-black active:bg-red-700 active:text-white supports-hover:hover:bg-red-800 supports-hover:hover:text-white',
 		watering:
-			'border-[#7C98B2] bg-[#7C98B2] text-white active:brightness-90 supports-hover:hover:brightness-110'
+			'border-[#7C98B2] bg-[#7C98B2] text-white active:brightness-90 supports-hover:hover:brightness-110',
+		unstyled: ''
 	};
 </script>
 
@@ -43,11 +48,13 @@
 	{type}
 	{disabled}
 	aria-label={ariaLabel}
-	class={`border-2 rounded-full px-4 py-2 flex items-center justify-center transition duration-150 ease-in-out
+	aria-pressed={ariaPressed}
+	class={`${variant === 'unstyled' ? '' : 'border-2 rounded-full px-4 py-2 flex items-center justify-center transition duration-150 ease-in-out'}
 		${variantClasses[variant]}
 		${disabled ? 'opacity-50 cursor-not-allowed' : ''}
 		${className}`}
 	onclick={!disabled ? onClick : undefined}
+	onmouseenter={onMouseEnter}
 >
 	{@render children?.()}
 </button>
