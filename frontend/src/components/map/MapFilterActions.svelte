@@ -37,7 +37,7 @@
 
 {#if current.length > 0}
 	<div
-		class="fixed left-0 right-0 top-0 z-[1001] flex min-w-0 items-center gap-2 px-1 py-3"
+		class="fixed left-0 right-0 top-0 z-[1001] flex min-w-0 items-center gap-2 pl-1 pr-0 py-3"
 		transition:fade={{ duration: 150 }}
 	>
 		<Button
@@ -56,7 +56,7 @@
 				tabindex="0"
 				class="filter-scroll-area overflow-x-auto"
 			>
-				<div bind:this={scrollContent} class="flex w-max min-w-full items-center gap-2">
+				<div bind:this={scrollContent} class="flex w-max min-w-full items-center gap-2 pr-1">
 					{#each current as species (species)}
 						<Button
 							variant="secondary"
@@ -102,7 +102,7 @@
 		position: absolute;
 		top: 0;
 		bottom: 0;
-		width: clamp(1.5rem, 5vw, 8rem);
+		width: 1.5rem;
 		z-index: 1;
 		pointer-events: none;
 		background: rgba(255, 255, 255, 0.18);
