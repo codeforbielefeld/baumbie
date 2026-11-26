@@ -129,11 +129,12 @@
 	}
 </script>
 
-<div class="relative w-full">
+<div class="w-full">
 	<label class="sr-only" for={id}>{placeholder}</label>
+
 	<input
 		{id}
-		class="w-full rounded-lg border border-gray-400 bg-white px-4 py-3 text-gray-900 shadow-sm outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-200"
+		class="w-full rounded-lg border border-gray-400 bg-white px-4 py-3 text-gray-900 shadow-sm outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-200 "
 		{placeholder}
 		autocomplete="off"
 		role="combobox"

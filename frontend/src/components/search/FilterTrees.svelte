@@ -101,7 +101,7 @@
 
 </script>
 
-<div class="mx-auto flex h-full min-h-0 w-full max-w-screen-lg flex-col gap-7 pt-2">
+<div class="mx-auto flex h-full min-h-0 w-full p-1 max-w-screen-lg flex-col gap-7 pt-2">
 	<!-- Beschreibung -->
 	<div class="shrink-0 space-y-2 text-2xl text-gray-800 leading-relaxed">
 		<Notice tone="info" fontSize="base">
@@ -130,7 +130,7 @@
 
 
 	<div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
-		<div class="grid shrink-0 grid-cols-[minmax(0,1fr)_minmax(10rem,max-content)] border-b
+		<div class="grid shrink-0 grid-cols-[minmax(0,1fr)_minmax(10rem,max-content)] overflow-hidden [scrollbar-gutter:stable] border-b
 				border-gray-200 bg-gray-100
 				text-left text-sm font-semibold text-gray-700">
 			<!-- <button
@@ -166,7 +166,10 @@
 			</button>
 		</div>
 
-		<div class="min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto">
+		<div class="min-h-0
+				flex-1
+				divide-y divide-gray-100
+				overflow-y-auto [scrollbar-gutter:stable]">
 			{#each visibleSpecies as species, index (species.label)}
 				<Button
 					variant="unstyled"
