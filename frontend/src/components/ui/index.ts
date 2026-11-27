@@ -9,3 +9,4 @@ export { default as WaterField } from './input/WaterField.svelte';
 export { default as DateField } from './input/DateField.svelte';
 export { default as Notice } from './Notice.svelte';
 export { default as PanelSection } from './PanelSection.svelte';
+export { default as Searchfield } from './Searchfield.svelte';
