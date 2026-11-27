@@ -105,11 +105,14 @@
 	<!-- Beschreibung -->
 	<div class="shrink-0 space-y-2 text-2xl text-gray-800 leading-relaxed">
 		<Notice tone="info" fontSize="base">
-			Es gibt <strong>{formatNumber(speciesStats.totalTrees)} Stadtbäume</strong> in Bielefeld, darunter
-			<strong>{formatNumber(speciesStats.distinctSpecies)} verschiedene Arten</strong>.<br>
+			Es gibt <strong>{formatNumber(speciesStats.totalTrees)} Stadtbäume</strong> in Bielefeld und
+			<strong>{formatNumber(speciesStats.distinctSpecies)} verschiedene Arten</strong>. Zu den Stadtbäumen zählen alle Bäume, die vom Umweltbetrieb gepflegt und verwaltet werden.<br>
 			<br>
+		</Notice>
+
+		<Notice tone="info" fontSize="base">
 			<span class="inline-flex items-start gap-1.5">
-				<span>Tippe in der Tabelle auf die Baumarten, die du in der Karte sehen willst. Oder such nach einer Baumart.</span>
+				<span>Tippe in der Tabelle auf die Baumarten, die du in der Karte sehen willst. Oder suche nach einer Baumart.</span>
 			</span>
 		</Notice>
 	</div>
